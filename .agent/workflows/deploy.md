@@ -1,5 +1,5 @@
 ---
-description: Deployment command for production releases. Pre-flight checks and deployment execution.
+description: Code xong rồi? Đẩy lên Server/Vercel thôi.
 ---
 
 # /deploy - Production Deployment

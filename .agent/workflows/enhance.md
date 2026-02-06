@@ -1,5 +1,5 @@
 ---
-description: Add or update features in existing application. Used for iterative development.
+description: Muốn sửa màu, thêm nút, sửa logic nhỏ? Vào đây.
 ---
 
 # /enhance - Update Application

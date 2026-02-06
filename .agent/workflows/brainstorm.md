@@ -1,5 +1,5 @@
 ---
-description: Structured brainstorming for projects and features. Explores multiple options before implementation.
+description: Bí ý tưởng? Dùng cái này để AI gợi ý.
 ---
 
 # /brainstorm - Structured Idea Exploration

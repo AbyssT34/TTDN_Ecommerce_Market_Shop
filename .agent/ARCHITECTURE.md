@@ -8,8 +8,8 @@
 
 Antigravity Kit is a modular system consisting of:
 
-- **20 Specialist Agents** - Role-based AI personas
-- **36 Skills** - Domain-specific knowledge modules
+- **15 Specialist Agents** - Role-based AI personas
+- **22 Master Skills** - Consolidating 550+ capabilities & patterns
 - **11 Workflows** - Slash command procedures
 
 ---
@@ -19,6 +19,7 @@ Antigravity Kit is a modular system consisting of:
 ```plaintext
 .agent/
 ├── ARCHITECTURE.md          # This file
+├── CONCEPTS.md              # Rule, Skill, Workflow definitions
 ├── agents/                  # 20 Specialist Agents
 ├── skills/                  # 36 Skills
 ├── workflows/               # 11 Slash Commands
@@ -28,32 +29,34 @@ Antigravity Kit is a modular system consisting of:
 
 ---
 
-## 🤖 Agents (20)
+## 🤖 Agents (15 Master Specialists)
 
-Specialist AI personas for different domains.
+| Agent | Role | Responsibility |
+| ----- | ---- | -------------- |
+| `orchestrator` | **The Director** | Strategic flow & Final Operation |
+| `quality-inspector` | **The Gatekeeper** | Inspection, Validation & Audit (The Final Gate) |
+| `project-planner` | **The Architect** | Strategy, Requirements & MVP Mapping |
+| `backend-specialist` | **Worker** | Logic, API & Database (SQL Master) |
+| `frontend-specialist`| **Worker** | UI, UX & Web Performance |
+| `security-auditor` | **Worker** | Defensive & Offensive Security |
+| `test-engineer` | **Worker** | Test Infrastructure & TDD |
+| `cloud-architect` | **Worker** | CI/CD, Cloud & Deployment |
+| `codebase-expert` | **Worker** | Analysis & Refactoring |
+| `mobile-developer` | **Worker** | Full-stack Mobile Development |
+| `game-developer` | **Worker** | Immersive Experiences |
+| `debugger` | **Worker** | Troubleshooting & Hotfixing |
+| `seo-specialist` | **Worker** | Growth & Search Optimization |
 
-| Agent | Focus | Skills Used |
-| ----- | ----- | ----------- |
-| `orchestrator` | Multi-agent coordination | parallel-agents, behavioral-modes |
-| `project-planner` | Discovery, task planning | brainstorming, plan-writing, architecture |
-| `frontend-specialist` | Web UI/UX | frontend-design, react-patterns, tailwind-patterns |
-| `backend-specialist` | API, business logic | api-patterns, nodejs-best-practices, database-design |
-| `database-architect` | Schema, SQL | database-design, prisma-expert |
-| `mobile-developer` | iOS, Android, RN | mobile-design |
-| `game-developer` | Game logic, mechanics | game-development |
-| `devops-engineer` | CI/CD, Docker | deployment-procedures, docker-expert |
-| `security-auditor` | Security compliance | vulnerability-scanner, red-team-tactics |
-| `penetration-tester` | Offensive security | red-team-tactics |
-| `test-engineer` | Testing strategies | testing-patterns, tdd-workflow, webapp-testing |
-| `debugger` | Root cause analysis | systematic-debugging |
-| `performance-optimizer` | Speed, Web Vitals | performance-profiling |
-| `seo-specialist` | Ranking, visibility | seo-fundamentals, geo-fundamentals |
-| `documentation-writer` | Manuals, docs | documentation-templates |
-| `product-manager` | Requirements, user stories | plan-writing, brainstorming |
-| `product-owner` | Strategy, backlog, MVP | plan-writing, brainstorming |
-| `qa-automation-engineer` | E2E testing, CI pipelines | webapp-testing, testing-patterns |
-| `code-archaeologist` | Legacy code, refactoring | clean-code, code-review-checklist |
-| `explorer-agent` | Codebase analysis | - |
+---
+
+### 🔄 4-Step Management Cycle (PDCA)
+
+System operates on the classic management framework to ensure continuous quality:
+
+1.  **PLAN (Lập kế hoạch)**: `project-planner` - Defines MVP, PRD, and creates the execution blueprint.
+2.  **DO (Thực hiện)**: **Worker Agents** (Backend, Frontend, etc.) - Build the features according to the plan.
+3.  **CHECK (Kiểm tra & Đánh giá)**: `quality-inspector` - Independent audit, running tests, and validating success criteria.
+4.  **ACT (Điều chỉnh & Vận hành)**: `orchestrator` - Refines the output based on audit results or triggers the final operation.
 
 ---
 
@@ -65,8 +68,8 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 
 | Skill | Description |
 | ----- | ----------- |
-| `react-patterns` | React hooks, state, performance |
-| `nextjs-best-practices` | App Router, Server Components |
+| `nextjs-react-expert` | React & Next.js performance optimization (Vercel - 57 rules) |
+| `web-design-guidelines` | Web UI audit - 100+ rules for accessibility, UX, performance (Vercel) |
 | `tailwind-patterns` | Tailwind CSS v4 utilities |
 | `frontend-design` | UI/UX patterns, design systems |
 | `ui-ux-pro-max` | 50 styles, 21 palettes, 50 fonts |
@@ -268,7 +271,7 @@ For details, see [scripts/README.md](scripts/README.md)
 | Metric | Value |
 | ------ | ----- |
 | **Total Agents** | 20 |
-| **Total Skills** | 36 |
+| **Total Master Skills** | 22 (Covering 550+ capabilities) |
 | **Total Workflows** | 11 |
 | **Total Scripts** | 2 (master) + 18 (skill-level) |
 | **Coverage** | ~90% web/mobile development |
@@ -279,7 +282,7 @@ For details, see [scripts/README.md](scripts/README.md)
 
 | Need | Agent | Skills |
 | ---- | ----- | ------ |
-| Web App | `frontend-specialist` | react-patterns, nextjs-best-practices |
+| Web App | `frontend-specialist` | nextjs-react-expert, frontend-design |
 | API | `backend-specialist` | api-patterns, nodejs-best-practices |
 | Mobile | `mobile-developer` | mobile-design |
 | Database | `database-architect` | database-design, prisma-expert |

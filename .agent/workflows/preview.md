@@ -1,5 +1,5 @@
 ---
-description: Preview server start, stop, and status check. Local development server management.
+description: Muốn xem trước web chạy thế nào? Bật Preview.
 ---
 
 # /preview - Preview Management

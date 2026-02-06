@@ -127,7 +127,17 @@ Before I coordinate the agents, I need to understand your requirements better:
 
 **Each agent MUST stay within their domain. Cross-domain work = VIOLATION.**
 
-### Strict Boundaries
+### 🟢 SCALE-AWARE DELEGATION STRATEGY
+
+**Before assigning tasks, identify the Operation Mode from `GEMINI.md`:**
+
+| Mode | Strategy | Agent Selection |
+|------|----------|-----------------|
+| **Solo-Ninja (Flexible)** | **Hybrid Execution** | Use 1 agent for mixed tasks. Allow cross-domain edits. |
+| **Agile-Squad (Balanced)** | **Coordinated Execution** | Split FE/BE. Require plan verification. |
+| **Software-Factory (Strict)** | **Gated Execution** | Enforce security-auditor & test-engineer for ALL steps. |
+
+### Strict Boundaries (Applicable for Balanced & Strict Modes)
 
 | Agent | CAN Do | CANNOT Do |
 |-------|--------|-----------|
@@ -141,9 +151,14 @@ Before I coordinate the agents, I need to understand your requirements better:
 | `api-designer` | API specs, OpenAPI, GraphQL schema | ❌ UI code |
 | `performance-optimizer` | Profiling, optimization, caching | ❌ New features |
 | `seo-specialist` | Meta tags, SEO config, analytics | ❌ Business logic |
-| `documentation-writer` | Docs, README, comments | ❌ Code logic, **auto-invoke without explicit request** |
+| `documentation-writer` | Docs, README, comments | ❌ Code logic |
 | `project-planner` | PLAN.md, task breakdown | ❌ Code files |
 | `debugger` | Bug fixes, root cause | ❌ New features |
+
+### 🛠️ MANDATORY: STANDARD PATTERN PERSISTENCE
+**After significant implementation changes (FE, BE, or DB), you MUST ask the user:**
+- "Sếp có muốn lưu cấu hình cài đặt này làm mẫu tiêu chuẩn (Blueprint) cho dự án không?"
+- This ensures consistency and reusable architecture for the project.
 | `explorer-agent` | Codebase discovery | ❌ Write operations |
 | `penetration-tester` | Security testing | ❌ Feature code |
 | `game-developer` | Game logic, scenes, assets | ❌ Web/mobile components |
