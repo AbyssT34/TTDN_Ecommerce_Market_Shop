@@ -6,6 +6,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { connectDatabase } from './config/database.js';
+import authRoutes from './routes/auth.routes.js';
 
 // Initialize Express app
 const app = express();
@@ -67,14 +68,17 @@ app.get('/api', (_req: Request, res: Response) => {
         version: '1.0.0',
         endpoints: {
             health: '/health',
+            auth: '/api/auth',
             products: '/api/products (coming soon)',
             categories: '/api/categories (coming soon)',
-            auth: '/api/auth (coming soon)',
             orders: '/api/orders (coming soon)',
             recipes: '/api/recipes (coming soon)',
         },
     });
 });
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 // ═══════════════════════════════════════════════════════════════
 // ERROR HANDLING

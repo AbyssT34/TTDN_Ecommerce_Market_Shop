@@ -1,17 +1,43 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from '@/components/ui';
+import { Header, Footer } from '@/components/layout';
+import { LoginPage } from '@/features/auth/LoginPage';
+import { RegisterPage } from '@/features/auth/RegisterPage';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { motion } from 'framer-motion';
 
 /**
  * Root Application Component
- * Phase 1: Foundation - Basic setup with placeholder UI
+ * Phase 2: Visual & Security - Auth routes added
  */
 function App() {
     return (
         <BrowserRouter>
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col">
+                {/* Toast Container */}
+                <ToastContainer />
+
                 {/* Main Content */}
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    {/* Public Routes (No Header/Footer) */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+
+                    {/* Protected Routes (With Layout) */}
+                    <Route
+                        path="/"
+                        element={
+                            <ProtectedRoute>
+                                <>
+                                    <Header />
+                                    <HomePage />
+                                    <Footer />
+                                </>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* 404 */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </div>
@@ -20,11 +46,11 @@ function App() {
 }
 
 /**
- * Homepage - Placeholder for Phase 2
+ * Homepage - Placeholder for Phase 3
  */
 function HomePage() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-8">
+        <main className="flex-1 flex flex-col items-center justify-center p-8">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -43,7 +69,7 @@ function HomePage() {
 
                 {/* Title */}
                 <h1 className="text-5xl font-display font-bold mb-4 bg-gradient-to-r from-primary-400 via-accent-honey to-accent-orange bg-clip-text text-transparent">
-                    Ecommerce Shop
+                    Welcome to Food Market
                 </h1>
 
                 {/* Subtitle */}
@@ -56,13 +82,13 @@ function HomePage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/20 border border-primary-500/30 text-primary-400"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 text-green-400"
                 >
                     <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                     </span>
-                    Phase 1: Foundation Complete
+                    Phase 2: Complete ✓
                 </motion.div>
 
                 {/* Tech Stack */}
@@ -72,8 +98,8 @@ function HomePage() {
                     transition={{ delay: 0.6 }}
                     className="mt-12 flex flex-wrap justify-center gap-3"
                 >
-                    {['React 18', 'TypeScript', 'Vite', 'Tailwind CSS', 'MongoDB'].map(
-                        (tech, i) => (
+                    {['React 18', 'TypeScript', 'Vite', 'Tailwind CSS', 'JWT Auth', 'MongoDB'].map(
+                        (tech) => (
                             <span
                                 key={tech}
                                 className="px-3 py-1 text-sm rounded-md bg-white/5 border border-white/10 text-gray-300"
@@ -84,7 +110,7 @@ function HomePage() {
                     )}
                 </motion.div>
             </motion.div>
-        </div>
+        </main>
     );
 }
 
@@ -116,3 +142,4 @@ function NotFoundPage() {
 }
 
 export default App;
+
