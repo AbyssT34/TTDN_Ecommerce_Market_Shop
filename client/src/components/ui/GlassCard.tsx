@@ -1,4 +1,4 @@
-import { HTMLAttributes, forwardRef } from 'react';
+import { HTMLAttributes, forwardRef, ReactNode } from 'react';
 import { motion, MotionProps } from 'framer-motion';
 
 // ═══════════════════════════════════════════════════════════════
@@ -12,6 +12,7 @@ export interface GlassCardProps
     variant?: GlassCardVariant;
     hoverable?: boolean;
     padding?: 'none' | 'sm' | 'md' | 'lg';
+    children?: ReactNode;
 }
 
 // ═══════════════════════════════════════════════════════════════

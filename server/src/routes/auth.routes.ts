@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getMe, logout } from '../controllers/auth.controller.js';
+import { register, login, getMe, logout, updateProfile, changePassword } from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import rateLimit from 'express-rate-limit';
 
@@ -49,4 +49,19 @@ router.get('/me', authenticate, getMe);
  */
 router.post('/logout', authenticate, logout);
 
+/**
+ * @route   PUT /api/auth/profile
+ * @desc    Update user profile (name, phone, avatar)
+ * @access  Private
+ */
+router.put('/profile', authenticate, updateProfile);
+
+/**
+ * @route   PUT /api/auth/password
+ * @desc    Change user password
+ * @access  Private
+ */
+router.put('/password', authenticate, changePassword);
+
 export default router;
+

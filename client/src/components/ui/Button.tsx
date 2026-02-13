@@ -1,4 +1,4 @@
-import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
 import { motion, MotionProps } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
@@ -17,6 +17,7 @@ export interface ButtonProps
     fullWidth?: boolean;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
+    children?: ReactNode;
 }
 
 // ═══════════════════════════════════════════════════════════════

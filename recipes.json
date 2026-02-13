@@ -1,0 +1,1676 @@
+[
+  {
+    "id": 1,
+    "name": "Thịt kho trứng",
+    "mood_tags": [
+      "daily",
+      "family",
+      "comfort"
+    ],
+    "cooking_time_min": 40,
+    "ingredients": [
+      {
+        "name": "Thịt ba chỉ",
+        "qty": "500g",
+        "note": "có mỡ nạc xen kẽ"
+      },
+      {
+        "name": "Trứng gà",
+        "qty": "4 quả",
+        "note": "luộc chín, bóc vỏ"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "3 muỗng canh",
+        "note": "nước mắm ngon"
+      },
+      {
+        "name": "Đường",
+        "qty": "2 muỗng canh",
+        "note": "tạo màu và vị"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "2 củ",
+        "note": "băm nhỏ"
+      },
+      {
+        "name": "Tiêu",
+        "qty": "1/2 muỗng cà phê",
+        "note": "rắc cuối"
+      }
+    ],
+    "steps": [
+      "Luộc trứng chín, bóc vỏ.",
+      "Thịt rửa sạch, cắt miếng vuông.",
+      "Ướp thịt với nước mắm, đường, tiêu 15 phút.",
+      "Phi hành tím cho thơm.",
+      "Cho thịt vào xào săn.",
+      "Thêm trứng và nước xâm xấp.",
+      "Kho nhỏ lửa đến khi nước sệt."
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Cá kho tộ",
+    "mood_tags": [
+      "daily",
+      "comfort"
+    ],
+    "cooking_time_min": 35,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "600g",
+        "note": "cá lóc hoặc basa"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "3 muỗng canh",
+        "note": "ướp và kho"
+      },
+      {
+        "name": "Đường",
+        "qty": "1.5 muỗng canh",
+        "note": "thắng màu"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "2 củ",
+        "note": "băm"
+      },
+      {
+        "name": "Tiêu",
+        "qty": "1/2 muỗng cà phê",
+        "note": "tạo mùi"
+      }
+    ],
+    "steps": [
+      "Cá làm sạch, cắt khúc.",
+      "Ướp cá với gia vị 15 phút.",
+      "Thắng đường đến màu cánh gián.",
+      "Xếp cá vào nồi, cho nước màu.",
+      "Thêm nước xâm xấp.",
+      "Kho lửa nhỏ 25 phút.",
+      "Rắc tiêu trước khi tắt bếp."
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Gà kho gừng",
+    "mood_tags": [
+      "daily",
+      "comfort"
+    ],
+    "cooking_time_min": 30,
+    "ingredients": [
+      {
+        "name": "Thịt gà",
+        "qty": "700g",
+        "note": "chặt miếng vừa ăn"
+      },
+      {
+        "name": "Gừng",
+        "qty": "30g",
+        "note": "thái sợi"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "ướp"
+      },
+      {
+        "name": "Đường",
+        "qty": "1 muỗng canh",
+        "note": "cân vị"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Ướp gà với gia vị 15 phút.",
+      "Phi tỏi cho thơm.",
+      "Cho gà vào xào săn.",
+      "Thêm gừng đảo đều.",
+      "Cho nước xâm xấp.",
+      "Kho nhỏ lửa 20 phút.",
+      "Nêm lại cho vừa."
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Sườn xào chua ngọt",
+    "mood_tags": [
+      "family"
+    ],
+    "cooking_time_min": 35,
+    "ingredients": [
+      {
+        "name": "Sườn non",
+        "qty": "600g",
+        "note": "chặt khúc"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "2 quả",
+        "note": "cắt múi"
+      },
+      {
+        "name": "Đường",
+        "qty": "2 muỗng canh",
+        "note": "tạo ngọt"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "nêm chính"
+      }
+    ],
+    "steps": [
+      "Luộc sườn sơ 5 phút.",
+      "Chiên sườn vàng đều.",
+      "Xào cà chua cho nhuyễn.",
+      "Thêm đường, nước mắm.",
+      "Cho sườn vào đảo.",
+      "Đun nhỏ lửa 10 phút.",
+      "Nêm lại."
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Bò xào hành tây",
+    "mood_tags": [
+      "quick",
+      "gym"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Thịt bò",
+        "qty": "400g",
+        "note": "thái mỏng ngang thớ"
+      },
+      {
+        "name": "Hành tây",
+        "qty": "1 củ",
+        "note": "cắt múi"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      },
+      {
+        "name": "Dầu hào",
+        "qty": "1.5 muỗng canh",
+        "note": "ướp bò"
+      }
+    ],
+    "steps": [
+      "Ướp bò 10 phút.",
+      "Phi tỏi cho thơm.",
+      "Xào bò nhanh tay.",
+      "Cho hành tây vào.",
+      "Đảo 1–2 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Rau muống xào tỏi",
+    "mood_tags": [
+      "quick",
+      "healthy"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Rau muống",
+        "qty": "300g",
+        "note": "nhặt, rửa sạch"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "4 tép",
+        "note": "đập dập"
+      },
+      {
+        "name": "Muối",
+        "qty": "1/2 muỗng cà phê",
+        "note": "nêm"
+      }
+    ],
+    "steps": [
+      "Làm nóng chảo với dầu.",
+      "Phi tỏi cho thơm.",
+      "Cho rau vào xào nhanh.",
+      "Nêm muối.",
+      "Đảo đều và tắt bếp."
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Thịt ba chỉ rang cháy cạnh",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Thịt ba chỉ",
+        "qty": "500g",
+        "note": "cắt lát mỏng"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "nêm"
+      },
+      {
+        "name": "Đường",
+        "qty": "1 muỗng canh",
+        "note": "tạo màu"
+      }
+    ],
+    "steps": [
+      "Cho thịt vào chảo rang khô.",
+      "Rang đến khi ra mỡ.",
+      "Thêm đường tạo màu.",
+      "Nêm nước mắm.",
+      "Đảo đến khi cháy cạnh."
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Tôm rim mặn ngọt",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Tôm",
+        "qty": "400g",
+        "note": "lột vỏ, bỏ chỉ"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "nêm"
+      },
+      {
+        "name": "Đường",
+        "qty": "1.5 muỗng canh",
+        "note": "tạo ngọt"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi tỏi cho thơm.",
+      "Cho tôm vào đảo đều.",
+      "Thêm nước mắm và đường.",
+      "Rim nhỏ lửa.",
+      "Khi sệt thì tắt bếp."
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Trứng chiên thịt băm",
+    "mood_tags": [
+      "quick",
+      "gym"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Trứng gà",
+        "qty": "3 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "200g",
+        "note": "ướp nhẹ"
+      }
+    ],
+    "steps": [
+      "Trộn trứng với thịt.",
+      "Nêm gia vị.",
+      "Đổ vào chảo nóng.",
+      "Chiên vàng hai mặt."
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Canh trứng cà chua",
+    "mood_tags": [
+      "quick",
+      "comfort"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "2 quả",
+        "note": "cắt múi"
+      }
+    ],
+    "steps": [
+      "Xào cà chua cho mềm.",
+      "Thêm nước.",
+      "Cho trứng vào khuấy nhẹ.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Canh cải nấu thịt",
+    "mood_tags": [
+      "healthy",
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Rau cải",
+        "qty": "300g",
+        "note": "rửa sạch, cắt khúc"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "200g",
+        "note": "ướp nhẹ muối tiêu"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "1 củ",
+        "note": "băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Phi hành tím cho thơm.",
+      "Cho thịt băm vào xào tơi.",
+      "Thêm nước, đun sôi.",
+      "Cho rau cải vào.",
+      "Nêm gia vị, nấu thêm 3–5 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Đậu hũ sốt cà chua",
+    "mood_tags": [
+      "healthy",
+      "daily"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Đậu hũ",
+        "qty": "3 miếng",
+        "note": "cắt vuông"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "3 quả",
+        "note": "băm nhuyễn"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "1 củ",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Chiên đậu hũ vàng các mặt.",
+      "Phi hành tím cho thơm.",
+      "Cho cà chua vào xào mềm.",
+      "Nêm gia vị vừa ăn.",
+      "Cho đậu vào sốt.",
+      "Đun nhỏ lửa 3–5 phút."
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Canh khổ qua nhồi thịt",
+    "mood_tags": [
+      "healthy",
+      "family"
+    ],
+    "cooking_time_min": 40,
+    "ingredients": [
+      {
+        "name": "Khổ qua",
+        "qty": "2 trái",
+        "note": "bỏ ruột"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "300g",
+        "note": "trộn nấm mèo nếu có"
+      },
+      {
+        "name": "Nấm mèo",
+        "qty": "20g",
+        "note": "ngâm nở, băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Trộn thịt băm với nấm mèo.",
+      "Nhồi thịt vào khổ qua.",
+      "Đun nước sôi.",
+      "Cho khổ qua vào nấu.",
+      "Nấu lửa nhỏ 25–30 phút.",
+      "Nêm gia vị vừa ăn."
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Cơm chiên trứng",
+    "mood_tags": [
+      "quick"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Cơm nguội",
+        "qty": "300g",
+        "note": "để tơi"
+      },
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt nhỏ"
+      }
+    ],
+    "steps": [
+      "Làm nóng chảo với dầu.",
+      "Cho trứng vào đảo nhanh.",
+      "Thêm cơm nguội.",
+      "Đảo đều cho tơi hạt.",
+      "Nêm gia vị.",
+      "Rắc hành lá, tắt bếp."
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Cháo thịt băm",
+    "mood_tags": [
+      "comfort"
+    ],
+    "cooking_time_min": 30,
+    "ingredients": [
+      {
+        "name": "Gạo",
+        "qty": "100g",
+        "note": "vo sạch"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "150g",
+        "note": "ướp nhẹ"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt nhỏ"
+      }
+    ],
+    "steps": [
+      "Nấu gạo với nước thành cháo.",
+      "Cho thịt băm vào khuấy đều.",
+      "Nấu thêm 10 phút.",
+      "Nêm gia vị.",
+      "Rắc hành lá.",
+      "Dùng nóng."
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Ức gà áp chảo",
+    "mood_tags": [
+      "gym",
+      "healthy"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Ức gà",
+        "qty": "500g",
+        "note": "đập mỏng đều"
+      },
+      {
+        "name": "Dầu olive",
+        "qty": "1 muỗng canh",
+        "note": "áp chảo"
+      },
+      {
+        "name": "Muối",
+        "qty": "1/2 muỗng cà phê",
+        "note": "ướp"
+      }
+    ],
+    "steps": [
+      "Ướp ức gà với muối tiêu 10 phút.",
+      "Làm nóng chảo với dầu olive.",
+      "Áp chảo mặt thứ nhất 7–8 phút.",
+      "Lật mặt còn lại, áp chảo tiếp.",
+      "Gà chín thì tắt bếp.",
+      "Cắt lát khi dùng."
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Trứng luộc",
+    "mood_tags": [
+      "quick",
+      "healthy"
+    ],
+    "cooking_time_min": 8,
+    "ingredients": [
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "rửa sạch"
+      }
+    ],
+    "steps": [
+      "Đun nước sôi.",
+      "Cho trứng vào nồi.",
+      "Luộc 7–8 phút.",
+      "Vớt ra ngâm nước lạnh.",
+      "Bóc vỏ khi dùng."
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Cá hấp gừng",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 25,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "600g",
+        "note": "làm sạch"
+      },
+      {
+        "name": "Gừng",
+        "qty": "30g",
+        "note": "thái sợi"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt khúc"
+      }
+    ],
+    "steps": [
+      "Ướp cá với muối nhẹ.",
+      "Xếp gừng lên cá.",
+      "Cho cá vào xửng hấp.",
+      "Hấp 20–25 phút.",
+      "Rắc hành lá.",
+      "Dùng nóng."
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Rau luộc thập cẩm",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Bông cải",
+        "qty": "200g",
+        "note": "cắt miếng"
+      },
+      {
+        "name": "Cà rốt",
+        "qty": "100g",
+        "note": "cắt lát"
+      },
+      {
+        "name": "Đậu que",
+        "qty": "100g",
+        "note": "cắt khúc"
+      }
+    ],
+    "steps": [
+      "Đun nước sôi.",
+      "Cho rau cứng vào trước.",
+      "Luộc 5–7 phút.",
+      "Vớt ra để ráo.",
+      "Dùng kèm nước chấm."
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Cá chiên nước mắm",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "600g",
+        "note": "làm sạch, để ráo"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "làm sốt"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Chiên cá vàng giòn hai mặt.",
+      "Phi tỏi cho thơm.",
+      "Cho nước mắm vào đun nhẹ.",
+      "Rưới sốt lên cá.",
+      "Tắt bếp và dùng."
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Canh chua cá",
+    "mood_tags": [
+      "rainy-day",
+      "comfort"
+    ],
+    "cooking_time_min": 35,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "500g",
+        "note": "cá lóc hoặc cá basa, cắt khúc"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "2 quả",
+        "note": "cắt múi cau"
+      },
+      {
+        "name": "Me",
+        "qty": "30g",
+        "note": "dầm lấy nước chua"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt khúc"
+      },
+      {
+        "name": "Rau thơm",
+        "qty": "50g",
+        "note": "ngò gai, rau om"
+      }
+    ],
+    "steps": [
+      "Đun sôi nước trong nồi.",
+      "Cho nước me vào tạo vị chua.",
+      "Thả cá vào nấu chín.",
+      "Cho cà chua vào nấu mềm.",
+      "Nêm nước mắm, muối cho vừa.",
+      "Cho hành lá và rau thơm.",
+      "Tắt bếp và dùng nóng."
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Canh chua tôm",
+    "mood_tags": [
+      "rainy-day",
+      "comfort"
+    ],
+    "cooking_time_min": 30,
+    "ingredients": [
+      {
+        "name": "Tôm",
+        "qty": "400g",
+        "note": "lột vỏ, rút chỉ lưng"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "2 quả",
+        "note": "cắt múi"
+      },
+      {
+        "name": "Me",
+        "qty": "30g",
+        "note": "lấy nước chua"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt khúc"
+      }
+    ],
+    "steps": [
+      "Đun sôi nước.",
+      "Cho nước me vào nồi.",
+      "Cho tôm vào nấu chín.",
+      "Thêm cà chua.",
+      "Nêm gia vị vừa ăn.",
+      "Cho hành lá vào.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Mì xào bò",
+    "mood_tags": [
+      "quick"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Mì trứng",
+        "qty": "2 vắt",
+        "note": "trụng sơ"
+      },
+      {
+        "name": "Thịt bò",
+        "qty": "200g",
+        "note": "thái mỏng"
+      },
+      {
+        "name": "Hành tây",
+        "qty": "1/2 củ",
+        "note": "cắt sợi"
+      }
+    ],
+    "steps": [
+      "Trụng mì qua nước sôi, để ráo.",
+      "Ướp bò nhẹ gia vị.",
+      "Phi tỏi cho thơm.",
+      "Xào bò nhanh tay.",
+      "Cho mì và hành tây vào.",
+      "Đảo đều, nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Mì xào trứng",
+    "mood_tags": [
+      "quick"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Mì trứng",
+        "qty": "2 vắt",
+        "note": "trụng sơ"
+      },
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt nhỏ"
+      }
+    ],
+    "steps": [
+      "Trụng mì, để ráo.",
+      "Phi hành cho thơm.",
+      "Cho trứng vào đảo nhanh.",
+      "Thêm mì vào chảo.",
+      "Nêm gia vị.",
+      "Đảo đều.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Bún xào thịt",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Bún tươi",
+        "qty": "400g",
+        "note": "xả nước cho tơi"
+      },
+      {
+        "name": "Thịt heo",
+        "qty": "300g",
+        "note": "thái lát mỏng"
+      },
+      {
+        "name": "Rau cải",
+        "qty": "100g",
+        "note": "cắt khúc"
+      }
+    ],
+    "steps": [
+      "Xào thịt heo cho chín.",
+      "Cho rau cải vào xào chung.",
+      "Thêm bún tươi.",
+      "Đảo đều tay.",
+      "Nêm gia vị vừa ăn.",
+      "Xào thêm 3–5 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Tôm hấp",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Tôm",
+        "qty": "500g",
+        "note": "rửa sạch, cắt râu"
+      },
+      {
+        "name": "Sả",
+        "qty": "2 cây",
+        "note": "đập dập"
+      }
+    ],
+    "steps": [
+      "Đun sôi nước với sả.",
+      "Cho tôm vào xửng hấp.",
+      "Hấp 10–12 phút.",
+      "Tôm chín đỏ đều.",
+      "Lấy ra dùng nóng."
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Mực xào cần tỏi",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Mực",
+        "qty": "400g",
+        "note": "làm sạch, cắt khoanh"
+      },
+      {
+        "name": "Cần tây",
+        "qty": "200g",
+        "note": "cắt khúc"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Trụng mực nhanh qua nước sôi.",
+      "Phi tỏi cho thơm.",
+      "Cho mực vào xào nhanh.",
+      "Thêm cần tây.",
+      "Đảo đều 2–3 phút.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Mực chiên nước mắm",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Mực",
+        "qty": "400g",
+        "note": "cắt miếng vừa ăn"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "làm sốt"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Chiên mực vàng giòn.",
+      "Phi tỏi cho thơm.",
+      "Cho nước mắm vào đun nhẹ.",
+      "Cho mực vào đảo đều.",
+      "Đun 2 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Bí đỏ xào tỏi",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 12,
+    "ingredients": [
+      {
+        "name": "Bí đỏ",
+        "qty": "300g",
+        "note": "gọt vỏ, thái mỏng"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi tỏi cho thơm.",
+      "Cho bí đỏ vào xào.",
+      "Thêm ít nước.",
+      "Xào chín mềm.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Su su xào tỏi",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Su su",
+        "qty": "300g",
+        "note": "gọt vỏ, thái sợi"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi tỏi cho thơm.",
+      "Cho su su vào xào.",
+      "Thêm ít nước.",
+      "Xào chín giòn.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Đậu que xào thịt",
+    "mood_tags": [
+      "daily",
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Đậu que",
+        "qty": "300g",
+        "note": "cắt khúc"
+      },
+      {
+        "name": "Thịt heo",
+        "qty": "200g",
+        "note": "thái lát mỏng"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm nhỏ"
+      }
+    ],
+    "steps": [
+      "Phi tỏi cho thơm.",
+      "Cho thịt heo vào xào chín.",
+      "Cho đậu que vào đảo đều.",
+      "Thêm ít nước.",
+      "Xào đến khi đậu chín.",
+      "Nêm gia vị vừa ăn.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Cà chua xào trứng",
+    "mood_tags": [
+      "quick",
+      "daily"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Cà chua",
+        "qty": "3 quả",
+        "note": "cắt múi cau"
+      },
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Hành lá",
+        "qty": "2 nhánh",
+        "note": "cắt nhỏ"
+      }
+    ],
+    "steps": [
+      "Phi hành cho thơm.",
+      "Cho cà chua vào xào mềm.",
+      "Đổ trứng vào khuấy nhẹ.",
+      "Nêm gia vị vừa ăn.",
+      "Đảo nhanh tay.",
+      "Rắc hành lá.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Gà chiên nước mắm",
+    "mood_tags": [
+      "comfort",
+      "family"
+    ],
+    "cooking_time_min": 25,
+    "ingredients": [
+      {
+        "name": "Thịt gà",
+        "qty": "600g",
+        "note": "chặt miếng vừa ăn"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "3 muỗng canh",
+        "note": "làm sốt"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "4 tép",
+        "note": "băm"
+      },
+      {
+        "name": "Đường",
+        "qty": "1.5 muỗng canh",
+        "note": "cân vị"
+      }
+    ],
+    "steps": [
+      "Chiên gà vàng giòn.",
+      "Phi tỏi cho thơm.",
+      "Cho nước mắm và đường vào nấu sốt.",
+      "Cho gà vào đảo đều.",
+      "Đun nhỏ lửa 3–5 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Gà rang sả ớt",
+    "mood_tags": [
+      "spicy",
+      "comfort"
+    ],
+    "cooking_time_min": 30,
+    "ingredients": [
+      {
+        "name": "Thịt gà",
+        "qty": "600g",
+        "note": "chặt miếng"
+      },
+      {
+        "name": "Sả",
+        "qty": "3 cây",
+        "note": "băm nhỏ"
+      },
+      {
+        "name": "Ớt",
+        "qty": "2 trái",
+        "note": "băm"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "2 muỗng canh",
+        "note": "nêm"
+      }
+    ],
+    "steps": [
+      "Phi sả ớt cho thơm.",
+      "Cho gà vào đảo săn.",
+      "Thêm nước mắm.",
+      "Rang lửa vừa.",
+      "Rang đến khi gà chín và sệt.",
+      "Nêm lại.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Canh mồng tơi nấu thịt",
+    "mood_tags": [
+      "healthy",
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Mồng tơi",
+        "qty": "300g",
+        "note": "rửa sạch"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "200g",
+        "note": "ướp nhẹ"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "1 củ",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi hành tím cho thơm.",
+      "Cho thịt băm vào xào.",
+      "Thêm nước đun sôi.",
+      "Cho mồng tơi vào.",
+      "Nêm gia vị.",
+      "Nấu thêm 3–5 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Canh rong biển thịt băm",
+    "mood_tags": [
+      "comfort",
+      "healthy"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Rong biển khô",
+        "qty": "20g",
+        "note": "ngâm nở"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "200g",
+        "note": "ướp nhẹ"
+      },
+      {
+        "name": "Dầu mè",
+        "qty": "1 muỗng cà phê",
+        "note": "tạo mùi"
+      }
+    ],
+    "steps": [
+      "Phi thịt băm với dầu mè.",
+      "Thêm nước đun sôi.",
+      "Cho rong biển vào.",
+      "Nấu 10 phút.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Bò xào cần tỏi",
+    "mood_tags": [
+      "gym",
+      "quick"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Thịt bò",
+        "qty": "400g",
+        "note": "thái mỏng"
+      },
+      {
+        "name": "Cần tây",
+        "qty": "200g",
+        "note": "cắt khúc"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "3 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Ướp bò nhẹ gia vị.",
+      "Phi tỏi cho thơm.",
+      "Xào bò nhanh tay.",
+      "Cho cần tây vào.",
+      "Đảo đều 2 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Cá chiên giòn",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "500g",
+        "note": "làm sạch, để ráo"
+      },
+      {
+        "name": "Bột chiên giòn",
+        "qty": "50g",
+        "note": "áo cá"
+      }
+    ],
+    "steps": [
+      "Áo cá qua bột.",
+      "Làm nóng dầu.",
+      "Chiên cá vàng giòn.",
+      "Vớt ra để ráo.",
+      "Dùng nóng."
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Tôm xào bơ tỏi",
+    "mood_tags": [
+      "comfort"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Tôm",
+        "qty": "400g",
+        "note": "lột vỏ, rút chỉ"
+      },
+      {
+        "name": "Bơ",
+        "qty": "30g",
+        "note": "bơ lạt"
+      },
+      {
+        "name": "Tỏi",
+        "qty": "4 tép",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi tỏi với bơ.",
+      "Cho tôm vào xào.",
+      "Đảo đều đến khi tôm chín.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Canh bí đỏ nấu thịt",
+    "mood_tags": [
+      "healthy",
+      "daily"
+    ],
+    "cooking_time_min": 25,
+    "ingredients": [
+      {
+        "name": "Bí đỏ",
+        "qty": "400g",
+        "note": "gọt vỏ, cắt khúc"
+      },
+      {
+        "name": "Thịt băm",
+        "qty": "200g",
+        "note": "ướp nhẹ"
+      },
+      {
+        "name": "Hành tím",
+        "qty": "1 củ",
+        "note": "băm"
+      }
+    ],
+    "steps": [
+      "Phi hành tím cho thơm.",
+      "Cho thịt băm vào xào.",
+      "Thêm nước đun sôi.",
+      "Cho bí đỏ vào.",
+      "Nấu đến khi bí mềm.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Bí đỏ hấp",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Bí đỏ",
+        "qty": "400g",
+        "note": "gọt vỏ, cắt miếng"
+      }
+    ],
+    "steps": [
+      "Chuẩn bị xửng hấp.",
+      "Cho bí đỏ vào xửng.",
+      "Hấp 12–15 phút.",
+      "Kiểm tra bí mềm.",
+      "Lấy ra dùng nóng."
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Su su luộc",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 10,
+    "ingredients": [
+      {
+        "name": "Su su",
+        "qty": "400g",
+        "note": "gọt vỏ, cắt miếng"
+      }
+    ],
+    "steps": [
+      "Đun nước sôi.",
+      "Cho su su vào.",
+      "Luộc 7–10 phút.",
+      "Vớt ra để ráo.",
+      "Dùng kèm nước chấm."
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Đậu hũ chiên sả ớt",
+    "mood_tags": [
+      "spicy",
+      "comfort"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Đậu hũ",
+        "qty": "3 miếng",
+        "note": "cắt vuông"
+      },
+      {
+        "name": "Sả",
+        "qty": "2 cây",
+        "note": "băm nhỏ"
+      },
+      {
+        "name": "Ớt",
+        "qty": "2 trái",
+        "note": "băm"
+      },
+      {
+        "name": "Nước mắm",
+        "qty": "1.5 muỗng canh",
+        "note": "nêm"
+      }
+    ],
+    "steps": [
+      "Chiên đậu hũ vàng giòn.",
+      "Phi sả ớt cho thơm.",
+      "Cho nước mắm vào.",
+      "Cho đậu vào đảo đều.",
+      "Rang nhỏ lửa 3–5 phút.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Canh trứng rong biển",
+    "mood_tags": [
+      "comfort",
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Rong biển khô",
+        "qty": "15g",
+        "note": "ngâm nở"
+      }
+    ],
+    "steps": [
+      "Đun sôi nước.",
+      "Cho rong biển vào.",
+      "Nấu 5 phút.",
+      "Cho trứng vào khuấy nhẹ.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Cơm chiên Dương Châu",
+    "mood_tags": [
+      "quick",
+      "comfort"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Cơm nguội",
+        "qty": "300g",
+        "note": "để tơi"
+      },
+      {
+        "name": "Trứng gà",
+        "qty": "1 quả",
+        "note": "đánh tan"
+      },
+      {
+        "name": "Lạp xưởng",
+        "qty": "50g",
+        "note": "cắt hạt lựu"
+      },
+      {
+        "name": "Đậu Hà Lan",
+        "qty": "50g",
+        "note": "luộc sơ"
+      }
+    ],
+    "steps": [
+      "Phi lạp xưởng cho ra mỡ.",
+      "Cho trứng vào đảo.",
+      "Thêm cơm nguội.",
+      "Cho đậu Hà Lan vào.",
+      "Đảo đều, nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Bún thịt xào",
+    "mood_tags": [
+      "daily"
+    ],
+    "cooking_time_min": 20,
+    "ingredients": [
+      {
+        "name": "Bún tươi",
+        "qty": "400g",
+        "note": "xả nước cho tơi"
+      },
+      {
+        "name": "Thịt heo",
+        "qty": "300g",
+        "note": "thái mỏng"
+      },
+      {
+        "name": "Rau xà lách",
+        "qty": "100g",
+        "note": "rửa sạch"
+      }
+    ],
+    "steps": [
+      "Xào thịt heo cho chín.",
+      "Nêm gia vị vừa ăn.",
+      "Cho bún vào đảo nhẹ.",
+      "Tắt bếp.",
+      "Ăn kèm rau xà lách."
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Cá hấp sả",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 25,
+    "ingredients": [
+      {
+        "name": "Cá",
+        "qty": "600g",
+        "note": "làm sạch"
+      },
+      {
+        "name": "Sả",
+        "qty": "3 cây",
+        "note": "đập dập"
+      }
+    ],
+    "steps": [
+      "Xếp sả dưới đáy xửng.",
+      "Đặt cá lên trên.",
+      "Hấp 20–25 phút.",
+      "Kiểm tra cá chín.",
+      "Lấy ra dùng nóng."
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Tôm hấp sả",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Tôm",
+        "qty": "500g",
+        "note": "rửa sạch"
+      },
+      {
+        "name": "Sả",
+        "qty": "2 cây",
+        "note": "đập dập"
+      }
+    ],
+    "steps": [
+      "Đun nước với sả.",
+      "Cho tôm vào xửng.",
+      "Hấp 10–12 phút.",
+      "Tôm chín đỏ.",
+      "Lấy ra dùng."
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Canh chua thịt",
+    "mood_tags": [
+      "rainy-day",
+      "comfort"
+    ],
+    "cooking_time_min": 30,
+    "ingredients": [
+      {
+        "name": "Thịt heo",
+        "qty": "400g",
+        "note": "cắt lát"
+      },
+      {
+        "name": "Cà chua",
+        "qty": "2 quả",
+        "note": "cắt múi"
+      },
+      {
+        "name": "Me",
+        "qty": "30g",
+        "note": "lấy nước chua"
+      }
+    ],
+    "steps": [
+      "Đun sôi nước.",
+      "Cho nước me vào.",
+      "Cho thịt vào nấu chín.",
+      "Thêm cà chua.",
+      "Nêm gia vị.",
+      "Tắt bếp."
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Trứng hấp",
+    "mood_tags": [
+      "healthy"
+    ],
+    "cooking_time_min": 15,
+    "ingredients": [
+      {
+        "name": "Trứng gà",
+        "qty": "2 quả",
+        "note": "đánh tan"
+      }
+    ],
+    "steps": [
+      "Đánh trứng với nước.",
+      "Lọc hỗn hợp cho mịn.",
+      "Đổ vào bát.",
+      "Hấp lửa nhỏ 12–15 phút.",
+      "Lấy ra dùng nóng."
+    ]
+  }
+]

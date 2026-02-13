@@ -3,6 +3,23 @@ import { persist } from 'zustand/middleware';
 import { IUser } from '../../../shared/types';
 
 // ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Decode JWT payload and check if token is expired
+ */
+const isTokenExpired = (token: string): boolean => {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        // exp is in seconds, Date.now() is in ms
+        return payload.exp * 1000 < Date.now();
+    } catch {
+        return true;
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════
 
@@ -15,6 +32,7 @@ interface AuthState {
 
 interface AuthActions {
     setAuth: (user: IUser, token: string) => void;
+    updateUser: (userData: Partial<IUser>) => void;
     logout: () => void;
     setLoading: (loading: boolean) => void;
     checkAuth: () => boolean;
@@ -45,6 +63,13 @@ export const useAuthStore = create<AuthStore>()(
                 });
             },
 
+            updateUser: (userData) => {
+                const currentUser = get().user;
+                if (currentUser) {
+                    set({ user: { ...currentUser, ...userData } as IUser });
+                }
+            },
+
             logout: () => {
                 set({
                     user: null,
@@ -60,7 +85,15 @@ export const useAuthStore = create<AuthStore>()(
 
             checkAuth: () => {
                 const { token, user } = get();
-                return !!token && !!user;
+                if (!token || !user) return false;
+
+                // Check token expiry
+                if (isTokenExpired(token)) {
+                    get().logout();
+                    return false;
+                }
+
+                return true;
             },
         }),
         {
