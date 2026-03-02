@@ -34,6 +34,7 @@ function App() {
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('lg');
   const [islogin, setIsLogin] = useState(true);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
