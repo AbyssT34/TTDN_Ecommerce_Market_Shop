@@ -1,0 +1,3 @@
+.producItem .title{line-height: 18px;}
+.producItem .actions button:hover svg{color: #fff !important;}
+.producItem .actions button svg{pointer-events: none !important;}
