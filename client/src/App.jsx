@@ -5,7 +5,7 @@ import Footer from './componets/Footer';
 import Home from './Page/Home';
 import ProductListing from './Page/ProductListing';
 import ProductDetails from './Page/ProductDetails';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -34,7 +34,6 @@ function App() {
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('lg');
   const [islogin, setIsLogin] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -43,6 +42,16 @@ function App() {
   const toggleCartPanel = (newOpen) => () => {
     setOpenCartPanel(newOpen);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('accesstoken');
+
+    if (token !== undefined && token !== null && token !== '') {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }, [islogin]);
 
   const openAlertBox = (status, msg) => {
     if (status === 'success') {

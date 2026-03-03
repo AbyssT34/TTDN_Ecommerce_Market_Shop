@@ -28,6 +28,8 @@
         "resend": "^6.2.2"
     },
     "devDependencies": {
+        "@babel/core": "^7.29.0",
+        "@babel/eslint-parser": "^7.28.6",
         "prettier": "^3.6.2"
     }
 }

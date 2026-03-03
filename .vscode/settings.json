@@ -1,10 +1,12 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "javascript.format.enable": false,
   "typescript.format.enable": false,
   "prettier.prettierPath": "server/node_modules/prettier",
   "prettier.requireConfig": false,
-  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": {
+    "editor.defaultFormatter": "lonefy.vscode-JS-CSS-HTML-formatter"
+  },
   "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
 }

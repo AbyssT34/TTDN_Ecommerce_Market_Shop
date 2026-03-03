@@ -18,6 +18,7 @@ import { IoIosLogOut } from 'react-icons/io';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+import { fetchDataFromApi } from '../../utils/api';
 
 // import Nav from './nav';
 
@@ -32,12 +33,29 @@ const Header = () => {
   const context = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const Logout = () => {
+    setAnchorEl(null);
+
+    fetchDataFromApi(`/api/user/logout?token=${localStorage.getItem('accesstoken')}`,{
+      withCredentials: true}).then((res) => {
+      if (res?.error === false) {
+        context.setIsLogin(false);
+        localStorage.removeItem('accesstoken',res?.accesstoken);
+        localStorage.removeItem('refreshToken',res?.refreshToken);
+        
+      }
+
+    
+  });
+}
 
   return (
     <>
@@ -169,7 +187,7 @@ const Header = () => {
                         <span className="text-[14px]"> My List</span>
                       </MenuItem>
                     </Link>
-                    <MenuItem onClick={handleClose} className="flex gap-2 !py-3">
+                    <MenuItem onClick={Logout} className="flex gap-2 !py-3">
                       <IoIosLogOut className="text-[18px]" />{' '}
                       <span className="text-[14px]"> Logout</span>
                     </MenuItem>

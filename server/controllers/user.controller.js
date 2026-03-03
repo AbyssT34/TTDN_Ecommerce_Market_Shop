@@ -154,7 +154,7 @@ export async function loginUserController(request, response) {
       });
     }
 
-    if (user.isVerified !== true) {
+    if (user.verify_email !== true) {
       return response.status(400).json({
         message: "Please verify your email first",
         error: true,
