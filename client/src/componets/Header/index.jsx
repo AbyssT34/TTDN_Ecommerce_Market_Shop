@@ -124,10 +124,14 @@ const Header = () => {
 
                     <div className="info flex flex-col">
                       <h4 className="leading-3 text-[14px] font-[500] text-[rgba(0,0,0,0.6)] mb-0 capitalize text-left justify-start">
-                        Vịnh Trần
+                        {
+                          context?.userData?.name
+                        }
                       </h4>
                       <span className="text-[13px] font-[400] text-[rgba(0,0,0,0.6)] capitalize text-left justify-start">
-                        quocvinhtran.0212@gmail.com
+                         {
+                          context?.userData?.email
+                        }
                       </span>
                     </div>
                   </Button>

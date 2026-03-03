@@ -24,6 +24,7 @@ import ForgotPassword from './Page/ForgotPassword';
 import MyAccount from './Page/MyAccount';
 import MyList from './Page/MyList';
 import Orders from './Page/Orders';
+import { fetchDataFromApi } from './utils/api';
 
 const MyContext = createContext();
 
@@ -34,6 +35,7 @@ function App() {
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('lg');
   const [islogin, setIsLogin] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -48,6 +50,12 @@ function App() {
 
     if (token !== undefined && token !== null && token !== '') {
       setIsLogin(true);
+
+      fetchDataFromApi(`/api/user/user-details?token=${localStorage.getItem('accesstoken')}`).then((res)=>{
+        console.log(res);
+        setUserData(res?.data);
+      })
+
     } else {
       setIsLogin(false);
     }
@@ -84,6 +92,8 @@ function App() {
     islogin,
     setIsLogin,
     alertBox,
+    setUserData,
+    userData,
   };
 
   return (
