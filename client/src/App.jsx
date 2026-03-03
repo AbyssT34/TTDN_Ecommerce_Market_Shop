@@ -33,7 +33,7 @@ function App() {
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState(false);
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('lg');
-  const [islogin, setIsLogin] = useState(true);
+  const [islogin, setIsLogin] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
 
   // const handleClickOpenProductDetailsModal = () => {
@@ -53,6 +53,15 @@ function App() {
     }
   };
 
+  const alertBox = (type, msg) => {
+    if (type === 'success') {
+      toast.success(msg);
+    }
+    if (type === 'error') {
+      toast.error(msg);
+    }
+  };
+
   const handleCloseProductDetailsModal = () => {
     setOpenProductDetailsModal(false);
   };
@@ -65,6 +74,7 @@ function App() {
     openAlertBox,
     islogin,
     setIsLogin,
+    alertBox,
   };
 
   return (
@@ -89,8 +99,6 @@ function App() {
           <Footer />
         </MyContext.Provider>
       </BrowserRouter>
-
-      <Toaster />
 
       <Dialog
         open={openProductDetailsModal}
@@ -118,6 +126,8 @@ function App() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Toaster />
     </>
   );
 }

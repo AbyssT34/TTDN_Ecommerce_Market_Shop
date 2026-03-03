@@ -6,8 +6,12 @@ import { IoEyeOff } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { MyContext } from '../../App';
+import { postData } from '../../utils/api';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isShowPassWord, setIsShowPassword] = useState(false);
   const [formFields, setFormFields] = useState({
     name: '',
@@ -16,6 +20,7 @@ const Register = () => {
   });
 
   const context = useContext(MyContext);
+  const history = useNavigate();
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -27,16 +32,44 @@ const Register = () => {
     });
   };
 
+  const valideValue = Object.values(formFields).every((el) => el);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
+
     if (formFields.name === '') {
-      context.openAlertBox('error', 'Please add full name');
+      context.alertBox('error', 'Please enter full name');
       return false;
     }
 
-    postData('/api/register', formFields).then((res) => {
+    if (formFields.email === '') {
+      context.alertBox('error', 'Please enter email id');
+      return false;
+    }
+
+    if (formFields.password === '') {
+      context.alertBox('error', 'Please enter password');
+      return false;
+    }
+
+    postData('/api/user/register', formFields).then((res) => {
       console.log(res);
+      if (res?.error !== true) {
+        setIsLoading(false);
+        context.alertBox('success', res?.message);
+        localStorage.setItem('userEmail', formFields.email);
+        setFormFields({
+          name: '',
+          email: '',
+          password: '',
+        });
+        history('/Verify');
+      } else {
+        context.alertBox('error', res?.message || 'Something went wrong');
+        setIsLoading(false);
+      }
     });
   };
 
@@ -53,6 +86,8 @@ const Register = () => {
                   type="text"
                   id="name"
                   name="name"
+                  value={formFields.name}
+                  disabled={isLoading === true ? true : false}
                   label="Full Name*"
                   variant="outlined"
                   className="w-full"
@@ -65,6 +100,8 @@ const Register = () => {
                   type="email"
                   id="email"
                   name="email"
+                  value={formFields.email}
+                  disabled={isLoading === true ? true : false}
                   label="Email Id*"
                   variant="outlined"
                   className="w-full"
@@ -77,6 +114,8 @@ const Register = () => {
                   type={isShowPassWord === false ? 'password' : 'text'}
                   id="password"
                   name="password"
+                  value={formFields.password}
+                  disabled={isLoading === true ? true : false}
                   label="Password*"
                   variant="outlined"
                   className="w-full"
@@ -96,8 +135,12 @@ const Register = () => {
               </div>
 
               <div className="flex items-center w-full mt-3 mb-3">
-                <Button type="submit" className="bg-org btn-lg w-full">
-                  Register
+                <Button
+                  type="submit"
+                  disabled={!valideValue}
+                  className="bg-org btn-lg w-full flex gap-3"
+                >
+                  {isLoading === true ? <CircularProgress color="inherit" /> : 'Register'}
                 </Button>
               </div>
 

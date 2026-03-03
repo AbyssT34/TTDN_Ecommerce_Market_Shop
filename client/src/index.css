@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @tailwind utilities;
-
 body {
   font-family: 'Montserrat', sans-serif;
   font-optical-sizing: auto;
@@ -16,6 +15,7 @@ p {
   margin-bottom: 10px;
   margin-top: 10px;
 }
+
 h1,
 h2,
 h3,
@@ -24,13 +24,16 @@ h5,
 h6 {
   font-weight: 600;
 }
+
 ::-webkit-scrollbar {
   width: 8px !important;
   height: 8px !important;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #ff5252;
 }
+
 ::-webkit-scrollbar-track {
   background: #fff;
 }
@@ -43,10 +46,12 @@ h6 {
   width: 95%;
   margin: auto;
 }
+
 header .top-strip {
   border-top: 1px solid rgb(0, 0, 0, 0.1);
   border-bottom: 1px solid rgb(0, 0, 0, 0.1);
 }
+
 .text-primary {
   color: #ff5252;
 }
@@ -58,6 +63,7 @@ header .top-strip {
   font-size: 16px;
   padding: 7px 20px !important;
 }
+
 .bg-org:hover {
   background: #171717 !important;
 }
@@ -76,6 +82,7 @@ header .top-strip {
   color: #fff !important;
   border: 1px solid #171717 !important;
 }
+
 .btn-lg {
   font-size: 18px;
   padding: 10px 20px !important;
@@ -85,6 +92,7 @@ header .top-strip {
   font-size: 12px !important;
   padding: 5px 20px !important;
 }
+
 .bg-primary {
   background-color: #ff5252;
 }
@@ -92,6 +100,7 @@ header .top-strip {
 .link:hover {
   color: #ff5252;
 }
+
 .Mutibadge-badge {
   background-color: #ff5252 !important;
 }
@@ -125,7 +134,9 @@ nav ul button:hover {
   border-radius: 100%;
   width: 45px;
   min-width: 45px;
-  box-shadow: 0 1px 3px #0000001f, 0 1px 2px #0000003d !important;
+  box-shadow:
+    0 1px 3px #0000001f,
+    0 1px 2px #0000003d !important;
 }
 
 .swiper-button-prev:hover,
@@ -156,12 +167,14 @@ nav ul button:hover {
 .homeCatSlider {
   overflow: inherit !important;
 }
+
 .homeCatSlider .swiper-button-prev,
 .homeCatSlider .swiper-button-next {
   width: 30px;
   height: 30px;
   min-width: 30px;
 }
+
 .homeCatSlider .swiper-button-prev::after,
 .homeCatSlider .swiper-button-next::after {
   font-size: 16px !important;
@@ -170,6 +183,7 @@ nav ul button:hover {
 .homeCatSlider .swiper-button-prev {
   left: -10px !important;
 }
+
 .homeCatSlider .swiper-button-next {
   right: -10px !important;
 }
@@ -182,6 +196,7 @@ nav ul button:hover {
 .homeCatSlider .swiper-button-next:hover {
   background: #ff5252 !important;
 }
+
 .homeCatSlider .swiper-button-prev:hover::after,
 .homeCatSlider .swiper-button-next:hover::after {
   color: #fff !important;
@@ -194,6 +209,7 @@ nav ul button:hover {
 .MuiTabs-indicator {
   background-color: #ff5252 !important;
 }
+
 .MuiTab-textColorPrimary.Mui-selected {
   color: #ff5252 !important;
 }
@@ -212,6 +228,7 @@ footer form input::placeholder {
 .css-vuhw6e-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
   color: #ff5252 !important;
 }
+
 .MuiFormControlLabel-label {
   font-size: 13px !important;
   color: rgb(0, 0, 0, 0.8);
@@ -225,18 +242,22 @@ footer form input::placeholder {
   right: 0px !important;
   opacity: 1;
 }
+
 .HomeSliderV2 .swiper-slide-active .info h4 {
   right: 0px !important;
   opacity: 1;
 }
+
 .HomeSliderV2 .swiper-slide-active .info h2 {
   right: 0px !important;
   opacity: 1;
 }
+
 .HomeSliderV2 .swiper-slide-active .info h3 {
   right: 0px !important;
   opacity: 1;
 }
+
 .HomeSliderV2 .swiper-slide-active .info .btn_ {
   right: 0px !important;
   opacity: 1;
@@ -245,12 +266,15 @@ footer form input::placeholder {
 .HomeSliderV2 .info h4 {
   transition-duration: 1.2s;
 }
+
 .HomeSliderV2 .info h2 {
   transition-duration: 1.5s;
 }
+
 .HomeSliderV2 .info h3 {
   transition-duration: 1.8s;
 }
+
 .HomeSliderV2 .info .btn_ {
   transition-duration: 2.1s;
 }
@@ -267,6 +291,7 @@ footer form input::placeholder {
   color: #ff5252 !important;
   opacity: 1;
 }
+
 .Mui-selected.MuiPaginationItem-page {
   background: #ff5252 !important;
   color: #fff !important;
@@ -274,12 +299,15 @@ footer form input::placeholder {
 
 .shadow-md,
 .shadow-lg {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgb(0, 0, 0, 0.24) !important;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgb(0, 0, 0, 0.24) !important;
 }
 
 .zoomProductSliderThumbs .swiper-wrapper {
   padding-top: 38px !important;
 }
+
 .zoomProductSliderThumbs .swiper-button-next {
   bottom: 0px !important;
   right: inherit !important;
@@ -288,6 +316,7 @@ footer form input::placeholder {
   height: 30px !important;
   border-radius: 0px !important;
 }
+
 .zoomProductSliderThumbs .swiper-button-next::after {
   transform: rotate(90deg);
 }
@@ -299,6 +328,7 @@ footer form input::placeholder {
   height: 30px !important;
   border-radius: 0px !important;
 }
+
 .zoomProductSliderThumbs .swiper-button-prev::after {
   transform: rotate(90deg);
 }
@@ -323,6 +353,7 @@ input[type='number']::-webkit-outer-spin-button {
 .reviewScroll::-webkit-scrollbar {
   width: 5px !important;
 }
+
 .reviewScroll::-webkit-scrollbar-thumb {
   background: #ccc !important;
 }
@@ -330,6 +361,7 @@ input[type='number']::-webkit-outer-spin-button {
 .productDetailsModal .MuiDialogContent-root {
   padding: 0px !important;
 }
+
 /* .productDetailsModal button{color: #000;} */
 
 .cartPanel .MuiPaper-root {
@@ -346,9 +378,11 @@ input[type='number']::-webkit-outer-spin-button {
   outline: none !important;
   border-radius: 4px;
 }
+
 .otpBox input:focus {
   border: 1px solid rgba(0, 0, 0, 0.7) !important;
 }
+
 .otpPage .container {
   height: 90vh;
   display: flex;
@@ -362,6 +396,7 @@ input[type='number']::-webkit-outer-spin-button {
   position: relative;
   display: block;
 }
+
 .myAccountTabs li a::before {
   content: '';
   width: 3px;
@@ -373,12 +408,19 @@ input[type='number']::-webkit-outer-spin-button {
   transition: all 0.3s ease-in-out;
   opacity: 0;
 }
+
 .myAccountTabs li a.active::before {
   height: 100%;
   opacity: 1;
   top: 0px;
 }
+
 .myAccountTabs li a.active button svg {
   color: #ff5252 !important;
   opacity: 1 !important;
+}
+
+button .MuiCirularProgress-root {
+  width: 30px !important;
+  height: 30px !important;
 }

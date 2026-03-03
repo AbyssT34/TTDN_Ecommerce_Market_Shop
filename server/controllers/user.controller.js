@@ -20,20 +20,20 @@ cloudinary.config({
 
 export async function registerUserController(request, response) {
   try {
-    let user;
     const { name, email, password } = request.body;
+
     if (!name || !email || !password) {
       return response.status(400).json({
-        message: "provide email, name, password",
+        message: "Provide name, email, password",
         error: true,
         success: false,
       });
     }
 
-    user = await UserModel.findOne({ email: email });
-    if (user) {
-      return response.json({
-        message: "User already Registered with this email",
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return response.status(400).json({
+        message: "User already registered with this email",
         error: true,
         success: false,
       });
@@ -43,39 +43,35 @@ export async function registerUserController(request, response) {
 
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(password, salt);
-    user = new UserModel({
-      email: email,
+
+    const user = new UserModel({
+      name,
+      email,
       password: hashPassword,
-      name: name,
       otp: verifyCode,
       otpExpires: Date.now() + 600000,
+      isVerified: false,
+      status: "Active",
     });
 
     await user.save();
-    // const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?.id}`;
 
-    //send verification email
-    await sendEmailFun({
-      sendTo: email,
-      subject: "Verify email from Ecommerce App",
-      text: "",
-      html: verifyEmailTemplate(name, verifyCode),
-    });
+    console.log("OTP:", verifyCode); // DEBUG
 
-    //Create a JWT token for verfication purposes
-    const token = jwt.sign(
-      {
-        email: user.email,
-        id: user._id,
-      },
-      process.env.JSON_WEB_TOKEN_SECRET_KEY
-    );
+    try {
+      await sendEmailFun({
+        sendTo: email,
+        subject: "Verify email from Ecommerce App",
+        html: verifyEmailTemplate(name, verifyCode),
+      });
+    } catch (err) {
+      console.log("Email send error:", err);
+    }
 
     return response.status(200).json({
       success: true,
       error: false,
-      message: "User  registered successfylly! Please verify your email.",
-      token: token,
+      message: "User registered successfully! Please verify your email.",
     });
   } catch (error) {
     return response.status(500).json({
@@ -90,7 +86,7 @@ export async function verifyEmailController(request, response) {
   try {
     const { email, otp } = request.body;
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       return response.status(400).json({
@@ -100,32 +96,33 @@ export async function verifyEmailController(request, response) {
       });
     }
 
-    const isCodeValid = user.otp === otp;
-    const isNotExpired = user.otpExpires > Date.now();
-
-    if (isCodeValid && isNotExpired) {
-      user.isVerified = true;
-      user.otp = null;
-      user.otpExpires = null;
-      await user.save();
-      return response.status(200).json({
-        error: false,
-        success: true,
-        message: "Email verified successfully",
-      });
-    } else if (!isCodeValid) {
+    if (user.otp !== otp) {
       return response.status(400).json({
         error: true,
         success: false,
         message: "Invalid OTP",
       });
-    } else {
+    }
+
+    if (user.otpExpires < Date.now()) {
       return response.status(400).json({
         error: true,
         success: false,
         message: "OTP expired",
       });
     }
+
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+
+    await user.save();
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      message: "Email verified successfully",
+    });
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
@@ -139,27 +136,27 @@ export async function loginUserController(request, response) {
   try {
     const { email, password } = request.body;
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
-      response.status(400).json({
-        message: "User not register",
+      return response.status(400).json({
+        message: "User not registered",
         error: true,
         success: false,
       });
     }
 
     if (user.status !== "Active") {
-      response.status(400).json({
-        message: "Contact to admin",
+      return response.status(400).json({
+        message: "Contact admin",
         error: true,
         success: false,
       });
     }
 
-    if (user.verify_email !== true) {
-      response.status(400).json({
-        message: "Your Email is not verify yet please verify your email first",
+    if (user.isVerified !== true) {
+      return response.status(400).json({
+        message: "Please verify your email first",
         error: true,
         success: false,
       });
@@ -168,8 +165,8 @@ export async function loginUserController(request, response) {
     const checkPassword = await bcryptjs.compare(password, user.password);
 
     if (!checkPassword) {
-      response.status(400).json({
-        message: "Check your password ",
+      return response.status(400).json({
+        message: "Incorrect password",
         error: true,
         success: false,
       });
@@ -177,10 +174,6 @@ export async function loginUserController(request, response) {
 
     const accesstoken = await generatedAccessToken(user._id);
     const refreshToken = await generatedRefreshToke(user._id);
-
-    const updateUser = await UserModel.findByIdAndUpdate(user._id, {
-      last_login_date: new Date(),
-    });
 
     const cookiesOption = {
       httpOnly: true,
@@ -191,14 +184,11 @@ export async function loginUserController(request, response) {
     response.cookie("accessToken", accesstoken, cookiesOption);
     response.cookie("refreshToken", refreshToken, cookiesOption);
 
-    return response.json({
-      message: "Login successfylly",
+    return response.status(200).json({
+      message: "Login successfully",
       error: false,
       success: true,
-      data: {
-        accesstoken,
-        refreshToken,
-      },
+      data: { accesstoken, refreshToken },
     });
   } catch (error) {
     return response.status(500).json({
