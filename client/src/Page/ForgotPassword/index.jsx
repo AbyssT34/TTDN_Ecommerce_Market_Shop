@@ -6,13 +6,71 @@ import { IoEyeOff } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { MyContext } from '../../App';
+import { postData } from '../../utils/api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ForgotPassword = () => {
   const [isShowPassWord, setIsShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isShowPassWord2, setIsShowPassword2] = useState(false);
+  const [formFields, setFormFields] = useState({
+      email:localStorage.getItem('userEmail'),
+      newPassword: '',
+      confirmPassword: '',
+    });
 
   const context = useContext(MyContext);
   const histoty = useNavigate();
+
+   const onChangeInput = (e) => {
+    const { name, value } = e.target;
+    setFormFields(() => {
+      return {
+        ...formFields,
+        [name]: value,
+      };
+    });
+  };
+    
+  const valideValue = Object.values(formFields).every((el) => el);
+
+   const handleSubmit = (e) => {
+      e.preventDefault();
+  
+      setIsLoading(true);
+  
+      if (formFields.newPassword === '') {
+        context.alertBox('error', 'Please enter new password');
+        setIsLoading(false);
+        return false;
+      }
+  
+      if (formFields.confirmPassword === '') {
+        context.alertBox('error', 'Please enter password');
+        setIsLoading(false);
+        return false;
+      }
+  
+      if (formFields.confirmPassword !== formFields.newPassword ) {
+        context.alertBox('error', 'Password and confirm password not match');
+        setIsLoading(false);
+        return false;
+      }
+
+      postData(`/api/user/reset-password`, formFields).then((res) => {
+        console.log(res);
+        if(res?.error === false) {
+          localStorage.removeItem('userEmail');
+        localStorage.removeItem('actionType');
+         context.alertBox('success', res?.message );
+        setIsLoading(false);
+        histoty("/login");
+        }else{
+          context.alertBox('error', res?.message );
+        }
+      })
+  
+    };
 
   return (
     <>
@@ -21,7 +79,7 @@ const ForgotPassword = () => {
           <div className="card shadow-md w-[400px] m-auto rounded-md bg-white p-5 px-10">
             <h3 className="text-center text-[18px] text-black">Forgot Password</h3>
 
-            <form className="w-full mt-5">
+            <form className="w-full mt-5" onSubmit={handleSubmit}>
               <div className="form-gourp w-full mb-5 relative">
                 <TextField
                   type={isShowPassWord === false ? 'password' : 'text'}
@@ -29,7 +87,10 @@ const ForgotPassword = () => {
                   label="New Password*"
                   variant="outlined"
                   className="w-full"
-                  name="name"
+                  name="newPassword"
+                  value={formFields.newPassword}
+                  disabled={isLoading === true ? true : false}
+                  onChange={onChangeInput}
                 />
                 <Button
                   className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[30px] 
@@ -51,7 +112,10 @@ const ForgotPassword = () => {
                   label="Confirm Password*"
                   variant="outlined"
                   className="w-full"
-                  name="password"
+                  name="confirmPassword"
+                  value={formFields.confirmPassword}
+                  disabled={isLoading === true ? true : false}
+                  onChange={onChangeInput}
                 />
                 <Button
                   className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[30px] 
@@ -66,9 +130,15 @@ const ForgotPassword = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center w-full mt-3 mb-3">
-                <Button className="bg-org btn-lg w-full">Change Password</Button>
-              </div>
+                  <div className="flex items-center w-full mt-3 mb-3">
+                              <Button
+                                type="submit"
+                                disabled={!valideValue}
+                                className="bg-org btn-lg w-full flex gap-3"
+                              >
+                                {isLoading === true ? <CircularProgress color="inherit" /> : 'Change Password'}
+                              </Button>
+                            </div>
             </form>
           </div>
         </div>

@@ -21,9 +21,26 @@ const Login = () => {
   const histoty = useNavigate();
 
   const forgotPassword = () => {
-    context.openAlertBox('success', 'OTP Send');
-    histoty('/verify'); // Điều hướng đến trang verify
+   if(formFields.email === ''){ 
+    context.alertBox('error', 'Please enter email id');
+    return false;
+   }else{
+    context.alertBox('success', `OTP send to ${formFields.email}`); 
+    localStorage.setItem('userEmail', formFields.email);
+    localStorage.setItem("actionType","forgot-password");
+
+    postData('/api/user/forgot-password',{
+      email: formFields.email,
+    }).then((res) => {
+      if(res?.error === false) {
+        context.alertBox('success', res?.message);
+        histoty('/verify');
+      }else{
+        context.alertBox('error', res?.message || 'Something went wrong');
+      }
+    });
   };
+  }
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;

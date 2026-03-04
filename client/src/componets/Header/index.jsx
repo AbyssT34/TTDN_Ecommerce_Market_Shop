@@ -129,7 +129,7 @@ const Header = () => {
                         }
                       </h4>
                       <span className="text-[13px] font-[400] text-[rgba(0,0,0,0.6)] capitalize text-left justify-start">
-                         {
+                        {
                           context?.userData?.email
                         }
                       </span>

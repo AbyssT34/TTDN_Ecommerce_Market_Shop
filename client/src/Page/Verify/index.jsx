@@ -19,9 +19,14 @@ const Verify = () => {
 
   // },[])
 
+
   const verityOTP = (e) => {
     e.preventDefault();
-    postData('/api/user/verifyEmail', {
+
+     const actionType = localStorage.getItem('actionType');
+
+  if(actionType !== 'forgot-password') {
+     postData('/api/user/verifyEmail', {
       email: localStorage.getItem('userEmail'),
       otp: otp,
     }).then((res) => {
@@ -34,6 +39,21 @@ const Verify = () => {
         context.alertBox('success', res?.message);
       }
     });
+  }else{
+     postData('/api/user/verify-forgot-password-otp', {
+      email: localStorage.getItem('userEmail'),
+      otp: otp,
+    }).then((res) => {
+      if (res?.error === false) {
+        console.log(res);
+        context.alertBox('success', res?.message);
+        history('/forgot-password');
+      } else {
+        context.alertBox('success', res?.message);
+      }
+    });
+  }
+    
   };
 
   return (

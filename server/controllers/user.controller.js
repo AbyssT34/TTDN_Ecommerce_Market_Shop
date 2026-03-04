@@ -506,7 +506,7 @@ export async function resetPassword(request, response) {
 
     if (!user) {
       return response.status(400).json({
-        message: "Email not not available",
+        message: "Email not available",
         error: true,
         success: false,
       });
@@ -526,7 +526,7 @@ export async function resetPassword(request, response) {
     user.password = hashPassword;
     await user.save();
 
-    return respomse.json({
+    return response.json({  // ✅ Sửa "respomse" → "response"
       message: "Password updated successfully",
       error: false,
       success: true,
