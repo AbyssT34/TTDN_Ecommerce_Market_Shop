@@ -39,6 +39,7 @@ const Login = () => {
         context.alertBox('error', res?.message || 'Something went wrong');
       }
     });
+
   };
   }
 
@@ -79,10 +80,10 @@ const Login = () => {
           password: '',
         });
 
-        localStorage.setItem('accesstoken', res?.data.accesstoken);
+       localStorage.setItem('accesstoken', res?.data.accesstoken);
         localStorage.setItem('refreshToken', res?.data.refreshToken);
 
-        context.setIsLogin(true);
+        context.setIsLogin(true); 
 
         histoty('/');
       } else {

@@ -51,11 +51,20 @@ function App() {
     if (token !== undefined && token !== null && token !== '') {
       setIsLogin(true);
 
-      fetchDataFromApi(`/api/user/user-details?token=${localStorage.getItem('accesstoken')}`).then((res)=>{
-        console.log(res);
+      fetchDataFromApi(`/api/user/user-details`).then((res) => {
         setUserData(res?.data);
-      })
+        console.log(res?.response?.data?.error);
+        if (res?.response?.data?.error === true) {
+          if (res?.response?.data?.message) {
+            localStorage.removeItem('accesstoken');
+            localStorage.removeItem('refreshToken');
 
+            alertBox("error", "Your session is closed please login again");
+
+            setIsLogin(false);
+          }
+        }
+      });
     } else {
       setIsLogin(false);
     }

@@ -23,7 +23,7 @@ userRouter.get("/logout", auth, logoutController);
 userRouter.put(
   "/user-avatar",
   auth,
-  upload.array("avatar"),
+  upload.array("images"),  // ✅ đổi 'avatar' → 'images'
   userAvatarController
 );
 userRouter.delete("/deteleImage", auth, removeImageFromCloudinary);

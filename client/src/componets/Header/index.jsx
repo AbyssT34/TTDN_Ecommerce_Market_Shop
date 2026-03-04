@@ -1,6 +1,6 @@
 // import Link from 'next/link'
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Search from '../Search/index';
 import { IoIosGitCompare } from 'react-icons/io';
 import Button from '@mui/material/Button';
@@ -34,6 +34,8 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  const history = useNavigate();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -50,6 +52,7 @@ const Header = () => {
         context.setIsLogin(false);
         localStorage.removeItem('accesstoken',res?.accesstoken);
         localStorage.removeItem('refreshToken',res?.refreshToken);
+        history("/");
         
       }
 
