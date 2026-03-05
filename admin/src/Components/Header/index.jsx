@@ -12,6 +12,7 @@ import { FaRegUser } from "react-icons/fa";
 import { IoMdLogOut } from "react-icons/io";
 import { MyContext } from "../../App";
 import { Link } from "react-router-dom";
+import { fetchDataFromApi } from "../../utils/api";
 
 const Header = () => {
   const [anchorElMyAcc, setAnchorElMyAcc] = useState(null);
@@ -24,6 +25,23 @@ const Header = () => {
   };
 
   const context = useContext(MyContext);
+    const Logout = () => {
+      setAnchorElMyAcc(null);
+  
+      fetchDataFromApi(`/api/user/logout?token=${localStorage.getItem('accesstoken')}`,{
+        withCredentials: true}).then((res) => {
+        if (res?.error === false) {
+          context.setIsLogin(false);
+          localStorage.removeItem('accesstoken',res?.accesstoken);
+          localStorage.removeItem('refreshToken',res?.refreshToken);
+          history("/");
+          
+        }
+  
+      
+    });
+  }
+  
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
       right: -3,
@@ -61,7 +79,7 @@ const Header = () => {
             </StyledBadge>
           </IconButton>
 
-          {context.isLogin === false ? (
+          {context.islogin === true ? (
             <div className="relative">
               <div
                 className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer"
@@ -118,10 +136,10 @@ const Header = () => {
 
                     <div className="info">
                       <h3 className="text-[15px] font-[500] leading-5">
-                        Vịnh Trần
+                        {context?.userData?.name}
                       </h3>
                       <p className="text-[12px] font-[400] opacity-70">
-                        quocvinhtran.0212@gmail.com
+                        {context?.userData?.email}
                       </p>
                     </div>
                   </div>
@@ -138,7 +156,7 @@ const Header = () => {
                 </MenuItem>
 
                 <MenuItem
-                  onClick={handleCloseMyAcc}
+                 onClick={Logout}
                   className="flex items-center gap-3"
                 >
                   <IoMdLogOut className="text-[16px]" />{" "}

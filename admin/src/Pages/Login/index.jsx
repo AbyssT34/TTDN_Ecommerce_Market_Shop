@@ -9,13 +9,24 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { postData } from "../../utils/api";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useContext } from "react";
+import { MyContext } from "../../App";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingFb, setLoadingFb] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isPasswordShow, setIsPasswordShow] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [formFields, setFormFields] = useState({
+    email: "",
+    password: "",
+  });
+
+  const context = useContext(MyContext);
+  const histoty = useNavigate();
 
   function handleClickGoogle() {
     setLoadingGoogle(true);
@@ -24,6 +35,82 @@ const Login = () => {
   function handleClickFb() {
     setLoadingFb(true);
   }
+
+  const onChangeInput = (e) => {
+    const { name, value } = e.target;
+    setFormFields(() => {
+      return {
+        ...formFields,
+        [name]: value,
+      };
+    });
+  };
+
+  const valideValue = Object.values(formFields).every((el) => el);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    if (formFields.email === "") {
+      context.alertBox("error", "Please enter email id");
+      return false;
+    }
+
+    if (formFields.password === "") {
+      context.alertBox("error", "Please enter password");
+      return false;
+    }
+
+    postData("/api/user/login", formFields, { withCredentials: true }).then(
+      (res) => {
+        console.log(res);
+        if (res?.error !== true) {
+          setIsLoading(false);
+          context.alertBox("success", res?.message);
+          setFormFields({
+            email: "",
+            password: "",
+          });
+
+          localStorage.setItem("accesstoken", res?.data.accesstoken);
+          localStorage.setItem("refreshToken", res?.data.refreshToken);
+
+          context.setIsLogin(true);
+
+          histoty("/");
+        } else {
+          context.alertBox("error", res?.message || "Something went wrong");
+          setIsLoading(false);
+        }
+      },
+    );
+  };
+
+  const forgotPassword = () => {
+     if(formFields.email === ''){ 
+      context.alertBox('error', 'Please enter email id');
+      return false;
+     }else{
+      context.alertBox('success', `OTP send to ${formFields.email}`); 
+      localStorage.setItem('userEmail', formFields.email);
+      localStorage.setItem("actionType","forgot-password");
+  
+      postData('/api/user/forgot-password',{
+        email: formFields.email,
+      }).then((res) => {
+        if(res?.error === false) {
+          context.alertBox('success', res?.message);
+          histoty('/verify-account');
+        }else{
+          context.alertBox('error', res?.message || 'Something went wrong');
+        }
+      });
+  
+    };
+    }
+  
 
   return (
     <>
@@ -105,13 +192,15 @@ const Login = () => {
           </div>
 
           {/* =========== Email Form =========== */}
-          <form className="w-full px-4 mt-5">
+          <form className="w-full px-4 mt-5" onSubmit={handleSubmit}>
             <div className="form-group mb-4 w-full">
               <h4 className="text-[14px] font-[500] mb-1">Email</h4>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                value={formFields.email}
+                disabled={isLoading === true ? true : false}
+                onChange={onChangeInput}
                 className="w-full h-[50px] border border-[rgba(0,0,0,0.1)] rounded-md 
                            focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3"
                 placeholder="Nhập email của bạn"
@@ -123,8 +212,10 @@ const Login = () => {
               <div className="relative w-full">
                 <input
                   type={isPasswordShow === false ? "password" : "text"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  value={formFields.password}
+                  disabled={isLoading === true ? true : false}
+                  onChange={onChangeInput}
                   className="w-full h-[50px] border border-[rgba(0,0,0,0.1)] rounded-md 
                            focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3"
                   placeholder="Nhập Password của bạn"
@@ -150,13 +241,27 @@ const Login = () => {
               />
               <Link
                 to={"/forgot-password"}
-                className="text-[#3872fa] font-[700] text-[15px] hover:underline hover:text-gray-700"
+                className="text-[#3872fa] font-[700] text-[15px] hover:underline hover:text-gray-700 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault(); // Ngăn điều hướng trang
+                  forgotPassword();
+                }}
               >
                 Forgot Password?
               </Link>
             </div>
 
-            <Button className="btn-blue btn-lg w-full">Sign In</Button>
+            <Button
+              type="submit"
+              disabled={!valideValue}
+              className="btn-blue btn-lg w-full"
+            >
+              {isLoading === true ? (
+                <CircularProgress color="inherit" />
+              ) : (
+                "Login"
+              )}
+            </Button>
           </form>
         </div>
       </section>

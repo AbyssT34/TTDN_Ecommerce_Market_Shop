@@ -10,12 +10,64 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import OtpBox from "../../Components/OtpBox";
+import { useContext } from "react";
+import { MyContext } from "../../App";
+import { useNavigate } from "react-router-dom";
+import { postData } from "../../utils/api";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const VerifyAccount = () => {
   const [otp, setOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOtpChange = (value) => {
     setOtp(value);
+  };
+
+  const history = useNavigate();
+  const context = useContext(MyContext);
+
+  const verityOTP = (e) => {
+    e.preventDefault();
+
+    if (otp !== "") {
+      setIsLoading(true);
+      const actionType = localStorage.getItem("actionType");
+
+      if (actionType !== "forgot-password") {
+        postData("/api/user/verifyEmail", {
+          email: localStorage.getItem("userEmail"),
+          otp: otp,
+        }).then((res) => {
+          if (res?.error === false) {
+            console.log(res);
+            context.alertBox("success", res?.message);
+            localStorage.removeItem("userEmail");
+            setIsLoading(false);
+            history("/login");
+          } else {
+            context.alertBox("error", res?.message)
+             setIsLoading(false);
+          }
+        });
+      } else {
+        postData("/api/user/verify-forgot-password-otp", {
+          email: localStorage.getItem("userEmail"),
+          otp: otp,
+        }).then((res) => {
+          if (res?.error === false) {
+            console.log(res);
+            context.alertBox("success", res?.message);
+            history("/change-password");
+          } else {
+            context.alertBox("error", res?.message);
+             setIsLoading(false);
+          }
+        });
+      }
+    } else {
+      context.alertBox("error", "Please enter OTP");
+    }
   };
 
   return (
@@ -68,21 +120,28 @@ const VerifyAccount = () => {
           <p className="text-center text-[15px]">
             OTP send to &nbsp;
             <span className="text-primary font-bold">
-              quocvinhtran.0212@gmail.com
+              {localStorage.getItem("userEmail")}
             </span>
           </p>
 
           <br />
+          <form onSubmit={verityOTP}>
+            <div className="text-center flex items-center justify-center flex-col">
+              <OtpBox length={6} onChange={handleOtpChange} />
+            </div>
 
-          <div className="text-center flex items-center justify-center flex-col">
-            <OtpBox length={6} onChange={handleOtpChange} />
-          </div>
+            <br />
 
-          <br />
-
-          <div className="w-[300px] m-auto">
-            <Button className="btn-blue w-full">Verify OTP</Button>
-          </div>
+            <div className="w-[300px] m-auto">
+              <Button type="submit" className="btn-blue w-full">
+                {isLoading === true ? (
+                  <CircularProgress color="inherit" />
+                ) : (
+                  "Verify OTP"
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </section>
     </>

@@ -36,11 +36,11 @@ const Verify = () => {
         localStorage.removeItem('userEmail');
         history('/login');
       } else {
-        context.alertBox('success', res?.message);
+      context.alertBox("error", res?.message);
       }
     });
   }else{
-     postData('/api/user/verify-forgot-password-otp', {
+     postData('/api/user/reset-password', {
       email: localStorage.getItem('userEmail'),
       otp: otp,
     }).then((res) => {
@@ -49,7 +49,7 @@ const Verify = () => {
         context.alertBox('success', res?.message);
         history('/forgot-password');
       } else {
-        context.alertBox('success', res?.message);
+        context.alertBox("error", res?.message);
       }
     });
   }

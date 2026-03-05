@@ -33,6 +33,9 @@ import Orders from "./Pages/Orders";
 import ForgotPassword from "./Pages/ForgotPassword";
 import VerifyAccount from "./Pages/VerifyAccount";
 import ChangePassword from "./Pages/ChangePassword";
+import toast, { Toaster } from "react-hot-toast";
+import { useEffect } from "react";
+import { fetchDataFromApi } from "./utils/api";
 
 // ✅ Khai báo context ở ngoài hàm App
 const MyContext = createContext();
@@ -43,11 +46,46 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 function App() {
   const [isSiderOpen, setIsSiderOpen] = useState(true);
-  const [isLogin, setIsLogin] = useState(true);
+  const [islogin, setIsLogin] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
     model: "",
   });
+
+  const alertBox = (type, msg) => {
+    if (type === "success") {
+      toast.success(msg);
+    }
+    if (type === "error") {
+      toast.error(msg);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("accesstoken");
+
+    if (token !== undefined && token !== null && token !== "") {
+      setIsLogin(true);
+
+      fetchDataFromApi(`/api/user/user-details`).then((res) => {
+        setUserData(res?.data);
+        console.log(res?.response?.data?.error);
+        if (res?.response?.data?.error === true) {
+          if (res?.response?.data?.message) {
+            localStorage.removeItem("accesstoken");
+            localStorage.removeItem("refreshToken");
+
+            alertBox("error", "Your session is closed please login again");
+
+            setIsLogin(false);
+          }
+        }
+      });
+    } else {
+      setIsLogin(false);
+    }
+  }, [islogin]);
 
   const router = createBrowserRouter([
     {
@@ -278,10 +316,13 @@ function App() {
   const values = {
     isSiderOpen,
     setIsSiderOpen,
-    isLogin,
+    islogin,
     setIsLogin,
     isOpenFullScreenPanel,
     setIsOpenFullScreenPanel,
+    alertBox,
+    userData,
+    setUserData,
   };
 
   return (
@@ -328,6 +369,7 @@ function App() {
           <AddSubCategory />
         )}
       </Dialog>
+      <Toaster />
     </MyContext.Provider>
   );
 }

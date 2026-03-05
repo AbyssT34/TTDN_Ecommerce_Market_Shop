@@ -319,7 +319,7 @@ export async function removeImageFromCloudinary(request, response) {
       imageName,
       (error, result) => {
         // console.log(error , res)
-      }
+      },
     );
     if (res) {
       response.status(200).send(res);
@@ -363,7 +363,7 @@ export async function updateUserDetails(request, response) {
         otp: verifyCode !== "" ? verifyCode : null,
         otpExpires: verifyCode !== "" ? Date.now() + 600000 : null,
       },
-      { new: true }
+      { new: true },
     );
     if (email !== userExist.email) {
       //send verification email
@@ -380,12 +380,12 @@ export async function updateUserDetails(request, response) {
       error: false,
       success: true,
       user: {
-        name : updatedUser?.name,
-        _id : updatedUser?._id,
-        email : updatedUser?.email,
-        mobile : updatedUser?.mobile,
-        avatar : updatedUser?.avatar,
-      }
+        name: updatedUser?.name,
+        _id: updatedUser?._id,
+        email: updatedUser?.email,
+        mobile: updatedUser?.mobile,
+        avatar: updatedUser?.avatar,
+      },
     });
   } catch (error) {
     return response.status(500).json({
@@ -501,12 +501,12 @@ export async function verifyForgotPasswordOtp(request, response) {
 //rest password
 export async function resetPassword(request, response) {
   try {
-    const { email,oldPassword, newPassword, confirmPassword } = request.body;
+    const { email, oldPassword, newPassword, confirmPassword } = request.body;
     if (!email || !oldPassword || !newPassword || !confirmPassword) {
       return response.status(400).json({
         message: "provide email, newPassword, confirmPassword",
-        error: true,   // ✅ thêm
-    success: false, // ✅ thêm
+        error: true, // ✅ thêm
+        success: false, // ✅ thêm
       });
     }
 
@@ -521,7 +521,7 @@ export async function resetPassword(request, response) {
     }
     const checkPassword = await bcryptjs.compare(oldPassword, user.password);
 
-    if(!checkPassword){
+    if (!checkPassword) {
       return response.status(400).json({
         message: "your old password is wrong",
         error: true,
@@ -538,12 +538,62 @@ export async function resetPassword(request, response) {
     }
 
     const salt = await bcryptjs.genSalt(10);
-    const hashPassword = await bcryptjs.hash(confirmPassword, salt);  
+    const hashPassword = await bcryptjs.hash(confirmPassword, salt);
 
     user.password = hashPassword;
     await user.save();
 
-    return response.json({  // ✅ Sửa "respomse" → "response"
+    return response.json({
+      // ✅ Sửa "respomse" → "response"
+      message: "Password updated successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Dùng cho forgot-password flow (không cần oldPassword)
+export async function forgotPasswordReset(request, response) {
+  try {
+    const { email, newPassword, confirmPassword } = request.body;
+    
+    if (!email || !newPassword || !confirmPassword) {
+      return response.status(400).json({
+        message: "provide email, newPassword, confirmPassword",
+        error: true,
+        success: false,
+      });
+    }
+
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return response.status(400).json({
+        message: "Email not available",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return response.status(400).json({
+        message: "newPassword and confirmPassword must be same",
+        error: true,
+        success: false,
+      });
+    }
+
+    const salt = await bcryptjs.genSalt(10);
+    const hashPassword = await bcryptjs.hash(newPassword, salt);
+    user.password = hashPassword;
+    await user.save();
+
+    return response.json({
       message: "Password updated successfully",
       error: false,
       success: true,
@@ -574,7 +624,7 @@ export async function refreshToken(request, response) {
 
     const verifyToken = await jwt.verify(
       refreshToken,
-      process.env.SECRET_KEY_REFRESH_TOKEN
+      process.env.SECRET_KEY_REFRESH_TOKEN,
     );
 
     if (!verifyToken) {
@@ -619,7 +669,7 @@ export async function userDetails(request, response) {
     console.log("userId", userId);
 
     const user = await UserModel.findById(userId).select(
-      "-password -refresh_token"
+      "-password -refresh_token",
     );
 
     return response.json({

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   forgotPasswordController,
+  forgotPasswordReset,
   loginUserController,
   logoutController,
   refreshToken,
@@ -33,5 +34,6 @@ userRouter.post("/verify-forgot-password-otp", verifyEmailController);
 userRouter.post("/reset-password", resetPassword);
 userRouter.post("/refresh-token", refreshToken);
 userRouter.get("/user-details", auth, userDetails);
+userRouter.post('/forgot-password-reset', forgotPasswordReset);
 
 export default userRouter;
