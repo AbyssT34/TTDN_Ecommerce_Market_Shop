@@ -4,16 +4,26 @@ import TextField from '@mui/material/TextField';
 import AccountSidebar from '../../componets/AccountSidebar';
 import { MyContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
-import { editData } from '../../utils/api';
+import { editData, postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Collapse } from 'react-collapse';
 
 const MyAccount = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [isChangePasswordFromShow, setIsChangePasswordFromShow] = useState(false);
   const [formFields, setFormFields] = useState({
     name: '',
     email: '',
     mobile: '',
+  });
+
+  const [changePassword, setChangePassword] = useState({
+    email: '',
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   const context = useContext(MyContext);
@@ -35,6 +45,13 @@ const MyAccount = () => {
         [name]: value,
       };
     });
+
+    setChangePassword(() => {
+      return {
+        ...changePassword,
+        [name]: value,
+      };
+    });
   };
 
   useEffect(() => {
@@ -44,6 +61,9 @@ const MyAccount = () => {
         email: context?.userData?.email || '',
         mobile: context?.userData?.mobile || '',
         name: context?.userData?.name || '',
+      });
+      setChangePassword({
+        email: context?.userData?.email || '',
       });
     }
   }, [context?.userData]);
@@ -84,6 +104,47 @@ const MyAccount = () => {
     });
   };
 
+  const valideValue2 = Object.values(changePassword).every((el) => el);
+
+ const handleSubmitChangePassword = (e) => {
+  e.preventDefault();
+  setIsLoading2(true);
+
+  if (changePassword.oldPassword === '') {
+    context.alertBox('error', 'Please enter old password');
+    setIsLoading2(false); // ✅
+    return false;
+  }
+  if (changePassword.newPassword === '') {
+    context.alertBox('error', 'Please enter new password');
+    setIsLoading2(false); // ✅
+    return false;
+  }
+  if (changePassword.confirmPassword === '') {
+    context.alertBox('error', 'Please confirm new password');
+    setIsLoading2(false); // ✅
+    return false;
+  }
+  if (changePassword.confirmPassword !== changePassword.newPassword) {
+    context.alertBox('error', 'New password and confirm password do not match');
+    setIsLoading2(false); // ✅ đây là chỗ bị thiếu khi new !== confirm
+    return false;
+  }
+
+  postData(`/api/user/reset-password`, changePassword).then((res) => {
+    if (res?.error !== true) {
+      setIsLoading2(false);
+      context.alertBox('success', res?.message);
+    } else {
+      context.alertBox('error', res?.message || 'Something went wrong');
+      setIsLoading2(false);
+    }
+  }).catch(() => {
+    setIsLoading2(false); // ✅ thêm catch phòng lỗi network
+    context.alertBox('error', 'Something went wrong');
+  });
+};
+
   return (
     <>
       <section className="py-10 w-full">
@@ -92,8 +153,16 @@ const MyAccount = () => {
             <AccountSidebar />
           </div>
           <div className="col2 w-[50%]">
-            <div className="card bg-white p-5 shadow-md rounded-md">
-              <h2 className="pb-3">My Profile</h2>
+            <div className="card bg-white p-5 shadow-md rounded-md mb-5">
+              <div className="flex items-center pb-3">
+                <h2 className="pb-0">My Profile</h2>
+                <Button
+                  className="!ml-auto"
+                  onClick={() => setIsChangePasswordFromShow(!isChangePasswordFromShow)}
+                >
+                  Change Password
+                </Button>
+              </div>
               <hr />
 
               <form className="mt-5" onSubmit={handleSubmit}>
@@ -159,6 +228,80 @@ const MyAccount = () => {
                 </div>
               </form>
             </div>
+
+            <Collapse isOpened={isChangePasswordFromShow}>
+              <div className="card bg-white p-5 shadow-md rounded-md">
+                <div className="flex items-center pb-3">
+                  <h2 className="pb-0">Change Passwor</h2>
+                </div>
+                <hr />
+                <form className="mt-5" onSubmit={handleSubmitChangePassword}>
+                  <div className="flex items-center gap-5">
+                    <div className="w-[50%]">
+                      <TextField
+                        label="Old Password"
+                        variant="outlined"
+                        size="small"
+                        className="w-full"
+                        name="oldPassword"
+                        value={changePassword.oldPassword}
+                        onChange={onChangeInput}
+                        disabled={isLoading2 === true ? true : false}
+                      />
+                    </div>
+
+                    <div className="w-[50%]">
+                      <TextField
+                        type="text"
+                        label="New Password"
+                        variant="outlined"
+                        size="small"
+                        className="w-full"
+                        name="newPassword"
+                        value={changePassword.newPassword}
+                        onChange={onChangeInput}
+                        disabled={isLoading2 === true ? true : false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center mt-4 gap-5">
+                    <div className="w-[50%]">
+                      <TextField
+                        label="Confirm Password"
+                        variant="outlined"
+                        size="small"
+                        className="w-full"
+                        name="confirmPassword"
+                        value={changePassword.confirmPassword}
+                        onChange={onChangeInput}
+                        disabled={isLoading2 === true ? true : false}
+                      />
+                    </div>
+                  </div>
+                  <br />
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="submit"
+                      disabled={!valideValue2}
+                      className="bg-org btn-lg"
+                      sx={{
+                        width: '180px',
+                        height: '42px',
+                        fontSize: '14px',
+                        whiteSpace: 'nowrap', // ✅ không xuống dòng
+                      }}
+                    >
+                      {isLoading2 === true ? (
+                        <CircularProgress color="inherit" />
+                      ) : (
+                        'Change Password'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </Collapse>
           </div>
         </div>
       </section>

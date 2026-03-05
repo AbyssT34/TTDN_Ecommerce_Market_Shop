@@ -501,10 +501,12 @@ export async function verifyForgotPasswordOtp(request, response) {
 //rest password
 export async function resetPassword(request, response) {
   try {
-    const { email, newPassword, confirmPassword } = request.body;
-    if (!email || !newPassword || !confirmPassword) {
+    const { email,oldPassword, newPassword, confirmPassword } = request.body;
+    if (!email || !oldPassword || !newPassword || !confirmPassword) {
       return response.status(400).json({
         message: "provide email, newPassword, confirmPassword",
+        error: true,   // ✅ thêm
+    success: false, // ✅ thêm
       });
     }
 
@@ -513,6 +515,15 @@ export async function resetPassword(request, response) {
     if (!user) {
       return response.status(400).json({
         message: "Email not available",
+        error: true,
+        success: false,
+      });
+    }
+    const checkPassword = await bcryptjs.compare(oldPassword, user.password);
+
+    if(!checkPassword){
+      return response.status(400).json({
+        message: "your old password is wrong",
         error: true,
         success: false,
       });
@@ -527,7 +538,7 @@ export async function resetPassword(request, response) {
     }
 
     const salt = await bcryptjs.genSalt(10);
-    const hashPassword = await bcryptjs.hash(confirmPassword, salt);
+    const hashPassword = await bcryptjs.hash(confirmPassword, salt);  
 
     user.password = hashPassword;
     await user.save();

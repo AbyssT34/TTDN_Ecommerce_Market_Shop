@@ -6,7 +6,7 @@
   "prettier.prettierPath": "server/node_modules/prettier",
   "prettier.requireConfig": false,
   "[javascript]": {
-    "editor.defaultFormatter": "lonefy.vscode-JS-CSS-HTML-formatter"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
 }
