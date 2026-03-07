@@ -25,23 +25,24 @@ const Header = () => {
   };
 
   const context = useContext(MyContext);
-    const Logout = () => {
-      setAnchorElMyAcc(null);
-  
-      fetchDataFromApi(`/api/user/logout?token=${localStorage.getItem('accesstoken')}`,{
-        withCredentials: true}).then((res) => {
-        if (res?.error === false) {
-          context.setIsLogin(false);
-          localStorage.removeItem('accesstoken',res?.accesstoken);
-          localStorage.removeItem('refreshToken',res?.refreshToken);
-          history("/");
-          
-        }
-  
-      
+  const Logout = () => {
+    setAnchorElMyAcc(null);
+
+    fetchDataFromApi(
+      `/api/user/logout?token=${localStorage.getItem("accesstoken")}`,
+      {
+        withCredentials: true,
+      },
+    ).then((res) => {
+      if (res?.error === false) {
+        context.setIsLogin(false);
+        localStorage.removeItem("accesstoken", res?.accesstoken);
+        localStorage.removeItem("refreshToken", res?.refreshToken);
+        history("/");
+      }
     });
-  }
-  
+  };
+
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
       right: -3,
@@ -147,18 +148,16 @@ const Header = () => {
 
                 <Divider />
 
-                <MenuItem
-                  onClick={handleCloseMyAcc}
-                  className="flex items-center gap-3"
-                >
-                  <FaRegUser className="text-[16px]" />{" "}
-                  <span className="text-[14px]">Profile</span>
-                </MenuItem>
-
-                <MenuItem
-                 onClick={Logout}
-                  className="flex items-center gap-3"
-                >
+                <Link to="/profile">
+                  <MenuItem
+                    onClick={handleCloseMyAcc}
+                    className="flex items-center gap-3"
+                  >
+                    <FaRegUser className="text-[16px]" />{" "}
+                    <span className="text-[14px]">Profile</span>
+                  </MenuItem>
+                </Link>
+                <MenuItem onClick={Logout} className="flex items-center gap-3">
                   <IoMdLogOut className="text-[16px]" />{" "}
                   <span className="text-[14px]">Sign Out</span>
                 </MenuItem>

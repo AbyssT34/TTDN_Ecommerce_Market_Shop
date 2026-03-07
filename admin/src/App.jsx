@@ -36,6 +36,8 @@ import ChangePassword from "./Pages/ChangePassword";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { fetchDataFromApi } from "./utils/api";
+import Profile from "./Pages/Profile";
+import AddAddress from "./Pages/Address/index";
 
 // ✅ Khai báo context ở ngoài hàm App
 const MyContext = createContext();
@@ -62,30 +64,26 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
+ useEffect(() => {
+  const token = localStorage.getItem("accesstoken");
 
-    if (token !== undefined && token !== null && token !== "") {
-      setIsLogin(true);
+  if (token !== undefined && token !== null && token !== "") {
+    setIsLogin(true);
 
-      fetchDataFromApi(`/api/user/user-details`).then((res) => {
-        setUserData(res?.data);
-        console.log(res?.response?.data?.error);
-        if (res?.response?.data?.error === true) {
-          if (res?.response?.data?.message) {
-            localStorage.removeItem("accesstoken");
-            localStorage.removeItem("refreshToken");
-
-            alertBox("error", "Your session is closed please login again");
-
-            setIsLogin(false);
-          }
-        }
-      });
-    } else {
-      setIsLogin(false);
-    }
-  }, [islogin]);
+    fetchDataFromApi(`/api/user/user-details`).then((res) => {
+      if (res?.error === true) {  // ✅ check đúng
+        localStorage.removeItem("accesstoken");
+        localStorage.removeItem("refreshToken");
+        alertBox("error", "Your session is closed please login again");
+        window.location.href = "/login"
+      } else {
+        setUserData(res?.data); // ✅ chỉ set khi thành công
+      }
+    });
+  } else {
+    setIsLogin(false);
+  }
+}, []); // ✅ đổi [islogin] → [] tránh loop
 
   const router = createBrowserRouter([
     {
@@ -311,6 +309,32 @@ function App() {
         </>
       ),
     },
+     {
+      path: "/profile",
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="contentMain flex">
+              <div
+                className={`overflow-hidden sidebarWrapper ${
+                  isSiderOpen === true ? "w-[18%]" : "w-[0px] opacity-0"
+                } transition-all`}
+              >
+                <SideBar />
+              </div>
+              <div
+                className={`contentRight py-4 px-5  ${
+                  isSiderOpen === false ? "w-[100%]" : "w-[82%]"
+                } transition-all`}
+              >
+                <Profile />
+              </div>
+            </div>
+          </section>
+        </>
+      ),
+    },
   ]);
 
   const values = {
@@ -367,6 +391,9 @@ function App() {
         {isOpenFullScreenPanel?.model === "Add New Category" && <AddCategory />}
         {isOpenFullScreenPanel?.model === "Add New Sub Category" && (
           <AddSubCategory />
+        )}
+          {isOpenFullScreenPanel?.model === "Add New Address" && (
+          <AddAddress />
         )}
       </Dialog>
       <Toaster />

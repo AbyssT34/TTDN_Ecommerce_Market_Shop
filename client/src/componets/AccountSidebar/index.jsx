@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { IoMdCloudUpload } from 'react-icons/io';
 import { FaRegUser } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { MyContext } from '../../App';
 import CircularProgress from '@mui/material/CircularProgress';
-import {  uploadImage } from '../../utils/api';
+import { uploadImage } from '../../utils/api';
 
 const AccountSidebar = () => {
   const [previews, setPreviews] = useState([]);
@@ -78,8 +78,7 @@ const AccountSidebar = () => {
     <>
       <div className="card bg-white shadow-md rounded-md sticky top-[10px]">
         <div className="w-full p-5 flex items-center justify-center flex-col">
-          <div
-            className="w-[110px] h-[110px] rounded-full overflow-hidden mb-4 relative group 
+          <div className="w-[110px] h-[110px] rounded-full overflow-hidden mb-4 relative group 
           flex items-center justify-center bg-gray-200"
           >
             {uploading === true ? (

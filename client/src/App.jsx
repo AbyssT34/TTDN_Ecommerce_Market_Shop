@@ -61,7 +61,7 @@ function App() {
 
             alertBox("error", "Your session is closed please login again");
 
-            setIsLogin(false);
+            window.location.href = "/login"
           }
         }
       });
