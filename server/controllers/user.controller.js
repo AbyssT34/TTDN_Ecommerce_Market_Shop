@@ -112,7 +112,7 @@ export async function verifyEmailController(request, response) {
       });
     }
 
-    user.isVerified = true;
+    user.verify_email = true;
     user.otp = null;
     user.otpExpires = null;
 
@@ -670,7 +670,7 @@ export async function userDetails(request, response) {
 
     const user = await UserModel.findById(userId).select(
       "-password -refresh_token",
-    );
+    ).populate('address_details');
 
     return response.json({
       message: "User details fetched successfully",

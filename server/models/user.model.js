@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema(
     },
     verify_email: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     access_token: {
       type: String,

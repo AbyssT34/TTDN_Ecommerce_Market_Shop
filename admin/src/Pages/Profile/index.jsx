@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../App";
-import { uploadImage } from "../../utils/api";
+import { fetchDataFromApi, uploadImage } from "../../utils/api";
 import { editData, postData } from "../../utils/api";
 import { IoMdCloudUpload } from "react-icons/io";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -10,11 +10,14 @@ import TextField from "@mui/material/TextField";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { Collapse } from "react-collapse";
+import Radio from "@mui/material/Radio";
 
 const Profile = () => {
   const [previews, setPreviews] = useState([]);
   const [phone, setPhone] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [address, setAddress] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -35,6 +38,12 @@ const Profile = () => {
 
   const history = useNavigate();
   const context = useContext(MyContext);
+
+  const [selectedValue, setSelectedValue] = useState("");
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("accesstoken");
@@ -63,6 +72,12 @@ const Profile = () => {
 
   useEffect(() => {
     if (context?.userData?._id !== "" && context?.userData?._id !== undefined) {
+      fetchDataFromApi(
+        `/api/address/get?userId=${context?.userData?._id}`,
+      ).then((res) => {
+        setAddress(res.data);
+        context?.setAddress(res.data);
+      });
       setUserId(context?.userData?._id);
       setFormFields({
         email: context?.userData?.email || "",
@@ -331,7 +346,7 @@ const Profile = () => {
           <br />
 
           <div
-            className="flex items-center justify-center p-5 border border-dashed
+            className="flex items-center justify-center p-5 rounded-md border border-dashed
            border-[rgba(0,0,0,0.2)] bg-[#f1faff] hover:bg-[#e7f3f9] cursor-pointer"
             onClick={() =>
               context.setIsOpenFullScreenPanel({
@@ -341,6 +356,36 @@ const Profile = () => {
             }
           >
             <span className="text-[14px] font-[500]">Add Address</span>
+          </div>
+
+          <div className="flex gap-2 flex-col mt-4">
+            {address?.length > 0 &&
+              address?.map((address, index) => {
+                return (
+                  <>
+                    <label
+                      className="addressBox w-full flex items-center justify-center border border-dashed
+           border-[rgba(0,0,0,0.2)] bg-[#f1f1f1] p-3 rounded-md cursor-pointer"
+                    >
+                      <Radio
+                        name="address"
+                        value={address?._id}
+                        checked={selectedValue === (
+                          address?._id
+                        )}
+                        onChange={handleChange}
+                      />
+                      <span className="text-[12px]">
+                        {address?.address_line1 + " "
+                           +  address?.city + " "
+                           +  address?.country + " "
+                           +  address?.state + " "
+                           +  address?.pincode}
+                      </span>
+                    </label>
+                  </>
+                );
+              })}
           </div>
 
           <br />

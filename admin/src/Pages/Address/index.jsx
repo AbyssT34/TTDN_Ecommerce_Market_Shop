@@ -6,13 +6,14 @@ import "react-international-phone/style.css";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { MyContext } from "../../App";
-import { useNavigate } from "react-router-dom";
-import {  postData } from "../../utils/api";
+
+import {  fetchDataFromApi, postData } from "../../utils/api";
 
 const AddAddress = () => {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(false);
+    const context = useContext(MyContext);
   const [formFields, setFormFields] = useState({
     address_line1: "",
     city: "",
@@ -21,23 +22,25 @@ const AddAddress = () => {
     country: "",
     mobile: "",
     status: "",
-    userId: context?.userData?._id,
+    userId: "",
+    selected : false
   });
 
-  const history = useNavigate();
-  const context = useContext(MyContext);
-
   useEffect(() => {
-    setFormFields(() => {
-      formFields.userId = context?.userData?._id
-    })
-  },[context?.userData])
+    setFormFields((prevState) => ({
+        ...prevState,
+        userId:context?.userData?._id
+    }))
+
+  },[context?.userData]);
+
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
-    setFormFields({
-      status:event.target.value
-    })
+    setFormFields((prevState) => ({
+      ...prevState,
+      status: event.target.value,
+    }));
   };
 
   const onChangeInput = (e) => {
@@ -85,14 +88,17 @@ const AddAddress = () => {
     postData(`/api/address/add`, formFields, { withCredentials: true }).then(
       (res) => {
         console.log(res);
-        if (res?.error !== true) {
+        if (res?.error !== true) {  
           setIsLoading(false);
           context.alertBox("success", res?.data?.message);
-          context.setIsLogin(true);
-
-             context?.setIsOpenFullScreenPanel({
-                open: false,
-              })
+          context?.setIsOpenFullScreenPanel({
+            open: false,
+          });
+          fetchDataFromApi(
+                  `/api/address/get?userId=${context?.userData?._id}`,
+                ).then((res) => {
+                    context?.setAddress(res.data);
+                });
 
         } else {
           context.alertBox(
@@ -119,7 +125,7 @@ const AddAddress = () => {
                   type="text"
                   className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none
             focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm"
-             name="address_line1"
+                  name="address_line1"
                   value={formFields.address_line1}
                   onChange={onChangeInput}
                 />
@@ -131,7 +137,7 @@ const AddAddress = () => {
                   type="text"
                   className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none
             focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm"
-             name="city"
+                  name="city"
                   value={formFields.city}
                   onChange={onChangeInput}
                 />
@@ -161,7 +167,7 @@ const AddAddress = () => {
                   type="text"
                   className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none
             focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm"
-             name="pincode"
+                  name="pincode"
                   value={formFields.pincode}
                   onChange={onChangeInput}
                 />
@@ -169,13 +175,13 @@ const AddAddress = () => {
 
               <div className="col w-[100%]">
                 <h3 className="text-[14px] font-[500] mb-1 text-black">
-                  Coutry
+                  Country
                 </h3>
                 <input
                   type="text"
                   className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none
             focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm"
-             name="coutry"
+                  name="country"
                   value={formFields.country}
                   onChange={onChangeInput}
                 />
@@ -190,9 +196,11 @@ const AddAddress = () => {
                   value={phone}
                   disabled={isLoading === true ? true : false}
                   onChange={(phone) => {
-                    setPhone(phone);setFormFields({
-                    mobile: phone,
-                  });
+                    setPhone(phone);
+                    setFormFields((prevState) => ({
+                      ...prevState,
+                      mobile: phone,
+                    }));
                   }}
                 />
               </div>
