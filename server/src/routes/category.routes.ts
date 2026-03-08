@@ -21,8 +21,8 @@ router.get('/:id', getCategoryById);
 // ADMIN ROUTES
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/', authenticate, authorize('admin', 'superadmin'), createCategory);
-router.put('/:id', authenticate, authorize('admin', 'superadmin'), updateCategory);
-router.delete('/:id', authenticate, authorize('admin', 'superadmin'), deleteCategory);
+router.post('/', authenticate, authorize('admin' as any, 'superadmin' as any), createCategory);
+router.put('/:id', authenticate, authorize('admin' as any, 'superadmin' as any), updateCategory);
+router.delete('/:id', authenticate, authorize('admin' as any, 'superadmin' as any), deleteCategory);
 
 export default router;

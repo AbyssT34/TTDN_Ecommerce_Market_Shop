@@ -18,6 +18,7 @@ export interface CreateOrderRequest {
         district: string;
         province: string;
     };
+    deliverySlot: '08:00-12:00' | '14:00-18:00';
     paymentMethod: 'COD' | 'BANK_TRANSFER';
 }
 

@@ -25,6 +25,7 @@ const createOrderSchema = z.object({
         district: z.string(),
         province: z.string(),
     }),
+    deliverySlot: z.enum(['08:00-12:00', '14:00-18:00']),
     paymentMethod: z.enum(['COD', 'BANK_TRANSFER']),
 });
 
@@ -78,6 +79,10 @@ export const createOrder = async (req: Request, res: Response) => {
         const shippingFee = 30000; // Fixed 30k VND for now
         const total = subtotal + shippingFee;
 
+        if (mappedPaymentMethod === 'cod' && total > 2000000) {
+            return res.status(400).json({ error: 'Đơn hàng trên 2.000.000 VNĐ không hỗ trợ thanh toán COD. Vui lòng chọn chuyển khoản.' });
+        }
+
         // Map shipping address fields (frontend: address/province → model: street/city)
         const shippingAddress = {
             fullName: validated.shippingAddress.fullName,
@@ -93,6 +98,7 @@ export const createOrder = async (req: Request, res: Response) => {
             user: userId,
             items: orderItems,
             shippingAddress,
+            deliverySlot: validated.deliverySlot,
             paymentMethod: mappedPaymentMethod,
             subtotal,
             shippingFee,
@@ -234,14 +240,12 @@ export const handleSePayIPN = async (req: Request, res: Response) => {
             }
 
             // Update order status
-            order.status = 'CONFIRMED';
-            order.paymentStatus = 'PAID';
-            order.paymentInfo = order.paymentInfo || {};
-            order.paymentInfo.transactionId = ipnData.transaction?.transaction_id;
-            order.paymentInfo.paidAt = ipnData.order.paid_at ? new Date(ipnData.order.paid_at) : new Date();
+            order.orderStatus = 'confirmed' as any;
+            order.paymentStatus = 'paid' as any;
+            order.sepayTransactionId = ipnData.transaction?.transaction_id || ipnData.order?.order_id || 'unknown';
 
             order.timeline.push({
-                status: 'CONFIRMED',
+                status: 'confirmed' as any,
                 timestamp: new Date(),
                 note: `Payment confirmed via SePay (${ipnData.transaction?.bank_code || 'Bank Transfer'})`,
             });

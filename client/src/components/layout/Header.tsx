@@ -179,6 +179,15 @@ export const Header = () => {
                                                         <Heart className="w-4 h-4" />
                                                         Yêu thích
                                                     </Link>
+                                                    {(user?.role === 'admin' || user?.role === 'superadmin') && (
+                                                        <Link
+                                                            to="/admin"
+                                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-green-400 hover:bg-green-500/10 transition-colors font-medium"
+                                                        >
+                                                            <span className="text-base">⚙️</span>
+                                                            Quản trị Admin
+                                                        </Link>
+                                                    )}
                                                 </div>
 
                                                 {/* Logout */}

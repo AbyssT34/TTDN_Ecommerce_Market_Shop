@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, CreditCard, Copy, Check, Clock, QrCode, ArrowLeft, CheckCircle } from 'lucide-react';
+import { MapPin, CreditCard, Copy, Check, Clock, QrCode, CheckCircle } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { Button, Input, GlassCard, toast } from '@/components/ui';
 import { createOrder, Order } from '@/lib/api/orders';
@@ -41,6 +41,7 @@ export const CheckoutPage = () => {
         ward: '',
         district: '',
         province: '',
+        deliverySlot: '08:00-12:00' as '08:00-12:00' | '14:00-18:00',
         paymentMethod: 'COD' as 'COD' | 'BANK_TRANSFER',
     });
 
@@ -58,6 +59,13 @@ export const CheckoutPage = () => {
         }, 1000);
         return () => clearInterval(timer);
     }, [createdOrder, countdown]);
+
+    // Enforce COD limit
+    useEffect(() => {
+        if (subtotal + 30000 > 2000000 && formData.paymentMethod === 'COD') {
+            setFormData(prev => ({ ...prev, paymentMethod: 'BANK_TRANSFER' }));
+        }
+    }, [subtotal, formData.paymentMethod]);
 
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
@@ -99,6 +107,7 @@ export const CheckoutPage = () => {
                     district: formData.district,
                     province: formData.province,
                 },
+                deliverySlot: formData.deliverySlot,
                 paymentMethod: formData.paymentMethod,
             };
 
@@ -387,6 +396,50 @@ export const CheckoutPage = () => {
                             </div>
                         </GlassCard>
 
+                        {/* Delivery Slot */}
+                        <GlassCard variant="dark" padding="lg">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Clock className="w-5 h-5 text-primary-400" />
+                                <h3 className="text-xl font-bold text-white">Khung giờ giao hàng</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.deliverySlot === '08:00-12:00'
+                                    ? 'bg-primary-500/10 border-primary-500/50'
+                                    : 'bg-white/5 border-white/10 hover:border-primary-500/30'
+                                    }`}>
+                                    <input
+                                        type="radio"
+                                        name="deliverySlot"
+                                        value="08:00-12:00"
+                                        checked={formData.deliverySlot === '08:00-12:00'}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 accent-primary-500"
+                                    />
+                                    <div>
+                                        <p className="text-white font-medium">Sáng (08:00 - 12:00)</p>
+                                    </div>
+                                </label>
+
+                                <label className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.deliverySlot === '14:00-18:00'
+                                    ? 'bg-primary-500/10 border-primary-500/50'
+                                    : 'bg-white/5 border-white/10 hover:border-primary-500/30'
+                                    }`}>
+                                    <input
+                                        type="radio"
+                                        name="deliverySlot"
+                                        value="14:00-18:00"
+                                        checked={formData.deliverySlot === '14:00-18:00'}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 accent-primary-500"
+                                    />
+                                    <div>
+                                        <p className="text-white font-medium">Chiều (14:00 - 18:00)</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </GlassCard>
+
                         {/* Payment Method */}
                         <GlassCard variant="dark" padding="lg">
                             <div className="flex items-center gap-2 mb-4">
@@ -395,9 +448,9 @@ export const CheckoutPage = () => {
                             </div>
 
                             <div className="space-y-3">
-                                <label className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'COD'
-                                    ? 'bg-primary-500/10 border-primary-500/50'
-                                    : 'bg-white/5 border-white/10 hover:border-primary-500/30'
+                                <label className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${subtotal + 30000 > 2000000 ? 'opacity-50 cursor-not-allowed bg-gray-800 border-gray-700' : formData.paymentMethod === 'COD'
+                                    ? 'bg-primary-500/10 border-primary-500/50 cursor-pointer'
+                                    : 'bg-white/5 border-white/10 hover:border-primary-500/30 cursor-pointer'
                                     }`}>
                                     <input
                                         type="radio"
@@ -405,12 +458,16 @@ export const CheckoutPage = () => {
                                         value="COD"
                                         checked={formData.paymentMethod === 'COD'}
                                         onChange={handleChange}
+                                        disabled={subtotal + 30000 > 2000000}
                                         className="w-4 h-4 accent-primary-500"
                                     />
                                     <div>
-                                        <p className="text-white font-medium">Thanh toán khi nhận hàng (COD)</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-white font-medium">Thanh toán khi nhận hàng (COD)</p>
+                                            {subtotal + 30000 > 2000000 && <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded uppercase font-bold tracking-wider">Vượt hạn mức</span>}
+                                        </div>
                                         <p className="text-sm text-gray-400">
-                                            Thanh toán bằng tiền mặt khi nhận hàng
+                                            {subtotal + 30000 > 2000000 ? 'Chỉ áp dụng cho đơn hàng dưới 2.000.000 VNĐ' : 'Thanh toán bằng tiền mặt khi nhận hàng'}
                                         </p>
                                     </div>
                                 </label>

@@ -3,6 +3,7 @@ import { Trash2, ShoppingBag, AlertCircle } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { Button, GlassCard } from '@/components/ui';
 import { useEffect, useState } from 'react';
+import { validateCart } from '@/lib/api/cart';
 
 // ═══════════════════════════════════════════════════════════════
 // CART PAGE
@@ -13,10 +14,22 @@ export const CartPage = () => {
     const { items, subtotal, reservationExpiresAt, removeItem, updateQuantity, calculateSubtotal } =
         useCartStore();
     const [timeLeft, setTimeLeft] = useState<string>('');
+    const [wholesaleWarning, setWholesaleWarning] = useState<boolean>(false);
+    const [perishableWeight, setPerishableWeight] = useState<number>(0);
 
     useEffect(() => {
         calculateSubtotal();
     }, [calculateSubtotal]);
+
+    // Fetch cart validation for warnings
+    useEffect(() => {
+        if (items.length > 0) {
+            validateCart().then(res => {
+                setWholesaleWarning(res.requiresWholesaleContact || false);
+                setPerishableWeight(res.totalPerishableWeight || 0);
+            }).catch(console.error);
+        }
+    }, [items]);
 
     // Countdown timer
     useEffect(() => {
@@ -74,6 +87,19 @@ export const CartPage = () => {
                         <p className="text-white font-medium">Hàng được giữ trong: {timeLeft}</p>
                         <p className="text-sm text-gray-400">
                             Vui lòng thanh toán trước khi hết thời gian
+                        </p>
+                    </div>
+                </GlassCard>
+            )}
+
+            {/* Wholesale Warning */}
+            {wholesaleWarning && (
+                <GlassCard variant="dark" padding="md" className="mb-6 flex items-center gap-3 border-orange-500/50">
+                    <AlertCircle className="w-5 h-5 text-orange-400" />
+                    <div>
+                        <p className="text-white font-medium">Cảnh báo: Khối lượng hàng tươi sống lớn ({perishableWeight}kg)</p>
+                        <p className="text-sm text-gray-400">
+                            Bạn đang mua vượt quá 50kg hàng hóa cần bảo quản lạnh/đông. Vui lòng liên hệ bán buôn để được hỗ trợ giao hàng số lượng lớn.
                         </p>
                     </div>
                 </GlassCard>

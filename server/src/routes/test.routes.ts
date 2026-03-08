@@ -15,7 +15,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  * GET /api/test/cloudinary
  * Test Cloudinary connection
  */
-router.get('/cloudinary', async (req: Request, res: Response) => {
+router.get('/cloudinary', async (_req: Request, res: Response) => {
     try {
         const isConnected = await testCloudinaryConnection();
 
@@ -48,13 +48,14 @@ router.get('/cloudinary', async (req: Request, res: Response) => {
  */
 router.post('/upload', upload.single('image'), async (req: Request, res: Response) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
+        const file = (req as any).file;
+        if (!file) {
+            return res.status(400).json({ error: 'No file provided' });
         }
 
         // Convert buffer to base64 data URI
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+        const b64 = Buffer.from(file.buffer).toString('base64');
+        const dataURI = `data:${file.mimetype};base64,${b64}`;
 
         // Upload to Cloudinary
         const result = await uploadImage(dataURI, 'test');

@@ -22,22 +22,30 @@ async function testConnection() {
         await mongoose.connect(mongoUri);
 
         const db = mongoose.connection.db;
-        const admin = db.admin();
+        const admin = db!.admin();
         const serverStatus = await admin.serverStatus();
 
-        console.log('✅ MongoDB connected successfully!\n');
+        console.log('✅ MongoDB connected successfully!\\n');
         console.log('Connection Details:');
-        console.log(`   📁 Database: ${db.databaseName}`);
+        console.log(`   📁 Database: ${db!.databaseName}`);
         console.log(`   🌐 Host: ${serverStatus.host}`);
         console.log(`   📊 Version: ${serverStatus.version}`);
-        console.log(`   ⏱️  Uptime: ${Math.floor(serverStatus.uptime / 60)} minutes\n`);
+        console.log(`   ⏱️  Uptime: ${Math.floor(serverStatus.uptime / 60)} minutes\\n`);
+
+        console.log('\\n2. Testing Query Execution...');
+        const sampleProducts = await db!.collection('products').find({}).limit(5).toArray();
+        console.log('- Successfully fetched', sampleProducts.length, 'products');
+
+        console.log('\\n3. Testing Index Information...');
+        console.log('- Creating test index on "name" field (if not exists)...');
+        await db!.collection('products').createIndex({ name: 1 });
 
         // Test write permission
-        const testCollection = db.collection('test');
+        const testCollection = db!.collection('test');
         await testCollection.insertOne({ test: true, timestamp: new Date() });
         await testCollection.deleteOne({ test: true });
 
-        console.log('✅ Write permissions verified!\n');
+        console.log('✅ Write permissions verified!\\n');
 
         await mongoose.disconnect();
         process.exit(0);

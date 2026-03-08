@@ -13,6 +13,14 @@ import { PaymentPage } from '@/features/checkout/PaymentPage';
 import { OrderListPage } from '@/features/orders/OrderListPage';
 import { OrderDetailPage } from '@/features/orders/OrderDetailPage';
 import { ProfilePage } from '@/features/auth/ProfilePage';
+import { AdminRoute } from '@/features/admin/components/AdminRoute';
+import { AdminLayout } from '@/features/admin/components/AdminLayout';
+import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage';
+import { AdminProductsPage } from '@/features/admin/AdminProductsPage';
+import { AdminProductFormPage } from '@/features/admin/AdminProductFormPage';
+import { AdminOrdersPage } from '@/features/admin/AdminOrdersPage';
+import { AdminOrderDetailPage } from '@/features/admin/AdminOrderDetailPage';
+import { AdminUsersPage } from '@/features/admin/AdminUsersPage';
 import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 
@@ -181,6 +189,80 @@ function App() {
                                         <Footer />
                                     </>
                                 </ProtectedRoute>
+                            }
+                        />
+
+                        {/* ════════════════════════════════════════════ */}
+                        {/* ADMIN ROUTES (protected: admin/superadmin)  */}
+                        {/* ════════════════════════════════════════════ */}
+                        <Route
+                            path="/admin"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminDashboardPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/products"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminProductsPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/products/new"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminProductFormPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/products/:id/edit"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminProductFormPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/orders"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminOrdersPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/orders/:id"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminOrderDetailPage />
+                                    </AdminLayout>
+                                </AdminRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/users"
+                            element={
+                                <AdminRoute>
+                                    <AdminLayout>
+                                        <AdminUsersPage />
+                                    </AdminLayout>
+                                </AdminRoute>
                             }
                         />
 

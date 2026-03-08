@@ -24,7 +24,12 @@ export async function uploadImage(
     folder: string = 'products'
 ): Promise<{ url: string; publicId: string }> {
     try {
-        const result = await cloudinary.uploader.upload(file, {
+        let fileStr = file as string;
+        if (Buffer.isBuffer(file)) {
+            fileStr = `data:image/jpeg;base64,${file.toString('base64')}`;
+        }
+
+        const result = await cloudinary.uploader.upload(fileStr, {
             folder,
             resource_type: 'auto',
             transformation: [

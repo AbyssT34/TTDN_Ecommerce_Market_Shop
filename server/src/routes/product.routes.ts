@@ -20,9 +20,11 @@ router.get('/:id', getProductById);
 // ═══════════════════════════════════════════════════════════════
 // ADMIN ROUTES
 // ═══════════════════════════════════════════════════════════════
-
-router.post('/', authenticate, authorize('admin', 'superadmin'), createProduct);
-router.put('/:id', authenticate, authorize('admin', 'superadmin'), updateProduct);
-router.delete('/:id', authenticate, authorize('admin', 'superadmin'), deleteProduct);
+// Create product (Admin only)
+router.post('/', authenticate, authorize('admin' as any, 'superadmin' as any), createProduct);
+// Update product (Admin only)
+router.put('/:id', authenticate, authorize('admin' as any, 'superadmin' as any), updateProduct);
+// Delete product (Admin only)
+router.delete('/:id', authenticate, authorize('admin' as any, 'superadmin' as any), deleteProduct);
 
 export default router;

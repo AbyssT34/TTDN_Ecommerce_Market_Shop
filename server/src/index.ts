@@ -12,6 +12,7 @@ import categoryRoutes from './routes/category.routes.js';
 import cartRoutes from './routes/cart.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import testRoutes from './routes/test.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 // Initialize Express app
 const app = express();
@@ -57,7 +58,7 @@ app.use('/api', limiter);
 // ═══════════════════════════════════════════════════════════════
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
     res.json({
         status: 'OK',
         message: 'Server is running',
@@ -102,6 +103,9 @@ app.use('/api/cart', cartRoutes);
 
 // Order routes
 app.use('/api/orders', orderRoutes);
+
+// Admin routes (protected: admin/superadmin only)
+app.use('/api/admin', adminRoutes);
 
 // Test routes (Development only)
 if (process.env.NODE_ENV !== 'production') {

@@ -144,6 +144,7 @@ export const validateCart = async (req: Request, res: Response) => {
         const reservations = await CartReservation.find({ userId }).populate('productId');
 
         const errors: any[] = [];
+        let totalPerishableWeight = 0;
 
         for (const reservation of reservations) {
             const product: any = reservation.productId;
@@ -154,6 +155,19 @@ export const validateCart = async (req: Request, res: Response) => {
                     error: 'Product not available',
                 });
                 continue;
+            }
+
+            // Calculate perishable weight
+            if (product.storageType === 'ngăn mát' || product.storageType === 'ngăn đông') {
+                let itemWeightKg = 0;
+                if (product.unit === 'kg') {
+                    itemWeightKg = (product.weightValue || 1) * reservation.quantity;
+                } else if (product.unit === 'gram') {
+                    itemWeightKg = ((product.weightValue || 100) / 1000) * reservation.quantity;
+                } else {
+                    itemWeightKg = (product.weightValue || 0) * reservation.quantity;
+                }
+                totalPerishableWeight += itemWeightKg;
             }
 
             // Calculate total reserved for this product (excluding current user)
@@ -183,7 +197,14 @@ export const validateCart = async (req: Request, res: Response) => {
             });
         }
 
-        res.json({ message: 'Cart is valid', reservations });
+        const requiresWholesaleContact = totalPerishableWeight > 50;
+
+        res.json({ 
+            message: 'Cart is valid', 
+            reservations, 
+            requiresWholesaleContact,
+            totalPerishableWeight
+        });
     } catch (error: any) {
         console.error('Validate cart error:', error);
         res.status(500).json({ error: 'Failed to validate cart' });

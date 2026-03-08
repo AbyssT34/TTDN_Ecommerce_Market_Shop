@@ -23,7 +23,7 @@ const createCategorySchema = z.object({
  * GET /api/categories
  * Get all categories (nested tree structure)
  */
-export const getAllCategories = async (req: Request, res: Response) => {
+export const getAllCategories = async (_req: Request, res: Response) => {
     try {
         // Fetch all active categories
         const categories = await Category.find({ isActive: true })

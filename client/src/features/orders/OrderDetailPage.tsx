@@ -158,8 +158,8 @@ export const OrderDetailPage = () => {
                             <p className="font-medium text-white">{order.shippingAddress.fullName}</p>
                             <p>{order.shippingAddress.phone}</p>
                             <p className="mt-2">
-                                {order.shippingAddress.address}, {order.shippingAddress.ward},{' '}
-                                {order.shippingAddress.district}, {order.shippingAddress.province}
+                                {order.shippingAddress.street}, {order.shippingAddress.ward},{' '}
+                                {order.shippingAddress.district}, {order.shippingAddress.city}
                             </p>
                         </div>
                     </GlassCard>

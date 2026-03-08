@@ -57,6 +57,7 @@ export interface IOrder extends Document {
     user: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shippingAddress: IOrderAddress;
+    deliverySlot: string;
     paymentMethod: PaymentMethod;
     paymentStatus: PaymentStatus;
     orderStatus: OrderStatus;
@@ -149,6 +150,11 @@ const orderSchema = new Schema<IOrder>(
         items: [orderItemSchema],
         shippingAddress: {
             type: orderAddressSchema,
+            required: true,
+        },
+        deliverySlot: {
+            type: String,
+            enum: ['08:00-12:00', '14:00-18:00'],
             required: true,
         },
         paymentMethod: {

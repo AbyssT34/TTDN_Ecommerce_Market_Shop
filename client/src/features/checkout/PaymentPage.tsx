@@ -24,7 +24,7 @@ const formatPrice = (price: number) =>
 export const PaymentPage = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const [_searchParams] = useSearchParams();
     const [copied, setCopied] = useState<string | null>(null);
     const [countdown, setCountdown] = useState(15 * 60); // 15 minutes
 

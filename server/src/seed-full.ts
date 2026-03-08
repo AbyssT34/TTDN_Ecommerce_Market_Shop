@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import { User, UserRole } from './models/User.model.js';
 import { Category } from './models/Category.model.js';
 import { Product } from './models/Product.model.js';
 import fs from 'fs/promises';
