@@ -79,7 +79,7 @@ const Address = () => {
     deleteData(`/api/address/${id}`).then((res) => {
        fetchDataFromApi(`/api/address/get?userId=${context?.userData?._id}`).then((res) => {
          setAddress(res.data);
-       });
+       });  
     });
   };
 
