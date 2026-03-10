@@ -25,6 +25,7 @@ import MyAccount from './Page/MyAccount';
 import MyList from './Page/MyList';
 import Orders from './Page/Orders';
 import { fetchDataFromApi } from './utils/api';
+import Address from './Page/MyAccount/address';
 
 const MyContext = createContext();
 
@@ -36,6 +37,7 @@ function App() {
   const [maxWidth, setMaxWidth] = useState('lg');
   const [islogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
+
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -123,6 +125,7 @@ function App() {
             <Route path={'/my-account'} exact={true} element={<MyAccount />} />
             <Route path={'/my-list'} exact={true} element={<MyList />} />
             <Route path={'/my-orders'} exact={true} element={<Orders />} />
+             <Route path={'/address'} exact={true} element={<Address />} />
           </Routes>
           <Footer />
         </MyContext.Provider>

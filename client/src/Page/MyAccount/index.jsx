@@ -7,12 +7,16 @@ import { useNavigate } from 'react-router-dom';
 import { editData, postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Collapse } from 'react-collapse';
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import Radio from "@mui/material/Radio";
 
 const MyAccount = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isChangePasswordFromShow, setIsChangePasswordFromShow] = useState(false);
+  const [phone, setPhone] = useState("");
   const [formFields, setFormFields] = useState({
     name: '',
     email: '',
@@ -62,6 +66,8 @@ const MyAccount = () => {
         mobile: context?.userData?.mobile || '',
         name: context?.userData?.name || '',
       });
+      const ph = `${context?.userData?.mobile}`;
+       setPhone(ph);
       setChangePassword({
         email: context?.userData?.email || '',
       });
@@ -198,16 +204,17 @@ const MyAccount = () => {
 
                 <div className="flex items-center mt-4 gap-5">
                   <div className="w-[50%]">
-                    <TextField
-                      label="Phone Number"
-                      variant="outlined"
-                      size="small"
-                      className="w-full"
-                      name="mobile"
-                      value={formFields.mobile}
-                      onChange={onChangeInput}
-                      disabled={isLoading === true ? true : false}
-                    />
+                    <PhoneInput
+                                    defaultCountry="vn"
+                                    value={phone}
+                                    disabled={isLoading === true ? true : false}
+                                    onChange={(phone) => {
+                                      setPhone(phone);
+                                      setFormFields({
+                                        mobile: phone,
+                                      });
+                                    }}
+                                  />
                   </div>
                 </div>
                 <br />
@@ -228,6 +235,7 @@ const MyAccount = () => {
                 </div>
               </form>
             </div>
+
 
             <Collapse isOpened={isChangePasswordFromShow}>
               <div className="card bg-white p-5 shadow-md rounded-md">

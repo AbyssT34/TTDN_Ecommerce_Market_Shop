@@ -9,6 +9,8 @@ import Button from '@mui/material/Button';
 import { MyContext } from '../../App';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uploadImage } from '../../utils/api';
+import { LuMapPinCheck } from 'react-icons/lu';
+import { LuMapPin } from 'react-icons/lu';
 
 const AccountSidebar = () => {
   const [previews, setPreviews] = useState([]);
@@ -78,7 +80,8 @@ const AccountSidebar = () => {
     <>
       <div className="card bg-white shadow-md rounded-md sticky top-[10px]">
         <div className="w-full p-5 flex items-center justify-center flex-col">
-          <div className="w-[110px] h-[110px] rounded-full overflow-hidden mb-4 relative group 
+          <div
+            className="w-[110px] h-[110px] rounded-full overflow-hidden mb-4 relative group 
           flex items-center justify-center bg-gray-200"
           >
             {uploading === true ? (
@@ -130,6 +133,18 @@ const AccountSidebar = () => {
           </li>
 
           <li className="w-full">
+            <NavLink to={'/address'} exact={true} activeClassNem="isActive">
+              <Button
+                className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
+                  !rounded-none flex items-center gap-2"
+              >
+                <LuMapPin className="text-[17px]" />
+                Address
+              </Button>
+            </NavLink>
+          </li>
+
+          <li className="w-full">
             <NavLink to={'/my-list'} exact={true} activeClassNem="isActive">
               <Button
                 className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
@@ -147,7 +162,7 @@ const AccountSidebar = () => {
                 className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
                   !rounded-none flex items-center gap-2"
               >
-                <IoBagCheckOutline className="text-[17px]" />
+                <LuMapPinCheck className="text-[17px]" />
                 My Orders
               </Button>
             </NavLink>

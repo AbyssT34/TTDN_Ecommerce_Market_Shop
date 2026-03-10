@@ -11,6 +11,7 @@ import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { Collapse } from "react-collapse";
 import Radio from "@mui/material/Radio";
+const label = { inputProps: { "arial-label": "checkbox demo" } };
 
 const Profile = () => {
   const [previews, setPreviews] = useState([]);
@@ -368,19 +369,22 @@ const Profile = () => {
            border-[rgba(0,0,0,0.2)] bg-[#f1f1f1] p-3 rounded-md cursor-pointer"
                     >
                       <Radio
+                        {...label}
                         name="address"
                         value={address?._id}
-                        checked={selectedValue === (
-                          address?._id
-                        )}
+                        checked={selectedValue === address?._id}
                         onChange={handleChange}
                       />
                       <span className="text-[12px]">
-                        {address?.address_line1 + " "
-                           +  address?.city + " "
-                           +  address?.country + " "
-                           +  address?.state + " "
-                           +  address?.pincode}
+                        {address?.address_line1 +
+                          " " +
+                          address?.city +
+                          " " +
+                          address?.country +
+                          " " +
+                          address?.state +
+                          " " +
+                          address?.pincode}
                       </span>
                     </label>
                   </>
