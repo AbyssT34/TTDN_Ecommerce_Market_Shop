@@ -1,3 +1,4 @@
+import { error } from "console";
 import CategoryModel from "../models/category.model.js";
 
 import { v2 as cloudinary } from "cloudinary";
@@ -39,7 +40,9 @@ export async function uploadImages(request, response) {
     }
 
     return response.status(200).json({
-      avatar: imagesArr[0],
+      images: imagesArr,
+      error: false,
+      success: true,
     });
   } catch (error) {
     return response.status(500).json({
@@ -53,7 +56,6 @@ export async function uploadImages(request, response) {
 //create category
 export async function createCategory(request, response) {
   try {
-    // Validate name
     if (!request.body.name) {
       return response.status(400).json({
         success: false,
@@ -61,31 +63,12 @@ export async function createCategory(request, response) {
       });
     }
 
-    const files = request.files || [];
-    const imagesArr = [];
+    // ✅ Nhận images URLs từ frontend (đã upload lên Cloudinary rồi)
+    const images = request.body.images || [];
 
-    // ========== UPLOAD FILES ==========
-    if (files.length > 0) {
-      for (const file of files) {
-        const uploaded = await cloudinary.uploader.upload(file.path, {
-          use_filename: true,
-          unique_filename: false,
-          overwrite: false,
-          folder: "categories", // có thể bỏ nếu không muốn
-        });
-
-        console.log("Uploaded:", uploaded.secure_url);
-
-        imagesArr.push(uploaded.secure_url);
-
-        // Xóa file tạm trong server
-        fs.unlinkSync(file.path);
-      }
-    }
-    // ========== TẠO CATEGORY ==========
     const category = new CategoryModel({
       name: request.body.name,
-      images: imagesArr, // nếu không có hình → []
+      images: images, // ✅ dùng URL từ body
       parentId: request.body.parentId || null,
       parentCatName: request.body.parentCatName || null,
     });
@@ -196,7 +179,7 @@ export async function getSubCategoryCount(request, response) {
 //get single category
 export async function getCategory(request, response) {
   try {
-    const category = await CategoryModel.find({ parentId: request.params.id });
+    const category = await CategoryModel.findById(request.params.id);
 
     if (!category) {
       return response.status(404).json({
@@ -209,7 +192,7 @@ export async function getCategory(request, response) {
     return response.status(200).json({
       error: false,
       success: true,
-      category: category,
+      data: category,
     });
   } catch (error) {
     return response.status(500).json({
@@ -232,10 +215,14 @@ export async function removeImageFromCloudinary(request, response) {
       imageName,
       (error, result) => {
         // console.log(error , res)
-      }
+      },
     );
     if (res) {
-      response.status(200).send(res);
+      response.status(200).json({
+        error: false,
+        success: true,
+        message: "image deleted successfully",
+      });
     }
   }
 }
@@ -324,15 +311,32 @@ export async function updateCategory(request, response) {
       });
     }
 
+    // ✅ Khai báo trước khi dùng
+    const files = request.files || [];
+    const imagesArr = [];
+
+    if (files.length > 0) {
+      for (const file of files) {
+        const uploaded = await cloudinary.uploader.upload(file.path, {
+          use_filename: true,
+          unique_filename: false,
+          overwrite: false,
+          folder: "categories",
+        });
+        imagesArr.push(uploaded.secure_url);
+        fs.unlinkSync(file.path);
+      }
+    }
+
     const category = await CategoryModel.findByIdAndUpdate(
       id,
       {
         name: request.body.name,
-        images: imagesArr.length > 0 ? imagesArr[0] : request.body.images,
+        images: imagesArr.length > 0 ? imagesArr : request.body.images, // ✅ array không phải [0]
         parentId: request.body.parentId,
         parentCatName: request.body.parentCatName,
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!category) {
@@ -343,17 +347,15 @@ export async function updateCategory(request, response) {
       });
     }
 
-    let imagesArr = [];
-
-    response.status(200).json({
+    return response.status(200).json({
       error: false,
       success: true,
-      category: category,
+      data: category, // ✅ đổi category → data
     });
   } catch (error) {
     console.error(error);
-    response.status(500).json({
-      message: "Server error",
+    return response.status(500).json({
+      message: error.message || "Server error",
       success: false,
       error: true,
     });

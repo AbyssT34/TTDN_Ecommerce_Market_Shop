@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { IoMdAdd } from "react-icons/io";
 import Table from "@mui/material/Table";
@@ -18,6 +18,9 @@ import { FaRegEye } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import SearchBox from "../../Components/SearchBox";
 import { MyContext } from "../../App";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -32,7 +35,16 @@ const Categegory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
+  const [catData, setCatData] = useState([]);
+
   const context = useContext(MyContext);
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/category`).then((res) => {
+      console.log(res?.data);
+      setCatData(res?.data);
+    });
+  }, [context?.isOpenFullScreenPanel]);
 
   const handleChangeCatFilter = (event) => {
     setCategoryFilterVal(event.target.value);
@@ -46,6 +58,14 @@ const Categegory = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const deleteCat = (id) => {
+    deleteData(`/api/category/${id}`).then((res) => {
+      fetchDataFromApi(`/api/category`).then((res) => {
+        setCatData(res?.data);
+      });
+    })
+  }
 
   return (
     <>
@@ -92,48 +112,57 @@ const Categegory = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell width={100}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-4 w-[80px]">
-                    <div className="img w-full rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/navImg/Bags1.jpg"
-                          className="w-full group-hover:scale-105 transition-all"
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell width={300}>Bages</TableCell>
-                <TableCell width={200}>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+              {catData?.length !== 0 &&
+                catData?.map((item, index) => {
+                  return (
+                    <>
+                      <TableRow>
+                        <TableCell width={100}>
+                          <Checkbox {...label} size="small" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-4 w-[80px]">
+                            <div className="img w-full rounded-md overflow-hidden group">
+                              <Link to={"/product/45745"} data-discover="true">
+                                <LazyLoadImage
+                                  alt={"image"}
+                                  effect="blur"
+                                  className="w-full group-hover:scale-105 transition-all"
+                                  src={item.images[0]}
+                                />
+                              </Link>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell width={300}>{item.name}</TableCell>
+                        <TableCell width={200}>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+                              onClick={() =>
+                                context.setIsOpenFullScreenPanel({
+                                  open: true,
+                                  model: "Edit Category",
+                                  id: item._id,
+                                })
+                              }
+                            >
+                              <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
+                            </Button>
+                            <Button
+                              className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
+                              onClick={() => deleteCat(item?._id)}
+                            >
+                              <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

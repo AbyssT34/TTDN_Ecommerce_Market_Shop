@@ -1,15 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import UploadBox from "../../Components/UploadBox";
 import { IoMdClose } from "react-icons/io";
 import Button from "@mui/material/Button";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { deleteImages, postData } from "../../utils/api";
+import {
+  deleteImages,
+  editData,
+  fetchDataFromApi,
+  postData,
+} from "../../utils/api";
 import { MyContext } from "../../App";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const AddCategory = () => {
+const EditCategory = () => {
   const [previews, setPreviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formFields, setFormFields] = useState({
@@ -19,6 +24,18 @@ const AddCategory = () => {
 
   const context = useContext(MyContext);
 
+  useEffect(() => {
+    const id = context?.isOpenFullScreenPanel?.id;
+
+    fetchDataFromApi(`/api/category/${id}`).then((res) => {
+      setFormFields({
+        name: res?.data?.name || "",
+        images: res?.data?.images || [],
+      });
+      setPreviews(res?.data?.images || []);
+    });
+  }, []);
+
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields(() => {
@@ -27,15 +44,16 @@ const AddCategory = () => {
         [name]: value,
       };
     });
+    formFields.images = previews
   };
 
- const setPreviewsFun = (previewArr) => {
-   setPreviews((prev) => [...prev, ...previewArr]);
-   setFormFields((prev) => ({
-     ...prev,
-     images: [...prev.images, ...previewArr], // ✅ dùng setState
-   }));
- };
+  const setPreviewsFun = (previewArr) => {
+    setPreviews((prev) => [...prev, ...previewArr]);
+    setFormFields((prev) => ({
+      ...prev,
+      images: [...prev.images, ...previewArr], // ✅ dùng setState
+    }));
+  };
 
   const removeImg = (image, index) => {
     var imageArr = [];
@@ -70,8 +88,10 @@ const AddCategory = () => {
       return false;
     }
 
-    postData(`/api/category/create`, formFields).then((res) => {
-      console.log(res);
+    editData(
+      `/api/category/${context?.isOpenFullScreenPanel?.id}`,
+      formFields,
+    ).then((res) => {
       setTimeout(() => {
         {
           setIsLoading(false);
@@ -79,7 +99,7 @@ const AddCategory = () => {
             open: false,
           });
         }
-      }, 2500);
+      }, 100);
     });
   };
 
@@ -163,4 +183,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default EditCategory;
