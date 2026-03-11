@@ -52,6 +52,7 @@ function App() {
   const [islogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
   const [address, setAddress] = useState([]);
+  const [catData, setCatData] = useState([]);
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
     id: "",
@@ -87,6 +88,16 @@ function App() {
       setIsLogin(false);
     }
   }, []); // ✅ đổi [islogin] → [] tránh loop
+
+    useEffect(() => {
+     getCat();
+    }, []);
+
+    const getCat =()=>{
+       fetchDataFromApi(`/api/category`).then((res) => {
+         setCatData(res?.data);
+       });
+    }
 
   const router = createBrowserRouter([
     {
@@ -352,6 +363,9 @@ function App() {
     setUserData,
     address,
     setAddress,
+    catData,
+    setCatData,
+    getCat,
   };
 
   return (

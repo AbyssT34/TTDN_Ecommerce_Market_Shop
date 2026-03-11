@@ -35,20 +35,17 @@ const Categegory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
-  const [catData, setCatData] = useState([]);
-
   const context = useContext(MyContext);
-
-  useEffect(() => {
-    fetchDataFromApi(`/api/category`).then((res) => {
-      console.log(res?.data);
-      setCatData(res?.data);
-    });
-  }, [context?.isOpenFullScreenPanel]);
 
   const handleChangeCatFilter = (event) => {
     setCategoryFilterVal(event.target.value);
   };
+
+    useEffect(() => {
+      fetchDataFromApi(`/api/category`).then((res) => {
+      context?.setCatData(res?.data);
+      });
+    }, [context?.isOpenFullScreenPanel]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -62,10 +59,10 @@ const Categegory = () => {
   const deleteCat = (id) => {
     deleteData(`/api/category/${id}`).then((res) => {
       fetchDataFromApi(`/api/category`).then((res) => {
-        setCatData(res?.data);
+        context?.setCatData(res?.data);
       });
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -112,11 +109,11 @@ const Categegory = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {catData?.length !== 0 &&
-                catData?.map((item, index) => {
+              {context?.catData?.length !== 0 &&
+                context?.catData?.map((item, index) => {
                   return (
                     <>
-                      <TableRow>
+                      <TableRow key={index}>
                         <TableCell width={100}>
                           <Checkbox {...label} size="small" />
                         </TableCell>

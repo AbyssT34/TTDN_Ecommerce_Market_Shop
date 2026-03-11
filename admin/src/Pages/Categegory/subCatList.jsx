@@ -1,64 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import { IoMdAdd } from "react-icons/io";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-
-import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
-import ProgressBar from "../../Components/ProgressBar";
-import { AiOutlineEdit } from "react-icons/ai";
-import { FaRegEye } from "react-icons/fa6";
-import { GoTrash } from "react-icons/go";
 import { MyContext } from "../../App";
-import Chip from "@mui/material/Chip";
-
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
-
-const columns = [
-  { id: "image", label: "CATEGORY IMAGE", minWidth: 150 },
-  { id: "catName", label: "CATEGORY NAME", minWidth: 150 },
-  { id: "subCatName", label: "SUB CATEGORY NAME", minWidth: 300 },
-  { id: "action", label: "ACTION", minWidth: 100 },
-];
+import { FaAngleDown } from "react-icons/fa";
+import EditSubBoxCat from "./editSubBoxCat";
 
 const SubCatList = () => {
-  const [categoryFilterVal, setCategoryFilterVal] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(0);
-
+  const [isOpen, setIsOpen] = useState(0);
   const context = useContext(MyContext);
 
-  const handleChangeCatFilter = (event) => {
-    setCategoryFilterVal(event.target.value);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const expend = (index) => {
+    if (isOpen === index) {
+      setIsOpen(!isOpen);
+    } else {
+      setIsOpen(index);
+    }
   };
 
   return (
     <>
       <div className="flex items-center justify-between px-2 py-0 mt-3">
-        <h2 className="text-[18px] font-[700]">
-          Sub Category List
-          <span className="text-[14px] font-[400]">(Materia Ui Table )</span>
-        </h2>
+        <h2 className="text-[18px] font-[700]">Sub Category List</h2>
 
         <div className="col w-[30%] ml-auto flex items-center justify-end gap-3">
-          <Button className="btn !bg-green-600 !text-white btn-sm ">
-            Export
-          </Button>
           <Button
             className="btn-blue  !text-white btn-sm"
             onClick={() =>
@@ -72,84 +35,78 @@ const SubCatList = () => {
           </Button>
         </div>
       </div>
-      <div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell width={60}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                {columns.map((column) => (
-                  <TableCell
-                    width={column.width}
-                    key={column.id}
-                    align={column.align}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell width={300}>
-                  <div className="flex items-center gap-4 w-[80px]">
-                    <div className="img w-full rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/navImg/Bags1.jpg"
-                          className="w-full group-hover:scale-105 transition-all"
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </TableCell>
 
-                <TableCell>
-                  <Chip label="Bage" />
-                </TableCell>
-
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Chip label="Men" color="primary" />
-                    <Chip label="Women" color="primary" />
-                    <Chip label="Kids" color="primary" />
-                  </div>
-                </TableCell>
-                <TableCell width={100}>
-                  <div className="flex items-center gap-1">
+      <div className="card my-4 pt-5 pb-5 px-5 shadow-md sm:rounded-lg bg-white">
+        {context?.catData?.length !== 0 && (
+          <ul className="w-full">
+            {context?.catData?.map((firstLavelCat, index) => {
+              return (
+                <li className="w-full mb-1" key={index}>
+                  <div className="flex items-center w-full p-2 bg-[#f1f1f1] rounded-sm px-4">
+                    <span className="font-[500] flex items-center gap-4 text-[14px]">
+                      {firstLavelCat?.name}
+                    </span>
                     <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
+                      className="!min-w-[35px] !w-[35px] !h-[35px] !rounded-full
+                     !text-black !ml-auto"
+                      onClick={() => expend(index)}
                     >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
+                      <FaAngleDown />
                     </Button>
                   </div>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={10}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+
+                  {isOpen === index && (
+                    <>
+                      {firstLavelCat?.children?.length !== 0 && (
+                        <ul className="w-full">
+                          {firstLavelCat?.children?.map((subCat, index_) => {
+                            return (
+                              <li className="w-full py-1" key={index_}>
+                                <EditSubBoxCat
+                                  name={subCat?.name}
+                                  id={subCat?._id}
+                                  catData={context?.catData}
+                                  index={index_}
+                                  selectedCat={subCat?.parentId}
+                                  selectedCatName={subCat?.parentCatName}
+                                />
+                                {subCat?.children?.length !== 0 && (
+                                  <ul className="pl-4">
+                                    {
+                                      subCat?.children?.map((thirdLevel ,index__) => {
+                                        return (
+                                          <li
+                                            key={index__}
+                                            className="w-full hover:bg-[#f1f1f1]"
+                                          >
+                                            <EditSubBoxCat
+                                              name={thirdLevel?.name}
+                                              catData={firstLavelCat?.children}
+                                              index={index__}
+                                              selectedCat={thirdLevel?.parentId}
+                                              selectedCatName={
+                                                thirdLevel?.parentCatName
+                                              }
+                                              id={thirdLevel?._id}
+                                            />
+                                          </li>
+                                        );
+                                      })
+                                    }
+                                  </ul>
+                                )}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </>
   );
