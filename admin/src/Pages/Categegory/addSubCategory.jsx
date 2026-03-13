@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext,  useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import Button from "@mui/material/Button";
 import { FaCloudUploadAlt } from "react-icons/fa";
@@ -7,6 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { MyContext } from "../../App";
 import {  postData } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 
 const AddSubCategory = () => {
   const [productCat, setProductCat] = useState("");
@@ -26,6 +27,7 @@ const AddSubCategory = () => {
   });
 
   const context = useContext(MyContext);
+   const history = useNavigate();
 
 
   const onChangeInput = (e) => {
@@ -125,6 +127,7 @@ const AddSubCategory = () => {
             open: false,
           });
           context?.getCat();
+          history("/subCategory/list");
         }
       }, 2500);
     });

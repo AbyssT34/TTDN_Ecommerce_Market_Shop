@@ -3,6 +3,7 @@ import auth from "../middleware/auth.js";
 import upload from "../middleware/multer.js";
 import {
   createProduct,
+  deleteMultipleProduct,
   deleteProduct,
   getAllProducts,
   getAllProductsByCatId,
@@ -45,6 +46,7 @@ productRouter.get("/getAllFeaturedProducts", getAllProductsFeatured);
 productRouter.delete("/:id", deleteProduct);
 productRouter.get("/:id", getProduct);
 productRouter.delete("/deteleImage", auth, removeImageFromCloudinary);
+productRouter.delete("/deteleMuitiple", deleteMultipleProduct);
 productRouter.put("/updateProduct/:id", auth, updateProducts);
 
 export default productRouter;

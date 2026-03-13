@@ -57,6 +57,7 @@ export async function createProduct(request, response) {
       price: request.body.price,
       oldPrice: request.body.oldPrice,
       catName: request.body.catName,
+      category: request.body.category,
       catId: request.body.catId,
       subCatId: request.body.subCatId,
       subCat: request.body.subCat,
@@ -627,7 +628,7 @@ export async function getAllProductsFeatured(request, response) {
 export async function deleteProduct(request, response) {
   try {
     const product = await ProductModel.findById(request.params.id).populate(
-      "category"
+      "category",
     );
 
     if (!product) {
@@ -657,7 +658,7 @@ export async function deleteProduct(request, response) {
     }
 
     const deletedProduct = await ProductModel.findByIdAndDelete(
-      request.params.id
+      request.params.id,
     );
 
     if (!deletedProduct) {
@@ -682,11 +683,60 @@ export async function deleteProduct(request, response) {
   }
 }
 
+//delete multiple products
+export async function deleteMultipleProduct(request, response) {
+  const { ids } = request.body;
+  if (!ids || !Array.isArray(ids)) {
+    return response.status(400).json({
+      error: true,
+      success: false,
+      message: "Invalid input",
+    });
+
+    for (let i = 0; i < ids?.length; i++) {
+      const product = await ProductModel.findById(ids[i]);
+
+      const images = product.images;
+      let img = "";
+
+      for (img of images) {
+        const imgUrl = img;
+        const urlArr = imgUrl.split("/");
+        const image = urlArr[urlArr.length - 1];
+
+        const imageName = image.split(".")[0];
+      }
+
+      if (imageName) {
+        cloudinary.uploader.destroy(imageName, (error, result) => {
+          // console.log(error , result)
+        });
+      }
+    }
+
+    try {
+      await ProductModel.deleteMany({ _id: { $in: is } });
+
+       return response.status(200).json({
+         success: true,
+         error: false,
+         message: "Product Deleted",
+       });
+    } catch (error) {
+      return response.status(500).json({
+        message: error.message || error,
+        error: true,
+        success: false,
+      });
+    }
+  }
+}
+
 //get single products
 export async function getProduct(request, response) {
   try {
     const product = await ProductModel.findById(request.params.id).populate(
-      "category"
+      "category",
     );
 
     if (!product) {
@@ -724,7 +774,7 @@ export async function removeImageFromCloudinary(request, response) {
       imageName,
       (error, result) => {
         // console.log(error , res)
-      }
+      },
     );
     if (res) {
       response.status(200).send(res);
@@ -758,7 +808,7 @@ export async function updateProducts(request, response) {
         size: request.body.size,
         productWeight: request.body.productWeight,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!product) {

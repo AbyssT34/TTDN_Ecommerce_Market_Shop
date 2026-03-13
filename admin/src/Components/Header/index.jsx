@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, forwardRef } from "react";
 import Button from "@mui/material/Button";
 import Badge from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
@@ -13,6 +13,24 @@ import { IoMdLogOut } from "react-icons/io";
 import { MyContext } from "../../App";
 import { Link } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
+import AddProduct from "../../Pages/Products/addProduct";
+import AddHomeSlide from "../../Pages/HomeSliderBanners/addHomeSlide";
+import AddCategory from "../../Pages/Categegory/addCategory";
+import AddSubCategory from "../../Pages/Categegory/addSubCategory";
+import AddAddress from "../../Pages/Address";
+import EditCategory from "../../Pages/Categegory/editCategory";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { IoMdClose } from "react-icons/io";
+import Dialog from "@mui/material/Dialog";
+import Slide from "@mui/material/Slide";
+import EditProduct from "../../Pages/Products/editProduct";
+
+
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Header = () => {
   const [anchorElMyAcc, setAnchorElMyAcc] = useState(null);
@@ -170,6 +188,62 @@ const Header = () => {
           )}
         </div>
       </header>
+
+      <Dialog
+        fullScreen
+        open={context?.isOpenFullScreenPanel.open}
+        onClose={() =>
+          context?.setIsOpenFullScreenPanel({
+            open: false,
+          })
+        }
+        slots={{
+          transition: Transition,
+        }}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() =>
+                context?.setIsOpenFullScreenPanel({
+                  open: false,
+                })
+              }
+              aria-label="close"
+            >
+              <IoMdClose className="text-gray-800" />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              <span className="text-gray-800">
+                {context?.isOpenFullScreenPanel.model}
+              </span>
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        {context?.isOpenFullScreenPanel.model === "Add Product" && (
+          <AddProduct />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Add Home Slide" && (
+          <AddHomeSlide />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Add New Category" && (
+          <AddCategory />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Add New Sub Category" && (
+          <AddSubCategory />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Add New Address" && (
+          <AddAddress />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Edit Category" && (
+          <EditCategory />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Edit Product" && (
+          <EditProduct />
+        )}
+      </Dialog>
     </>
   );
 };

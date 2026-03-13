@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./Pages/Dashboard";
 import Header from "./Components/Header";
 import SideBar from "./Components/SideBar";
-import { createContext, forwardRef, useState } from "react";
+import { createContext, useState } from "react";
 import Login from "./Pages/Login";
 import SignUp from "./Pages/SignUp";
 import Products from "./Pages/Products";
@@ -43,9 +43,6 @@ import EditCategory from "./Pages/Categegory/editCategory";
 // ✅ Khai báo context ở ngoài hàm App
 const MyContext = createContext();
 
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 function App() {
   const [isSiderOpen, setIsSiderOpen] = useState(true);
@@ -53,6 +50,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [address, setAddress] = useState([]);
   const [catData, setCatData] = useState([]);
+  const [refreshData, setRefreshData] = useState(false);
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
     id: "",
@@ -366,54 +364,14 @@ function App() {
     catData,
     setCatData,
     getCat,
+    refreshData,
+    setRefreshData,
   };
 
   return (
     <MyContext.Provider value={values}>
       <RouterProvider router={router} />
 
-      <Dialog
-        fullScreen
-        open={isOpenFullScreenPanel.open}
-        onClose={() =>
-          setIsOpenFullScreenPanel({
-            open: false,
-          })
-        }
-        slots={{
-          transition: Transition,
-        }}
-      >
-        <AppBar sx={{ position: "relative" }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() =>
-                setIsOpenFullScreenPanel({
-                  open: false,
-                })
-              }
-              aria-label="close"
-            >
-              <IoMdClose className="text-gray-800" />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              <span className="text-gray-800">
-                {isOpenFullScreenPanel?.model}
-              </span>
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        {isOpenFullScreenPanel?.model === "Add Product" && <AddProduct />}
-        {isOpenFullScreenPanel?.model === "Add Home Slide" && <AddHomeSlide />}
-        {isOpenFullScreenPanel?.model === "Add New Category" && <AddCategory />}
-        {isOpenFullScreenPanel?.model === "Add New Sub Category" && (
-          <AddSubCategory />
-        )}
-        {isOpenFullScreenPanel?.model === "Add New Address" && <AddAddress />}
-        {isOpenFullScreenPanel?.model === "Edit Category" && <EditCategory />}
-      </Dialog>
       <Toaster />
     </MyContext.Provider>
   );

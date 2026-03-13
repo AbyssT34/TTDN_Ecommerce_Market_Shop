@@ -73,6 +73,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    sale: {
+      type: Number,
+      default:0,
+    },
     productRam: [
       {
         type: String,
@@ -98,7 +102,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const ProductModel = mongoose.model("Product", productSchema);

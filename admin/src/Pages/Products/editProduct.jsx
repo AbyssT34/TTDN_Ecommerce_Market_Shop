@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Rating from "@mui/material/Rating";
@@ -8,10 +8,10 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MyContext } from "../../App";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, editData, fetchDataFromApi } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 
-const AddProduct = () => {
+const EditProduct = () => {
   const [productCat, setProductCat] = useState("");
   const [productSubCat, setProductSubCat] = useState("");
   const [productFeatured, setproductFeatured] = useState("");
@@ -46,6 +46,54 @@ const AddProduct = () => {
 
   const context = useContext(MyContext);
   const history = useNavigate();
+
+  // ✅ Fix: thêm dependency array, chỉ fetch khi id thay đổi
+  useEffect(() => {
+    if (!context?.isOpenFullScreenPanel?.id) return;
+
+    fetchDataFromApi(`/api/product/${context?.isOpenFullScreenPanel?.id}`).then(
+      (res) => {
+        if (!res?.product) return;
+
+        const p = res.product;
+
+        // ✅ category có thể là object (populated) hoặc string ID
+        const categoryId = p?.category?._id || p?.category || "";
+
+        setFormFields({
+          name: p.name || "",
+          description: p.description || "",
+          images: p.images || [],
+          brand: p.brand || "",
+          price: p.price || "",
+          oldPrice: p.oldPrice || "",
+          catName: p.catName || "",
+          catId: p.catId || "",
+          subCatId: p.subCatId || "",
+          subCat: p.subCat || "",
+          thirdsubCat: p.thirdsubCat || "",
+          thirdsubCatId: p.thirdsubCatId || "",
+          category: categoryId,
+          countInStock: p.countInStock || "",
+          rating: p.rating || "",
+          isFeatured: p.isFeatured ?? false,
+          discount: p.discount || "",
+          productRam: p.productRam || [],
+          size: p.size || [],
+          productWeight: p.productWeight || [],
+        });
+
+        setProductCat(p.catId || "");
+        setProductSubCat(p.subCatId || "");
+        setProductThirLaveldCat(p.thirdsubCatId || "");
+        setproductFeatured(p.isFeatured ?? false);
+        setproductRams(p.productRam || []);
+        setproductSize(p.size || []);
+        setproductWeight(p.productWeight || []);
+        setPreviews(p.images || []);
+      },
+    );
+  }, [context?.isOpenFullScreenPanel?.id]); // ✅ chỉ chạy khi id thay đổi
 
   const setPreviewsFun = (previewArr) => {
     setPreviews((prev) => [...prev, ...previewArr]);
@@ -157,50 +205,61 @@ const AddProduct = () => {
   const onChangeRating = (e) => {
     setFormFields((prev) => ({ ...prev, rating: e.target.value }));
   };
+const handleSubmitg = (e) => {
+  e.preventDefault();
 
-  const handleSubmitg = (e) => {
-    e.preventDefault();
+  if (formFields.name === "")
+    return context.alertBox("error", "Please enter product name");
+  if (formFields.description === "")
+    return context.alertBox("error", "Please enter product description");
+  if (formFields.catId === "")
+    return context.alertBox("error", "Please select product category");
+  if (formFields.price === "")
+    return context.alertBox("error", "Please enter product price");
+  if (formFields.oldPrice === "")
+    return context.alertBox("error", "Please enter product old price");
+  if (formFields.countInStock === "")
+    return context.alertBox("error", "Please enter product stock");
+  if (formFields.brand === "")
+    return context.alertBox("error", "Please enter product brand");
+  if (formFields.discount === "")
+    return context.alertBox("error", "Please enter product discount");
+  if (previews?.length === 0)
+    return context.alertBox("error", "Please select product image");
 
-    if (formFields.name === "")
-      return context.alertBox("error", "Please enter product name");
-    if (formFields.description === "")
-      return context.alertBox("error", "Please enter product description");
-    if (formFields.catId === "")
-      return context.alertBox("error", "Please select product category");
-    if (formFields.price === "")
-      return context.alertBox("error", "Please enter product price");
-    if (formFields.oldPrice === "")
-      return context.alertBox("error", "Please enter product old price");
-    if (formFields.countInStock === "")
-      return context.alertBox("error", "Please enter product stock");
-    if (formFields.brand === "")
-      return context.alertBox("error", "Please enter product brand");
-    if (formFields.discount === "")
-      return context.alertBox("error", "Please enter product discount");
-    if (previews?.length === 0)
-      return context.alertBox("error", "Please select product image");
+  setIsLoading(true);
 
-    setIsLoading(true);
+  editData(
+    `/api/product/updateProduct/${context?.isOpenFullScreenPanel?.id}`,
+    formFields,
+  )
+    .then((res) => {
+      setIsLoading(false);
 
-    postData(`/api/product/create`, formFields)
-      .then((res) => {
-        setIsLoading(false);
-        if (res?.error === false) {
-          context.alertBox(
-            "success",
-            res?.message || "Product created successfully",
-          );
-          context.setIsOpenFullScreenPanel({ open: false });
-          history("/products");
-        } else {
-          context.alertBox("error", res?.message || "Failed to create product");
-        }
-      })
-      .catch(() => {
-        setIsLoading(false);
-        context.alertBox("error", "Failed to create product");
-      });
-  };
+      console.log("Edit response:", res); // ✅ log để kiểm tra cấu trúc thực tế
+
+      // ✅ Chỉ check res.data vì editData dùng axios
+      if (res?.data?.error === false) {
+        context.alertBox(
+          "success",
+          res?.data?.message || "Product updated successfully",
+        );
+        context.setRefreshData((prev) => !prev);
+        context.setIsOpenFullScreenPanel({ open: false });
+        history("/products");
+      } else {
+        context.alertBox(
+          "error",
+          res?.data?.message || "Failed to update product",
+        );
+      }
+    })
+    .catch((err) => {
+      console.error("Edit error:", err);
+      setIsLoading(false);
+      context.alertBox("error", "Failed to update product");
+    });
+};
 
   return (
     <section className="p-5 bg-gray-50">
@@ -455,8 +514,8 @@ const AddProduct = () => {
                 Product Rating
               </h3>
               <Rating
-                name="half-rating"
-                defaultValue={1}
+                name="rating"
+                value={Number(formFields.rating)}
                 precision={0.5}
                 onChange={onChangeRating}
               />
@@ -504,7 +563,7 @@ const AddProduct = () => {
           ) : (
             <>
               <FaCloudUploadAlt className="text-[25px] text-white" />
-              Publish and View
+              Update Product
             </>
           )}
         </Button>
@@ -513,4 +572,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import { IoMdAdd } from "react-icons/io";
 import Table from "@mui/material/Table";
@@ -18,6 +18,9 @@ import { FaRegEye } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import SearchBox from "../../Components/SearchBox";
 import { MyContext } from "../../App";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -50,8 +53,29 @@ const Products = () => {
   const [categoryFilterVal, setCategoryFilterVal] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+  const [productData, setProductData] = useState([]);
 
   const context = useContext(MyContext);
+
+  useEffect(() => {
+    getProducts();
+  }, [context?.setIsOpenFullScreenPanel]);
+
+  const getProducts = async () => {
+    fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
+
+      if (res?.error === false) {
+        setProductData(res?.products);
+      }
+    });
+  };
+
+  const deleteProduct = (id) => {
+    deleteData(`/api/product/${id}`).then((res) => {
+      getProducts();
+      context.alertBox("success", "Product deleted");
+    });
+  };
 
   const handleChangeCatFilter = (event) => {
     setCategoryFilterVal(event.target.value);
@@ -138,301 +162,106 @@ const Products = () => {
                 ))}
               </TableRow>
             </TableHead>
+
             <TableBody>
-              <TableRow>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4 w-[300px]">
-                    <div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/product1.jpg"
-                          className="w-full group-hover:scale-105"
-                        />
-                      </Link>
-                    </div>
-                    <div className="info w-[75%]">
-                      <h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
-                        <Link to={"/product/45745"}>
-                          Women Wide Leg High-Rise Light Fade Stretchable Jeans
-                        </Link>
-                      </h3>
-                      <span className="text-[12px]">Books</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Electronics
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Women
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex  gap-1 flex-col">
-                    <span className="oldPrice line-through  leading-3 text-[14px] font-[500]">
-                      $58.00
-                    </span>
-                    <span className="price text-primary text-[14px] font-[600]">
-                      $49.00
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <p className="text-[14px] w-[100px]">
-                    <span className="font-[600]">234</span> sale
-                  </p>
-                  <ProgressBar value={40} type="success" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+              {productData?.length !== 0 &&
+                productData?.slice(page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage
+                )?.map((product, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        <Checkbox {...label} size="small" />
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        <div className="flex items-center gap-4 w-[300px]">
+                          <div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+                            <Link to={`/product/${product?._id}`}>
+                              <LazyLoadImage
+                                alt={"image"}
+                                effect="blur"
+                                src={product?.images[0]}
+                                className="w-full group-hover:scale-105"
+                              />
+                            </Link>
+                          </div>
+                          <div className="info w-[75%]">
+                            <h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
+                              <Link to={`/product/${product?._id}`}>
+                                {product?.name}
+                              </Link>
+                            </h3>
+                            <span className="text-[12px]">
+                              {product?.brand}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        {product?.catName}
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        {product?.subCat}
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        <div className="flex  gap-1 flex-col">
+                          <span className="oldPrice line-through  leading-3 text-[14px] font-[500]">
+                            &#8363; {product?.price}
+                          </span>
+                          <span className="price text-primary text-[14px] font-[600]">
+                            &#8363; {product.oldPrice}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        <p className="text-[14px] w-[100px]">
+                          <span className="font-[600]">{product?.sale}</span>{" "}
+                          sale
+                        </p>
+                        {/* <ProgressBar value={40} type="success" /> */}
+                      </TableCell>
+                      <TableCell style={{ minWidth: columns.minWidth }}>
+                        <div className="flex items-center gap-4">
+                          <Button
+                            className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
+                            onClick={() =>
+                              context.setIsOpenFullScreenPanel({
+                                open: true,
+                                model: "Edit Product",
+                                id: product?._id
+                              })
+                            }
+                          >
+                            <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
+                          </Button>
 
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+                          <Button
+                            className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
+                          >
+                            <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
+                          </Button>
 
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+                          <Button
+                            className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4 w-[300px]">
-                    <div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/product1.jpg"
-                          className="w-full group-hover:scale-105"
-                        />
-                      </Link>
-                    </div>
-                    <div className="info w-[75%]">
-                      <h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
-                        <Link to={"/product/45745"}>
-                          Women Wide Leg High-Rise Light Fade Stretchable Jeans
-                        </Link>
-                      </h3>
-                      <span className="text-[12px]">Books</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Electronics
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Women
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex  gap-1 flex-col">
-                    <span className="oldPrice line-through  leading-3 text-[14px] font-[500]">
-                      $58.00
-                    </span>
-                    <span className="price text-primary text-[14px] font-[600]">
-                      $49.00
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <p className="text-[14px] w-[100px]">
-                    <span className="font-[600]">234</span> sale
-                  </p>
-                  <ProgressBar value={40} type="success" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4 w-[300px]">
-                    <div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/product1.jpg"
-                          className="w-full group-hover:scale-105"
-                        />
-                      </Link>
-                    </div>
-                    <div className="info w-[75%]">
-                      <h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
-                        <Link to={"/product/45745"}>
-                          Women Wide Leg High-Rise Light Fade Stretchable Jeans
-                        </Link>
-                      </h3>
-                      <span className="text-[12px]">Books</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Electronics
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Women
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex  gap-1 flex-col">
-                    <span className="oldPrice line-through  leading-3 text-[14px] font-[500]">
-                      $58.00
-                    </span>
-                    <span className="price text-primary text-[14px] font-[600]">
-                      $49.00
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <p className="text-[14px] w-[100px]">
-                    <span className="font-[600]">234</span> sale
-                  </p>
-                  <ProgressBar value={40} type="success" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4 w-[300px]">
-                    <div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/product1.jpg"
-                          className="w-full group-hover:scale-105"
-                        />
-                      </Link>
-                    </div>
-                    <div className="info w-[75%]">
-                      <h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
-                        <Link to={"/product/45745"}>
-                          Women Wide Leg High-Rise Light Fade Stretchable Jeans
-                        </Link>
-                      </h3>
-                      <span className="text-[12px]">Books</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Electronics
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  Women
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex  gap-1 flex-col">
-                    <span className="oldPrice line-through  leading-3 text-[14px] font-[500]">
-                      $58.00
-                    </span>
-                    <span className="price text-primary text-[14px] font-[600]">
-                      $49.00
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <p className="text-[14px] w-[100px]">
-                    <span className="font-[600]">234</span> sale
-                  </p>
-                  <ProgressBar value={40} type="success" />
-                </TableCell>
-                <TableCell style={{ minWidth: columns.minWidth }}>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
+                            onClick={() => deleteProduct(product?._id)}
+                          >
+                            <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={10}
+          count={productData?.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
