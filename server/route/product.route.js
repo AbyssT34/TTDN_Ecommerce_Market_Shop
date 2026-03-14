@@ -43,10 +43,10 @@ productRouter.get("/getAllProductsByPrice", getAllProductsByPrice);
 productRouter.get("/getAllProductsByRating", getAllProductsByRating);
 productRouter.get("/getAllProductsCount", getProductsCount);
 productRouter.get("/getAllFeaturedProducts", getAllProductsFeatured);
+productRouter.delete("/deleteMultiple", deleteMultipleProduct);
 productRouter.delete("/:id", deleteProduct);
 productRouter.get("/:id", getProduct);
 productRouter.delete("/deteleImage", auth, removeImageFromCloudinary);
-productRouter.delete("/deteleMuitiple", deleteMultipleProduct);
 productRouter.put("/updateProduct/:id", auth, updateProducts);
 
 export default productRouter;

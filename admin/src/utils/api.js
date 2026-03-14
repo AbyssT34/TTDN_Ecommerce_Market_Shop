@@ -128,3 +128,21 @@ export const deleteData = async (url) => {
     return error?.response;
   }
 };
+
+export const deleteMultipleData = async (url, ids) => {
+  try {
+    const res = await axios({
+      method: "delete",
+      url: apiUrl + url,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accesstoken")}`,
+        "Content-Type": "application/json",
+      },
+      data: { ids }, // ✅ body của DELETE phải dùng axios config object
+    });
+    return res;
+  } catch (error) {
+    console.error("deleteMultipleData error:", error?.response?.data);
+    return error?.response;
+  }
+};
