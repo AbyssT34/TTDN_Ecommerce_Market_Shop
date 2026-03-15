@@ -499,7 +499,7 @@ const AddProduct = () => {
         <br />
 
         <Button type="submit" className="btn-blue btn-lg w-full flex gap-2">
-          {isLoading ? (
+          {isLoading === true ? (
             <CircularProgress color="inherit" />
           ) : (
             <>

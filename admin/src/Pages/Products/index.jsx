@@ -11,16 +11,21 @@ import TableRow from "@mui/material/TableRow";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
-import {  Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProgressBar from "../../Components/ProgressBar";
 import { AiOutlineEdit } from "react-icons/ai";
 import { FaRegEye } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import SearchBox from "../../Components/SearchBox";
 import { MyContext } from "../../App";
-import { deleteData, deleteMultipleData, fetchDataFromApi } from "../../utils/api";
+import {
+  deleteData,
+  deleteMultipleData,
+  fetchDataFromApi,
+} from "../../utils/api";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -57,6 +62,7 @@ const Products = () => {
   const [productSubCat, setProductSubCat] = useState("");
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [sortedIds, setSortedIds] = useState([]);
+   const [isLoading, setIsLoading] = useState(false);
 
   const context = useContext(MyContext);
 
@@ -65,6 +71,7 @@ const Products = () => {
   }, [context?.refreshData]);
   // ✅ watch refreshData thay vì setIsOpenFullScreenPanel
   const getProducts = async () => {
+    setIsLoading(true);
     fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
       let productArr = [];
       if (res?.error === false) {
@@ -72,7 +79,10 @@ const Products = () => {
           productArr[i] = res?.products[i];
           productArr[i].checked = false;
         }
-        setProductData(productArr);
+        setTimeout(() => {
+          setProductData(productArr);
+          setIsLoading(false);
+        }, 300);
       }
     });
   };
@@ -127,13 +137,13 @@ const Products = () => {
     console.log(sortedIds);
 
     try {
-     deleteMultipleData(`/api/product/deleteMultiple`, sortedIds).then(
-       (res) => {
-         console.log(res);
-         getProducts();
-         context.alertBox("success", "Product deleted");
-       },
-     );
+      deleteMultipleData(`/api/product/deleteMultiple`, sortedIds).then(
+        (res) => {
+          console.log(res);
+          getProducts();
+          context.alertBox("success", "Product deleted");
+        },
+      );
     } catch (error) {
       context.alertBox("error", "Error deleting item");
     }
@@ -142,11 +152,17 @@ const Products = () => {
   const handleChangeProductCat = (event) => {
     const value = event.target.value;
     setProductCat(value);
+      setProductSubCat("");
+      setProductThirLaveldCat("");
+    setIsLoading(true);
     // ✅ fix double slash
     fetchDataFromApi(`/api/product/getAllProductsByCatId/${value}`).then(
       (res) => {
         if (res?.error === false) {
           setProductData(res?.products);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 300);
         }
       },
     );
@@ -154,11 +170,17 @@ const Products = () => {
 
   const handleChangeProductSudCat = (event) => {
     const value = event.target.value;
+    setProductCat("");
     setProductSubCat(value);
+     setProductThirLaveldCat("");
+    setIsLoading(true);
     fetchDataFromApi(`/api/product/getAllProductsBySubCatId/${value}`).then(
       (res) => {
         if (res?.error === false) {
           setProductData(res?.products);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 300);
         }
       },
     );
@@ -168,11 +190,17 @@ const Products = () => {
   const handleChangeProductThirLavelCat = (event) => {
     const value = event.target.value;
     setProductThirLaveldCat(value);
+        setProductCat("");
+        setProductSubCat("");
+    setIsLoading(true);
     fetchDataFromApi(
       `/api/product/getAllProductsByThirdLavelCat/${value}`,
     ).then((res) => {
       if (res?.error === false) {
         setProductData(res?.products);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
       }
     });
   };
@@ -220,6 +248,8 @@ const Products = () => {
           </Button>
         </div>
       </div>
+
+
       <div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
         <div className="flex items-center w-full px-5 justify-between gap-4">
           <div className="col w-[15%]">
@@ -324,7 +354,8 @@ const Products = () => {
             </TableHead>
 
             <TableBody>
-              {productData?.length !== 0 &&
+              {isLoading === false ? (
+                productData?.length !== 0 &&
                 productData
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map((product, index) => {
@@ -421,7 +452,18 @@ const Products = () => {
                         </TableCell>
                       </TableRow>
                     );
-                  })}
+                  })
+              ) : (
+                <>
+                  <TableRow>
+                    <TableCell colspan={8}>
+                      <div className="flex items-center justify-center w-full min-h-[400px]">
+                        <CircularProgress color="inherit" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
             </TableBody>
           </Table>
         </TableContainer>

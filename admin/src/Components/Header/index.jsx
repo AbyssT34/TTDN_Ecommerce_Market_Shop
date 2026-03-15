@@ -76,7 +76,7 @@ const Header = () => {
         className={`w-full h-[auto] py-2 ${
           context.isSiderOpen === true ? "pl-70" : "pl-5"
         } shadow-md pr-7 bg-[#fff] 
-      flex items-center justify-between transition-all`}
+      flex items-center justify-between transition-all fixed top-0 left-0`}
       >
         <div className="part1">
           <Button
