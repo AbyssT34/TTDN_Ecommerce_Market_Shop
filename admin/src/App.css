@@ -206,3 +206,5 @@ button .MuiCirularProgress-root {
   font-size: 18px !important;
   color: #000;
 }
+
+.contentRight{padding-top: 80px !important; }

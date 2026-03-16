@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Rating from "@mui/material/Rating";
@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MyContext } from "../../App";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
@@ -16,8 +16,11 @@ const AddProduct = () => {
   const [productSubCat, setProductSubCat] = useState("");
   const [productFeatured, setproductFeatured] = useState("");
   const [productRams, setproductRams] = useState([]);
+  const [productRamsData, setproductRamsData] = useState([]);
   const [productWeight, setproductWeight] = useState([]);
+  const [productWeightData, setproductWeightData] = useState([]);
   const [productSize, setproductSize] = useState([]);
+  const [productSizeData, setproductSizeData] = useState([]);
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [previews, setPreviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +49,24 @@ const AddProduct = () => {
 
   const context = useContext(MyContext);
   const history = useNavigate();
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/product/productRams/get`).then((res) => {
+      if (res?.error === false) {
+        setproductRamsData(res?.data);
+      }
+    });
+    fetchDataFromApi(`/api/product/productWeight/get`).then((res) => {
+      if (res?.error === false) {
+        setproductWeightData(res?.data);
+      }
+    });
+    fetchDataFromApi(`/api/product/productSize/get`).then((res) => {
+      if (res?.error === false) {
+        setproductSizeData(res?.data);
+      }
+    });
+  }, []);
 
   const setPreviewsFun = (previewArr) => {
     setPreviews((prev) => [...prev, ...previewArr]);
@@ -398,17 +419,23 @@ const AddProduct = () => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Rams
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productRams}
-                onChange={handleChangeProductRams}
-              >
-                <MenuItem value={"4GB"}>4GB</MenuItem>
-                <MenuItem value={"6GB"}>6GB</MenuItem>
-                <MenuItem value={"8GB"}>8GB</MenuItem>
-              </Select>
+              {productRamsData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productRams}
+                  onChange={handleChangeProductRams}
+                >
+                  {productRamsData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             {/* Weight */}
@@ -416,17 +443,23 @@ const AddProduct = () => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Weight
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productWeight}
-                onChange={handleChangeProductWeight}
-              >
-                <MenuItem value={"10"}>2KG</MenuItem>
-                <MenuItem value={"20"}>4KG</MenuItem>
-                <MenuItem value={"30"}>5KG</MenuItem>
-              </Select>
+              {productWeightData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productWeight}
+                  onChange={handleChangeProductWeight}
+                >
+                  {productWeightData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             {/* Size */}
@@ -434,17 +467,23 @@ const AddProduct = () => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Size
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productSize}
-                onChange={handleChangeProductSize}
-              >
-                <MenuItem value={"S"}>S</MenuItem>
-                <MenuItem value={"M"}>M</MenuItem>
-                <MenuItem value={"L"}>L</MenuItem>
-              </Select>
+              {productSizeData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productSize}
+                  onChange={handleChangeProductSize}
+                >
+                  {productSizeData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
           </div>
 

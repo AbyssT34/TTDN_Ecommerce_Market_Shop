@@ -41,6 +41,8 @@ import AddAddress from "./Pages/Address/index";
 import EditCategory from "./Pages/Categegory/editCategory";
 import ProductDetails from "./Pages/Products/productDetails";
 import AddRams from "./Pages/Products/addRams";
+import AddWeight from "./Pages/Products/addWeight";
+import AddSize from "./Pages/Products/addSize";
 
 // ✅ Khai báo context ở ngoài hàm App
 const MyContext = createContext();
@@ -395,6 +397,58 @@ function App() {
                 } transition-all`}
               >
                 <AddRams />
+              </div>
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/product/addWeight",
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="contentMain flex">
+              <div
+                className={`overflow-hidden sidebarWrapper ${
+                  isSiderOpen === true ? "w-[18%]" : "w-[0px] opacity-0"
+                } transition-all`}
+              >
+                <SideBar />
+              </div>
+              <div
+                className={`contentRight py-4 px-5  ${
+                  isSiderOpen === false ? "w-[100%]" : "w-[82%]"
+                } transition-all`}
+              >
+                <AddWeight />
+              </div>
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/product/addSize",
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="contentMain flex">
+              <div
+                className={`overflow-hidden sidebarWrapper ${
+                  isSiderOpen === true ? "w-[18%]" : "w-[0px] opacity-0"
+                } transition-all`}
+              >
+                <SideBar />
+              </div>
+              <div
+                className={`contentRight py-4 px-5  ${
+                  isSiderOpen === false ? "w-[100%]" : "w-[82%]"
+                } transition-all`}
+              >
+                <AddSize />
               </div>
             </div>
           </section>

@@ -4,10 +4,16 @@ import upload from "../middleware/multer.js";
 import {
   createProduct,
   createProductRam,
+  createProductWeight,
+  createProductSize,
   deleteMultipleProduct,
   deleteMultipleProductRams,
+  deleteMultipleProductWeights,
+  deleteMultipleProductSizes,
   deleteProduct,
   deleteProductRams,
+  deleteProductWeight,
+  deleteProductSize,
   getAllProducts,
   getAllProductsByCatId,
   getAllProductsByCatName,
@@ -22,9 +28,15 @@ import {
   getProductRams,
   getProductRamsById,
   getProductsCount,
+  getProductWeightById,
+  getProductWeights,
+  getProductSizeById,
+  getProductSizes,
   removeImageFromCloudinary,
   updateProductRams,
   updateProducts,
+  updateProductWeight,
+  updateProductSize,
   uploadImages,
 } from "../controllers/product.controller.js";
 
@@ -42,6 +54,23 @@ productRouter.put("/productRams/:id", auth, updateProductRams);
 productRouter.delete("/productRams/:id", deleteProductRams);
 productRouter.delete("/deleteMultipleRams", deleteMultipleProductRams);
 
+
+// ── Product Weight (cụ thể trước) ──────────────────────
+productRouter.get("/productWeight/get", getProductWeights);
+productRouter.post("/productWeight/create", auth, createProductWeight);
+productRouter.get("/productWeight/:id", getProductWeightById);
+productRouter.put("/productWeight/:id", auth, updateProductWeight);
+productRouter.delete("/productWeight/:id", deleteProductWeight);
+productRouter.delete("/deleteMultipleWeight", deleteMultipleProductWeights);
+
+// ── Product Size (cụ thể trước) ──────────────────────
+productRouter.get("/productSize/get", getProductSizes);
+productRouter.post("/productSize/create", auth, createProductSize);
+productRouter.get("/productSize/:id", getProductSizeById);
+productRouter.put("/productSize/:id", auth, updateProductSize);
+productRouter.delete("/productSize/:id", deleteProductSize);
+productRouter.delete("/deleteMultipleSize", deleteMultipleProductSizes);
+
 // ── Products (cụ thể trước) ──────────────────────────
 productRouter.post("/create", auth, createProduct);
 productRouter.get("/getAllProducts", getAllProducts);
@@ -49,8 +78,14 @@ productRouter.get("/getAllProductsByCatId/:id", getAllProductsByCatId);
 productRouter.get("/getAllProductsByCatName", getAllProductsByCatName);
 productRouter.get("/getAllProductsBySubCatId/:id", getAllProductsBySubCatId);
 productRouter.get("/getAllProductsBySubCatName", getAllProductsBySubCatName);
-productRouter.get("/getAllProductsByThirdLavelCat/:id", getAllProductsBySubThirdLaveCatId);
-productRouter.get("/getAllProductsByThirdLavelCatName", getAllProductsBySubThirdLaveCatName);
+productRouter.get(
+  "/getAllProductsByThirdLavelCat/:id",
+  getAllProductsBySubThirdLaveCatId,
+);
+productRouter.get(
+  "/getAllProductsByThirdLavelCatName",
+  getAllProductsBySubThirdLaveCatName,
+);
 productRouter.get("/getAllProductsByPrice", getAllProductsByPrice);
 productRouter.get("/getAllProductsByRating", getAllProductsByRating);
 productRouter.get("/getAllProductsCount", getProductsCount);
@@ -61,4 +96,5 @@ productRouter.put("/updateProduct/:id", auth, updateProducts);
 // ── Route động /:id — PHẢI ĐẶT CUỐI CÙNG ───────────
 productRouter.get("/:id", getProduct);
 productRouter.delete("/:id", deleteProduct);
+
 export default productRouter;

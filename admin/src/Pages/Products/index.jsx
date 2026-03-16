@@ -26,6 +26,7 @@ import {
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import CircularProgress from "@mui/material/CircularProgress";
+import Rating from "@mui/material/Rating";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -48,6 +49,11 @@ const columns = [
     minWidth: 150,
   },
   {
+    id: "rating",
+    label: "RATING",
+    minWidth: 150,
+  },
+  {
     id: "action",
     label: "ACTION",
     minWidth: 150,
@@ -62,7 +68,7 @@ const Products = () => {
   const [productSubCat, setProductSubCat] = useState("");
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [sortedIds, setSortedIds] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const context = useContext(MyContext);
 
@@ -70,6 +76,8 @@ const Products = () => {
     getProducts();
   }, [context?.refreshData]);
   // ✅ watch refreshData thay vì setIsOpenFullScreenPanel
+
+
   const getProducts = async () => {
     setIsLoading(true);
     fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
@@ -152,8 +160,8 @@ const Products = () => {
   const handleChangeProductCat = (event) => {
     const value = event.target.value;
     setProductCat(value);
-      setProductSubCat("");
-      setProductThirLaveldCat("");
+    setProductSubCat("");
+    setProductThirLaveldCat("");
     setIsLoading(true);
     // ✅ fix double slash
     fetchDataFromApi(`/api/product/getAllProductsByCatId/${value}`).then(
@@ -172,7 +180,7 @@ const Products = () => {
     const value = event.target.value;
     setProductCat("");
     setProductSubCat(value);
-     setProductThirLaveldCat("");
+    setProductThirLaveldCat("");
     setIsLoading(true);
     fetchDataFromApi(`/api/product/getAllProductsBySubCatId/${value}`).then(
       (res) => {
@@ -190,8 +198,8 @@ const Products = () => {
   const handleChangeProductThirLavelCat = (event) => {
     const value = event.target.value;
     setProductThirLaveldCat(value);
-        setProductCat("");
-        setProductSubCat("");
+    setProductCat("");
+    setProductSubCat("");
     setIsLoading(true);
     fetchDataFromApi(
       `/api/product/getAllProductsByThirdLavelCat/${value}`,
@@ -248,7 +256,6 @@ const Products = () => {
           </Button>
         </div>
       </div>
-
 
       <div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
         <div className="flex items-center w-full px-5 justify-between gap-4">
@@ -354,6 +361,7 @@ const Products = () => {
             </TableHead>
 
             <TableBody>
+
               {isLoading === false ? (
                 productData?.length !== 0 &&
                 productData
@@ -415,6 +423,17 @@ const Products = () => {
                           <p className="text-[14px] w-[100px]">
                             <span className="font-[600]">{product?.sale}</span>{" "}
                             sale
+                          </p>
+                          {/* <ProgressBar value={40} type="success" /> */}
+                        </TableCell>
+
+                        <TableCell style={{ minWidth: columns.minWidth }}>
+                          <p className="text-[14px] w-[100px]">
+                            <Rating
+                              name="half-rating"
+                              size="small"
+                              defaultValue={product?.rating}
+                            />
                           </p>
                           {/* <ProgressBar value={40} type="success" /> */}
                         </TableCell>

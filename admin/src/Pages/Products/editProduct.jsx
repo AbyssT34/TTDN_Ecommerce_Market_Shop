@@ -16,8 +16,11 @@ const EditProduct = () => {
   const [productSubCat, setProductSubCat] = useState("");
   const [productFeatured, setproductFeatured] = useState("");
   const [productRams, setproductRams] = useState([]);
+  const [productRamsData, setproductRamsData] = useState([]);
   const [productWeight, setproductWeight] = useState([]);
+  const [productWeightData, setproductWeightData] = useState([]);
   const [productSize, setproductSize] = useState([]);
+  const [productSizeData, setproductSizeData] = useState([]);
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [previews, setPreviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +52,22 @@ const EditProduct = () => {
 
   // ✅ Fix: thêm dependency array, chỉ fetch khi id thay đổi
   useEffect(() => {
+    fetchDataFromApi(`/api/product/productRams/get`).then((res) => {
+      if (res?.error === false) {
+        setproductRamsData(res?.data);
+      }
+    });
+    fetchDataFromApi(`/api/product/productWeight/get`).then((res) => {
+      if (res?.error === false) {
+        setproductWeightData(res?.data);
+      }
+    });
+    fetchDataFromApi(`/api/product/productSize/get`).then((res) => {
+      if (res?.error === false) {
+        setproductSizeData(res?.data);
+      }
+    });
+
     if (!context?.isOpenFullScreenPanel?.id) return;
 
     fetchDataFromApi(`/api/product/${context?.isOpenFullScreenPanel?.id}`).then(
@@ -205,61 +224,61 @@ const EditProduct = () => {
   const onChangeRating = (e) => {
     setFormFields((prev) => ({ ...prev, rating: e.target.value }));
   };
-const handleSubmitg = (e) => {
-  e.preventDefault();
+  const handleSubmitg = (e) => {
+    e.preventDefault();
 
-  if (formFields.name === "")
-    return context.alertBox("error", "Please enter product name");
-  if (formFields.description === "")
-    return context.alertBox("error", "Please enter product description");
-  if (formFields.catId === "")
-    return context.alertBox("error", "Please select product category");
-  if (formFields.price === "")
-    return context.alertBox("error", "Please enter product price");
-  if (formFields.oldPrice === "")
-    return context.alertBox("error", "Please enter product old price");
-  if (formFields.countInStock === "")
-    return context.alertBox("error", "Please enter product stock");
-  if (formFields.brand === "")
-    return context.alertBox("error", "Please enter product brand");
-  if (formFields.discount === "")
-    return context.alertBox("error", "Please enter product discount");
-  if (previews?.length === 0)
-    return context.alertBox("error", "Please select product image");
+    if (formFields.name === "")
+      return context.alertBox("error", "Please enter product name");
+    if (formFields.description === "")
+      return context.alertBox("error", "Please enter product description");
+    if (formFields.catId === "")
+      return context.alertBox("error", "Please select product category");
+    if (formFields.price === "")
+      return context.alertBox("error", "Please enter product price");
+    if (formFields.oldPrice === "")
+      return context.alertBox("error", "Please enter product old price");
+    if (formFields.countInStock === "")
+      return context.alertBox("error", "Please enter product stock");
+    if (formFields.brand === "")
+      return context.alertBox("error", "Please enter product brand");
+    if (formFields.discount === "")
+      return context.alertBox("error", "Please enter product discount");
+    if (previews?.length === 0)
+      return context.alertBox("error", "Please select product image");
 
-  setIsLoading(true);
+    setIsLoading(true);
 
-  editData(
-    `/api/product/updateProduct/${context?.isOpenFullScreenPanel?.id}`,
-    formFields,
-  )
-    .then((res) => {
-      setIsLoading(false);
+    editData(
+      `/api/product/updateProduct/${context?.isOpenFullScreenPanel?.id}`,
+      formFields,
+    )
+      .then((res) => {
+        setIsLoading(false);
 
-      console.log("Edit response:", res); // ✅ log để kiểm tra cấu trúc thực tế
+        console.log("Edit response:", res); // ✅ log để kiểm tra cấu trúc thực tế
 
-      // ✅ Chỉ check res.data vì editData dùng axios
-      if (res?.data?.error === false) {
-        context.alertBox(
-          "success",
-          res?.data?.message || "Product updated successfully",
-        );
-        context.setRefreshData((prev) => !prev);
-        context.setIsOpenFullScreenPanel({ open: false });
-        history("/products");
-      } else {
-        context.alertBox(
-          "error",
-          res?.data?.message || "Failed to update product",
-        );
-      }
-    })
-    .catch((err) => {
-      console.error("Edit error:", err);
-      setIsLoading(false);
-      context.alertBox("error", "Failed to update product");
-    });
-};
+        // ✅ Chỉ check res.data vì editData dùng axios
+        if (res?.data?.error === false) {
+          context.alertBox(
+            "success",
+            res?.data?.message || "Product updated successfully",
+          );
+          context.setRefreshData((prev) => !prev);
+          context.setIsOpenFullScreenPanel({ open: false });
+          history("/products");
+        } else {
+          context.alertBox(
+            "error",
+            res?.data?.message || "Failed to update product",
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Edit error:", err);
+        setIsLoading(false);
+        context.alertBox("error", "Failed to update product");
+      });
+  };
 
   return (
     <section className="p-5 bg-gray-50">
@@ -457,17 +476,23 @@ const handleSubmitg = (e) => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Rams
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productRams}
-                onChange={handleChangeProductRams}
-              >
-                <MenuItem value={"4GB"}>4GB</MenuItem>
-                <MenuItem value={"6GB"}>6GB</MenuItem>
-                <MenuItem value={"8GB"}>8GB</MenuItem>
-              </Select>
+              {productRamsData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productRams}
+                  onChange={handleChangeProductRams}
+                >
+                  {productRamsData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             {/* Weight */}
@@ -475,17 +500,23 @@ const handleSubmitg = (e) => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Weight
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productWeight}
-                onChange={handleChangeProductWeight}
-              >
-                <MenuItem value={"10"}>2KG</MenuItem>
-                <MenuItem value={"20"}>4KG</MenuItem>
-                <MenuItem value={"30"}>5KG</MenuItem>
-              </Select>
+              {productWeightData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productWeight}
+                  onChange={handleChangeProductWeight}
+                >
+                  {productWeightData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             {/* Size */}
@@ -493,17 +524,23 @@ const handleSubmitg = (e) => {
               <h3 className="text-[14px] font-[500] mb-1 text-black">
                 Product Size
               </h3>
-              <Select
-                multiple
-                size="small"
-                className="w-full"
-                value={productSize}
-                onChange={handleChangeProductSize}
-              >
-                <MenuItem value={"S"}>S</MenuItem>
-                <MenuItem value={"M"}>M</MenuItem>
-                <MenuItem value={"L"}>L</MenuItem>
-              </Select>
+              {productSizeData?.length !== 0 && (
+                <Select
+                  multiple
+                  size="small"
+                  className="w-full"
+                  value={productSize}
+                  onChange={handleChangeProductSize}
+                >
+                  {productSizeData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
           </div>
 

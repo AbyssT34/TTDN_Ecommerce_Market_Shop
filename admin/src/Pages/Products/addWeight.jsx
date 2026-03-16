@@ -12,7 +12,7 @@ import {
   postData,
 } from "../../utils/api";
 
-const AddRams = () => {
+const AddWeight = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
@@ -21,7 +21,7 @@ const AddRams = () => {
   const context = useContext(MyContext);
   // ✅ Tách thành hàm riêng để tái sử dụng
   const getRams = () => {
-    fetchDataFromApi(`/api/product/productRams/get`).then((res) => {
+    fetchDataFromApi(`/api/product/productWeight/get`).then((res) => {
       if (res?.error === false) {
         setData(res?.data);
       }
@@ -44,7 +44,7 @@ const AddRams = () => {
 
     // ✅ Chỉ 1 trong 2 nhánh, không gọi postData 2 lần
     if (editId === "") {
-      postData(`/api/product/productRams/create`, { name }).then((res) => {
+      postData(`/api/product/productWeight/create`, { name }).then((res) => {
         if (res?.error === false) {
           context.alertBox("success", res?.message);
           setName("");
@@ -56,7 +56,7 @@ const AddRams = () => {
         setIsLoading(false);
       });
     } else {
-      editData(`/api/product/productRams/${editId}`, { name }).then((res) => {
+      editData(`/api/product/productWeight/${editId}`, { name }).then((res) => {
         if (res?.data?.error === false) {
           context.alertBox("success", res?.data?.message);
           setName("");
@@ -71,7 +71,7 @@ const AddRams = () => {
   };
 
   const editItem = (id) => {
-    fetchDataFromApi(`/api/product/productRams/${id}`).then((res) => {
+    fetchDataFromApi(`/api/product/productWeight/${id}`).then((res) => {
       console.log("editItem response:", res); // ✅ xem structure
       // ✅ fetchDataFromApi trả về data trực tiếp (axios đã unwrap)
       setName(res?.data?.name);
@@ -80,7 +80,7 @@ const AddRams = () => {
   };
 
   const deleteItems = (id) => {
-    deleteData(`/api/product/productRams/${id}`).then((res) => {
+    deleteData(`/api/product/productWeight/${id}`).then((res) => {
       getRams();
       context.alertBox("success", "Item deleted");
     });
@@ -89,13 +89,13 @@ const AddRams = () => {
   return (
     <>
       <div className="flex items-center justify-between px-2 py-0 mt-3">
-        <h2 className="text-[18px] font-[700]">Add Product Rams</h2>
+        <h2 className="text-[18px] font-[700]">Add Product Weight</h2>
       </div>
       <div className="card my-4 pt-5 pb-5 shadow-md sm:rounded-lg bg-white w-[65%]">
         <form className="form py-3 p-6" onSubmit={handleSubmit}>
           <div className="col mb-4">
             <h3 className="text-[14px] font-[500] mb-1 text-black">
-              Product Rams
+              Product Weight
             </h3>
             <input
               type="text"
@@ -130,7 +130,7 @@ const AddRams = () => {
                     className="px-6 py-3 whitespace-nowrap"
                     width="60%"
                   >
-                    PRODUCT RAM
+                    PRODUCT WEIGHT
                   </th>
                   <th
                     scope="col"
@@ -149,10 +149,12 @@ const AddRams = () => {
                even:bg-gray-50 border-gray-200"
                       key={index}
                     >
+
                       <td className="px-6 py-2">
                         <span className="font-600">{item?.name}</span>
                       </td>
                       <td className="px-6 py-2">
+                        {" "}
                         <div className="flex items-center gap-4">
                           <Button
                             className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
@@ -183,4 +185,4 @@ const AddRams = () => {
   );
 };
 
-export default AddRams;
+export default AddWeight;

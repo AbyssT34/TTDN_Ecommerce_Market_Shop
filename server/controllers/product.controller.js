@@ -1,5 +1,7 @@
 import ProductModel from "../models/product.model.js";
 import ProductRamsModel from "../models/productRam.model.js";
+import ProductWeightModel from "../models/productWeight.model.js";
+import ProductSizeModel from "../models/productSize.model.js";
 
 import { v2 as cloudinary } from "cloudinary";
 import { error } from "console";
@@ -1011,6 +1013,378 @@ export async function deleteMultipleProductRams(request, response) {
       success: true,
       error: false,
       message: "ProductRams Deleted",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//create product weight
+export async function createProductWeight(request, response) {
+  try {
+    let productWeight = new ProductWeightModel({
+      name: request.body.name,
+    });
+
+    productWeight = await productWeight.save();
+
+    if (!productWeight) {
+      return response.status(500).json({
+        success: false,
+        message: "ProductWeight Not Created",
+      });
+    }
+
+    return response.status(201).json({
+      message: "ProductWeight Created Successfully",
+      success: true,
+      error: false,
+      data: productWeight,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get all product weights
+export async function getProductWeights(request, response) {
+  try {
+    const productWeights = await ProductWeightModel.find();
+
+    if (!productWeights) {
+      return response.status(500).json({
+        message: "No ProductWeights found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      data: productWeights,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get product weight by id
+export async function getProductWeightById(request, response) {
+  try {
+    const productWeight = await ProductWeightModel.findById(request.params.id);
+
+    if (!productWeight) {
+      return response.status(404).json({
+        message: "ProductWeight not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      data: productWeight,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//update product weight
+export async function updateProductWeight(request, response) {
+  try {
+    const productWeight = await ProductWeightModel.findByIdAndUpdate(
+      request.params.id,
+      {
+        name: request.body.name,
+      },
+      { new: true },
+    );
+
+    if (!productWeight) {
+      return response.status(404).json({
+        message: "ProductWeight can not be updated!",
+        status: false,
+      });
+    }
+
+    return response.status(200).json({
+      message: "ProductWeight is updated",
+      error: false,
+      success: true,
+      data: productWeight,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//delete product weight
+export async function deleteProductWeight(request, response) {
+  try {
+    const productWeight = await ProductWeightModel.findById(request.params.id);
+
+    if (!productWeight) {
+      return response.status(404).json({
+        message: "ProductWeight Not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    const deletedProductWeight = await ProductWeightModel.findByIdAndDelete(
+      request.params.id,
+    );
+
+    if (!deletedProductWeight) {
+      return response.status(404).json({
+        message: "ProductWeight not found!",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message: "ProductWeight Deleted",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//delete multiple product weights
+export async function deleteMultipleProductWeights(request, response) {
+  const { ids } = request.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    return response.status(400).json({
+      error: true,
+      success: false,
+      message: "Invalid input",
+    });
+  }
+
+  try {
+    await ProductWeightModel.deleteMany({ _id: { $in: ids } });
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message: "ProductWeights Deleted",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//create product size
+export async function createProductSize(request, response) {
+  try {
+    let productSize = new ProductSizeModel({
+      name: request.body.name,
+    });
+
+    productSize = await productSize.save();
+
+    if (!productSize) {
+      return response.status(500).json({
+        success: false,
+        message: "ProductSize Not Created",
+      });
+    }
+
+    return response.status(201).json({
+      message: "ProductSize Created Successfully",
+      success: true,
+      error: false,
+      data: productSize,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get all product sizes
+export async function getProductSizes(request, response) {
+  try {
+    const productSizes = await ProductSizeModel.find();
+
+    if (!productSizes) {
+      return response.status(500).json({
+        message: "No ProductSizes found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      data: productSizes,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get product size by id
+export async function getProductSizeById(request, response) {
+  try {
+    const productSize = await ProductSizeModel.findById(request.params.id);
+
+    if (!productSize) {
+      return response.status(404).json({
+        message: "ProductSize not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      data: productSize,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//update product size
+export async function updateProductSize(request, response) {
+  try {
+    const productSize = await ProductSizeModel.findByIdAndUpdate(
+      request.params.id,
+      {
+        name: request.body.name,
+      },
+      { new: true },
+    );
+
+    if (!productSize) {
+      return response.status(404).json({
+        message: "ProductSize can not be updated!",
+        status: false,
+      });
+    }
+
+    return response.status(200).json({
+      message: "ProductSize is updated",
+      error: false,
+      success: true,
+      data: productSize,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//delete product size
+export async function deleteProductSize(request, response) {
+  try {
+    const productSize = await ProductSizeModel.findById(request.params.id);
+
+    if (!productSize) {
+      return response.status(404).json({
+        message: "ProductSize Not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    const deletedProductSize = await ProductSizeModel.findByIdAndDelete(
+      request.params.id,
+    );
+
+    if (!deletedProductSize) {
+      return response.status(404).json({
+        message: "ProductSize not found!",
+        success: false,
+        error: true,
+      });
+    }
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message: "ProductSize Deleted",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//delete multiple product sizes
+export async function deleteMultipleProductSizes(request, response) {
+  const { ids } = request.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    return response.status(400).json({
+      error: true,
+      success: false,
+      message: "Invalid input",
+    });
+  }
+
+  try {
+    await ProductSizeModel.deleteMany({ _id: { $in: ids } });
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message: "ProductSizes Deleted",
     });
   } catch (error) {
     return response.status(500).json({
