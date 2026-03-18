@@ -11,7 +11,7 @@ import Divider from "@mui/material/Divider";
 import { FaRegUser } from "react-icons/fa";
 import { IoMdLogOut } from "react-icons/io";
 import { MyContext } from "../../App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
 import AddProduct from "../../Pages/Products/addProduct";
 import AddHomeSlide from "../../Pages/HomeSliderBanners/addHomeSlide";
@@ -43,6 +43,8 @@ const Header = () => {
   };
 
   const context = useContext(MyContext);
+ const histoty = useNavigate();
+
   const Logout = () => {
     setAnchorElMyAcc(null);
 
@@ -56,7 +58,7 @@ const Header = () => {
         context.setIsLogin(false);
         localStorage.removeItem("accesstoken", res?.accesstoken);
         localStorage.removeItem("refreshToken", res?.refreshToken);
-        history("/");
+        histoty("/login");
       }
     });
   };
@@ -242,6 +244,9 @@ const Header = () => {
         )}
         {context?.isOpenFullScreenPanel.model === "Edit Product" && (
           <EditProduct />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Add HomeSlide" && (
+          <AddHomeSlide />
         )}
       </Dialog>
     </>

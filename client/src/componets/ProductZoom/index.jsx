@@ -7,12 +7,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 
-const ProductZoom = () => {
+const ProductZoom = (props) => {
   const [sliderIndex, setSliderIndex] = useState(0);
   const [bigSwiper, setBigSwiper] = useState(null);
   const [smallSwiper, setSmallSwiper] = useState(null);
 
-  const productImages = ['/product1.jpg', '/product2.jpg', '/product3.jpg'];
 
   const goto = (index) => {
     setSliderIndex(index);
@@ -35,19 +34,21 @@ const ProductZoom = () => {
             spaceBetween={0}
             navigation={true}
             modules={[Navigation]}
-            className="zoomProductSliderThumbs h-[500px] overflow-hidden"
+            className={`zoomProductSliderThumbs h-[400px] overflow-hidden ${props?.images?.length > 5 && 'space'}`}
           >
-            {productImages.map((image, index) => (
-              <SwiperSlide key={index}>
-                <div
-                  className={`item rounded-md overflow-hidden cursor-pointer group
+            {props?.images?.map((item, index) => {
+              return (
+                <SwiperSlide key={index}>
+                  <div
+                    className={`item rounded-md overflow-hidden cursor-pointer group
                                  ${sliderIndex === index ? '' : 'opacity-30'}`}
-                  onClick={() => goto(index)}
-                >
-                  <img src={image} className="w-full transition-all group-hover:scale-105" />
-                </div>
-              </SwiperSlide>
-            ))}
+                    onClick={() => goto(index)}
+                  >
+                    <img src={item} className="w-full transition-all group-hover:scale-105" />
+                  </div>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         </div>
         <div className="zoomContainer w-[85%] h-[500px] overflow-hidden rounded-md">
@@ -59,9 +60,9 @@ const ProductZoom = () => {
             initialSlide={sliderIndex}
             onSlideChange={(swiper) => setSliderIndex(swiper.activeIndex)}
           >
-            {productImages.map((image, index) => (
+            {props?.images?.map((item, index) => (
               <SwiperSlide key={index}>
-                <InnerImageZoom zoomType="hover" zoomScale={1} src={image} />
+                <InnerImageZoom zoomType="hover" zoomScale={1} src={item} />
               </SwiperSlide>
             ))}
           </Swiper>

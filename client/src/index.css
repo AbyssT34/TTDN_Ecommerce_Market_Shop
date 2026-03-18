@@ -304,7 +304,7 @@ footer form input::placeholder {
     0 1px 2px rgb(0, 0, 0, 0.24) !important;
 }
 
-.zoomProductSliderThumbs .swiper-wrapper {
+.zoomProductSliderThumbs.space .swiper-wrapper {
   padding-top: 38px !important;
 }
 
@@ -434,3 +434,5 @@ button .MuiCirularProgress-root {
 .react-international-phone-input-container{border: 1px solid rgba(0, 0, 0, 0.1) !important;}
 
 .MuiDialog-paper{width: 700px !important; max-width: 700px !important;}
+
+.productDetailsModal .MuiDialog-paper {width: 1200px !important; max-width: 1200px !important;}

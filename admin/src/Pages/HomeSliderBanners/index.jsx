@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import { IoMdAdd } from "react-icons/io";
 import Table from "@mui/material/Table";
@@ -11,13 +11,18 @@ import TableRow from "@mui/material/TableRow";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProgressBar from "../../Components/ProgressBar";
 import { AiOutlineEdit } from "react-icons/ai";
 import { FaRegEye } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import SearchBox from "../../Components/SearchBox";
 import { MyContext } from "../../App";
+import {
+  deleteData,
+  deleteMultipleData,
+  fetchDataFromApi,
+} from "../../utils/api";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -27,14 +32,89 @@ const columns = [
 ];
 
 const HomeSliderBanners = () => {
-  const [categoryFilterVal, setCategoryFilterVal] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+  const [slidesData, setSlidesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sortedIds, setSortedIds] = useState([]);
 
   const context = useContext(MyContext);
+  const histoty = useNavigate();
 
-  const handleChangeCatFilter = (event) => {
-    setCategoryFilterVal(event.target.value);
+  useEffect(() => {
+    getData();
+  }, [context?.isOpenFullScreenPanel]);
+
+  const getData = () => {
+    fetchDataFromApi(`/api/homeSlider`).then((res) => {
+      let arr = [];
+      if (res?.error === false) {
+        for (let i = 0; i < res?.data?.length; i++) {
+          arr[i] = res?.data[i];
+          arr[i].checked = false;
+          console.log(arr[i]);
+        }
+        setTimeout(() => {
+          setSlidesData(arr);
+          setIsLoading(false);
+        }, 300);
+      }
+    });
+  };
+
+  //Handler to toggle all checkboxes
+  const handleSelectAll = (e) => {
+    const isChecked = e.target.checked;
+
+    //update all items checked status
+    const updateItems = slidesData.map((item) => ({
+      ...item,
+      checked: isChecked,
+    }));
+    setSlidesData(updateItems);
+
+    //Update the sorted IDs state
+    if (isChecked) {
+      const ids = updateItems.map((item) => item._id).sort((a, b) => a - b);
+      setSortedIds(ids);
+    } else {
+      setSortedIds([]);
+    }
+  };
+
+  const handleCheckboxChange = (e, id, index) => {
+    const updateItems = slidesData.map((item) =>
+      item._id === id ? { ...item, checked: !item.checked } : item,
+    );
+
+    setSlidesData(updateItems);
+
+    //Update the sorted IDs state
+    const selectedIds = updateItems
+      .filter((item) => item.checked)
+      .map((item) => item._id)
+      .sort((a, b) => a - b);
+    setSortedIds(selectedIds);
+  };
+
+  const deleteMultipleProduct = () => {
+    if (sortedIds.length === 0) {
+      context.alertBox("error", "please select items to delete");
+    }
+
+    console.log(sortedIds);
+
+    try {
+      deleteMultipleData(`/api/homeSlider/deleteMultiple`, sortedIds).then(
+        (res) => {
+          console.log(res);
+          getData();
+          context.alertBox("success", "Product deleted");
+        },
+      );
+    } catch (error) {
+      context.alertBox("error", "Error deleting item");
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -46,6 +126,13 @@ const HomeSliderBanners = () => {
     setPage(0);
   };
 
+  const deleteSliede = (id) => {
+    deleteData(`/api/homeSlider/${id}`).then((res) => {
+      context.alertBox("success", "Product deleted");
+      getData();
+    });
+  };
+
   return (
     <>
       <div className="flex items-center justify-between px-2 py-0 mt-3">
@@ -55,9 +142,16 @@ const HomeSliderBanners = () => {
         </h2>
 
         <div className="col w-[25%] ml-auto flex items-center justify-end gap-3">
-          <Button className="btn !bg-green-600 !text-white btn-sm ">
-            Export
-          </Button>
+          {sortedIds?.length !== 0 && (
+            <Button
+              variant="contained"
+              className=" btn-sm"
+              color="error"
+              onClick={deleteMultipleProduct}
+            >
+              Delete
+            </Button>
+          )}
           <Button
             className="btn-blue  !text-white btn-sm"
             onClick={() =>
@@ -77,7 +171,16 @@ const HomeSliderBanners = () => {
             <TableHead>
               <TableRow>
                 <TableCell width={60}>
-                  <Checkbox {...label} size="small" />
+                  <Checkbox
+                    {...label}
+                    size="small"
+                    onChange={handleSelectAll}
+                    checked={
+                      slidesData?.length > 0
+                        ? slidesData.every((item) => item.checked)
+                        : false
+                    }
+                  />
                 </TableCell>
                 {columns.map((column) => (
                   <TableCell
@@ -91,47 +194,51 @@ const HomeSliderBanners = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell width={200}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-4 w-[300px]">
-                    <div className="img w-full rounded-md overflow-hidden group">
-                      <Link to={"/product/45745"}>
-                        <img
-                          src="/bannersort.png"
-                          className="w-full group-hover:scale-105 transition-all"
+              {slidesData?.length !== 0 &&
+                slidesData?.map((item, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell width={200}>
+                        <Checkbox
+                          {...label}
+                          size="small"
+                          checked={item.checked === true ? true : false}
+                          onChange={(e) =>
+                            handleCheckboxChange(e, item._id, index)
+                          }
                         />
-                      </Link>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell width={300}>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-4 w-[300px]">
+                          <div className="img w-full rounded-md overflow-hidden group">
+                            <img
+                              src={item?.images[0]}
+                              className="w-full group-hover:scale-105 transition-all"
+                            />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell width={300}>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
-                    </Button>
+                          >
+                            <AiOutlineEdit className="text-[rgba(0,0,0,0.7)] text-[20px]" />
+                          </Button>
 
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
+                          <Button
+                            className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
                     !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <FaRegEye className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-
-                    <Button
-                      className="!w-[35px] !h-[35px]  bg-[#f1f1f1] !min-w-[35px] !border !border-[rgba(0,0,0,0.1)] 
-                    !rounded-full hover:!bg-[#f1f1f1]"
-                    >
-                      <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
+                            onClick={() => deleteSliede(item?._id)}
+                          >
+                            <GoTrash className="text-[rgba(0,0,0,0.7)] text-[18px]" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>

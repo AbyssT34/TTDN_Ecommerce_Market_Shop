@@ -87,7 +87,7 @@ const Dashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
-    const [sortedIds, setSortedIds] = useState([]);
+  const [sortedIds, setSortedIds] = useState([]);
 
   const [categoryFilterVal, setCategoryFilterVal] = useState("");
   const [chart1Data, setChart1Data] = useState([

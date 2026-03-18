@@ -235,6 +235,7 @@ const Products = () => {
             <Button
               variant="contained"
               className=" btn-sm"
+              color="error"
               onClick={deleteMultipleProduct}
             >
               Delete
@@ -361,7 +362,6 @@ const Products = () => {
             </TableHead>
 
             <TableBody>
-
               {isLoading === false ? (
                 productData?.length !== 0 &&
                 productData

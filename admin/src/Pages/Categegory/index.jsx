@@ -22,8 +22,6 @@ import { deleteData, fetchDataFromApi } from "../../utils/api";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
-
 const columns = [
   { id: "image", label: "IMAGE", minWidth: 150 },
   { id: "catName", label: "CATEGORY NAME", minWidth: 150 },
@@ -31,21 +29,16 @@ const columns = [
 ];
 
 const Categegory = () => {
-  const [categoryFilterVal, setCategoryFilterVal] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
   const context = useContext(MyContext);
 
-  const handleChangeCatFilter = (event) => {
-    setCategoryFilterVal(event.target.value);
-  };
-
     useEffect(() => {
       fetchDataFromApi(`/api/category`).then((res) => {
       context?.setCatData(res?.data);
       });
-    }, [context?.isOpenFullScreenPanel]);
+    }, [context]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -57,7 +50,7 @@ const Categegory = () => {
   };
 
   const deleteCat = (id) => {
-    deleteData(`/api/category/${id}`).then((res) => {
+    deleteData(`/api/category/${id}`).then(() => {
       fetchDataFromApi(`/api/category`).then((res) => {
         context?.setCatData(res?.data);
       });
@@ -94,9 +87,6 @@ const Categegory = () => {
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <TableCell width={60}>
-                  <Checkbox {...label} size="small" />
-                </TableCell>
                 {columns.map((column) => (
                   <TableCell
                     width={column.width}
@@ -114,11 +104,8 @@ const Categegory = () => {
                   return (
                     <>
                       <TableRow key={index}>
-                        <TableCell width={100}>
-                          <Checkbox {...label} size="small" />
-                        </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-4 w-[80px]">
+                          <div className="flex items-center gap-4 w-[50px]">
                             <div className="img w-full rounded-md overflow-hidden group">
                               <Link to={"/product/45745"} data-discover="true">
                                 <LazyLoadImage

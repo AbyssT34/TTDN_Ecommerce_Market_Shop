@@ -222,6 +222,32 @@ function App() {
       ),
     },
     {
+      path: "/homeSlider/add",
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="contentMain flex">
+              <div
+                className={`overflow-hidden sidebarWrapper ${
+                  isSiderOpen === true ? "w-[18%]" : "w-[0px] opacity-0"
+                } transition-all`}
+              >
+                <SideBar />
+              </div>
+              <div
+                className={`contentRight py-4 px-5  ${
+                  isSiderOpen === false ? "w-[100%]" : "w-[82%]"
+                } transition-all`}
+              >
+                <AddHomeSlide />
+              </div>
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
       path: "/category/list",
       element: (
         <>

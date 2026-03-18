@@ -5,7 +5,7 @@ import { IoCloseSharp } from 'react-icons/io5';
 import { FaRegPlusSquare } from 'react-icons/fa';
 import { FaRegMinusSquare } from 'react-icons/fa';
 
-const CategoryCollapse = () => {
+const CategoryCollapse = (props) => {
   const [submenuIndex, setSubmenuIndex] = useState(null);
   const [innerSubmenuIndex, setInnerSubmenuIndex] = useState(null);
 
@@ -27,161 +27,83 @@ const CategoryCollapse = () => {
 
   return (
     <>
-      <div className="scroll ">
+      <div className="scroll">
         <ul className="w-full">
-          <li className="list-none flex items-center relative flex-col">
-            <Link to={'/'} className="w-full">
-              <Button className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]">
-                Fashion{' '}
-              </Button>
-            </Link>
-            {submenuIndex === 0 ? (
-              <FaRegMinusSquare
-                className="absolute top-[10px] right-[15px] cursor-pointer"
-                onClick={() => openSubmenu(0)}
-              />
-            ) : (
-              <FaRegPlusSquare
-                className="absolute top-[10px] right-[15px] cursor-pointer"
-                onClick={() => openSubmenu(0)}
-              />
-            )}
-            {submenuIndex === 0 && (
-              <ul className="submenu w-full pl-3">
-                <li className="list-none relative">
+          {props?.data?.length !== 0 &&
+            props?.data?.map((cat, index) => {
+              return (
+                // ✅ Fix 1: Thêm key prop
+                <li key={index} className="list-none flex items-center relative flex-col">
                   <Link to={'/'} className="w-full">
                     <Button className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]">
-                      Apparel{' '}
+                      {cat?.name}
                     </Button>
                   </Link>
-                  {innerSubmenuIndex === 0 ? (
-                    <FaRegMinusSquare
-                      className="absolute top-[10px] right-[15px] cursor-pointer"
-                      onClick={() => openInnerSubmenu(0)}
-                    />
-                  ) : (
-                    <FaRegPlusSquare
-                      className="absolute top-[10px] right-[15px] cursor-pointer"
-                      onClick={() => openInnerSubmenu(0)}
-                    />
-                  )}
-                  {innerSubmenuIndex === 0 && (
-                    <ul className="inner_submenu  w-full pl-3">
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Smart Tablet{' '}
-                        </Link>
-                      </li>
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Crepe T-Shirt{' '}
-                        </Link>
-                      </li>{' '}
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Leather Watch{' '}
-                        </Link>
-                      </li>{' '}
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Rolling Diamond{' '}
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
-                </li>
-              </ul>
-            )}
-          </li>
 
-          <li className="list-none flex items-center relative flex-col">
-            <Link to={'/'} className="w-full">
-              <Button className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]">
-                Outerwear{' '}
-              </Button>
-            </Link>
-            {submenuIndex === 1 ? (
-              <FaRegMinusSquare
-                className="absolute top-[10px] right-[15px] cursor-pointer"
-                onClick={() => openSubmenu(1)}
-              />
-            ) : (
-              <FaRegPlusSquare
-                className="absolute top-[10px] right-[15px] cursor-pointer"
-                onClick={() => openSubmenu(1)}
-              />
-            )}
-            {submenuIndex === 1 && (
-              <ul className="submenu w-full pl-3">
-                <li className="list-none relative">
-                  <Link to={'/'} className="w-full">
-                    <Button className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]">
-                      Apparel{' '}
-                    </Button>
-                  </Link>
-                  {innerSubmenuIndex === 1 ? (
+                  {submenuIndex === index ? (
                     <FaRegMinusSquare
                       className="absolute top-[10px] right-[15px] cursor-pointer"
-                      onClick={() => openInnerSubmenu(1)}
+                      onClick={() => openSubmenu(index)}
                     />
                   ) : (
                     <FaRegPlusSquare
                       className="absolute top-[10px] right-[15px] cursor-pointer"
-                      onClick={() => openInnerSubmenu(1)}
+                      onClick={() => openSubmenu(index)}
                     />
                   )}
-                  {innerSubmenuIndex === 1 && (
-                    <ul className="inner_submenu  w-full pl-3">
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Smart Tablet{' '}
-                        </Link>
-                      </li>
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Crepe T-Shirt{' '}
-                        </Link>
-                      </li>{' '}
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Leather Watch{' '}
-                        </Link>
-                      </li>{' '}
-                      <li className="list-none relative">
-                        <Link
-                          to={'/'}
-                          className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
-                        >
-                          Rolling Diamond{' '}
-                        </Link>
-                      </li>
+
+                  {submenuIndex === index && (
+                    <ul className="submenu w-full pl-3">
+                      {cat?.children?.length !== 0 &&
+                        cat?.children?.map((subCat, index_) => {
+                          return (
+                            // ✅ Fix 1: Thêm key prop
+                            <li key={index_} className="list-none relative">
+                              <Link to={'/'} className="w-full">
+                                <Button className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]">
+                                  {subCat?.name}
+                                </Button>
+                              </Link>
+
+                              {/* ✅ Fix 2: Đổi === 0 thành === index_ để toggle đúng từng item */}
+                              {innerSubmenuIndex === index_ ? (
+                                <FaRegMinusSquare
+                                  className="absolute top-[10px] right-[15px] cursor-pointer"
+                                  onClick={() => openInnerSubmenu(index_)}
+                                />
+                              ) : (
+                                <FaRegPlusSquare
+                                  className="absolute top-[10px] right-[15px] cursor-pointer"
+                                  onClick={() => openInnerSubmenu(index_)}
+                                />
+                              )}
+
+                              {/* ✅ Fix 2: Đổi === 0 thành === index_ */}
+                              {innerSubmenuIndex === index_ && (
+                                <ul className="inner_submenu w-full pl-3">
+                                  {subCat?.children?.length !== 0 &&
+                                    subCat?.children?.map((thirdLevelCat, index__) => {
+                                      return (
+                                        <li key={index__} className="list-none relative">
+                                          <Link
+                                            to={'/'}
+                                            className="link w-full !text-left !justify-start !px-3 transition text-[14px] mb-1"
+                                          >
+                                            {thirdLevelCat?.name}
+                                          </Link>
+                                        </li>
+                                      );
+                                    })}
+                                </ul>
+                              )}
+                            </li>
+                          );
+                        })}
                     </ul>
                   )}
                 </li>
-              </ul>
-            )}
-          </li>
+              );
+            })}
         </ul>
       </div>
     </>

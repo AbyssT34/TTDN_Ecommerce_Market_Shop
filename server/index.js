@@ -11,6 +11,7 @@ import productRouter from "./route/product.route.js";
 import cartRouter from "./route/cart.route.js";
 import myListRouter from "./route/mylist.route.js";
 import addressRouter from "./route/address.route.js";
+import homeSliderRouter from "./route/homeSlider.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000; // 🔹 khai báo ở đây
@@ -37,6 +38,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/myList", myListRouter);
 app.use("/api/address", addressRouter);
+app.use("/api/homeSlider",homeSliderRouter);
 
 // Kết nối DB và khởi động server
 await connectDB();

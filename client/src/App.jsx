@@ -31,13 +31,15 @@ const MyContext = createContext();
 
 function App() {
   const [openCartPanel, setOpenCartPanel] = useState(false);
-
-  const [openProductDetailsModal, setOpenProductDetailsModal] = useState(false);
+  const [openProductDetailsModal, setOpenProductDetailsModal] = useState({
+    open: false,
+    item: {},
+  });
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('lg');
   const [islogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
-
+  const [catData, setCatData] = useState([]);
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -61,9 +63,9 @@ function App() {
             localStorage.removeItem('accesstoken');
             localStorage.removeItem('refreshToken');
 
-            alertBox("error", "Your session is closed please login again");
+            alertBox('error', 'Your session is closed please login again');
 
-            window.location.href = "/login"
+            window.location.href = '/login';
           }
         }
       });
@@ -81,6 +83,14 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    fetchDataFromApi(`/api/category`).then((res) => {
+      if (res?.success === true) {
+        setCatData(res?.data);
+      }
+    });
+  }, []);
+
   const alertBox = (type, msg) => {
     if (type === 'success') {
       toast.success(msg);
@@ -90,12 +100,23 @@ function App() {
     }
   };
 
+   const handleOpenProductDetailsModal = (status, item) => {
+     setOpenProductDetailsModal({
+       open: status,
+       item: item,
+     });
+   }
+
   const handleCloseProductDetailsModal = () => {
-    setOpenProductDetailsModal(false);
+    setOpenProductDetailsModal({
+      open: false,
+      item: {}
+    });
   };
 
   const values = {
     setOpenProductDetailsModal,
+    handleOpenProductDetailsModal,
     setOpenCartPanel,
     openCartPanel,
     toggleCartPanel,
@@ -105,6 +126,8 @@ function App() {
     alertBox,
     setUserData,
     userData,
+    catData,
+    setCatData,
   };
 
   return (
@@ -125,14 +148,14 @@ function App() {
             <Route path={'/my-account'} exact={true} element={<MyAccount />} />
             <Route path={'/my-list'} exact={true} element={<MyList />} />
             <Route path={'/my-orders'} exact={true} element={<Orders />} />
-             <Route path={'/address'} exact={true} element={<Address />} />
+            <Route path={'/address'} exact={true} element={<Address />} />
           </Routes>
           <Footer />
         </MyContext.Provider>
       </BrowserRouter>
 
       <Dialog
-        open={openProductDetailsModal}
+        open={openProductDetailsModal.open}
         fullWidth={fullWidth}
         maxWidth={maxWidth}
         onClose={handleCloseProductDetailsModal}
@@ -148,12 +171,16 @@ function App() {
             >
               <IoCloseSharp className="text-[20px]" onClick={handleCloseProductDetailsModal} />
             </Button>
-            <div className="col1 w-[40%] px-3">
-              <ProductZoom />
-            </div>
-            <div className="col2 w-[60%] py-8 px-8 pr-16 productContainer">
-              <ProductDetailsComponent />
-            </div>
+            {openProductDetailsModal?.item?.length !== 0 && (
+              <>
+                <div className="col1 w-[40%] px-3 py-8">
+                  <ProductZoom images={openProductDetailsModal?.item?.images} />
+                </div>
+                <div className="col2 w-[60%] py-8 px-8 pr-16 productContainer">
+                  <ProductDetailsComponent item={openProductDetailsModal?.item}/>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

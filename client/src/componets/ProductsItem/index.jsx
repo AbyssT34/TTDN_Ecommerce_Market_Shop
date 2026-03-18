@@ -9,22 +9,18 @@ import { IoIosGitCompare } from 'react-icons/io';
 import { MdOutlineZoomOutMap } from 'react-icons/md';
 import { MyContext } from '../../App';
 
-const ProductsItem = () => {
+const ProductsItem = (props) => {
   const context = useContext(MyContext);
 
   return (
     <>
       <div className="productsItem shadow-lg rounded-md overflow-hidden border-1 border-[rgba(0,0,0,0.1)]">
         <div className="group imgWrapper w-[100%]  overflow-hidden rounded-md relative">
-          <Link to={'/'}>
+          <Link to={`/product/${props?.item?._id}`}>
             <div className="img h-[220px] overflow-hidden">
+              <img src={props?.item?.images[0]} className="w-full" />
               <img
-                src="https://serviceapi.spicezgold.com/download/1753722939206_125c18d6-592d-4082-84e5-49707ae9a4fd1749366193911-Flying-Machine-Women-Wide-Leg-High-Rise-Light-Fade-Stretchab-1.jpg"
-                alt="wrapper"
-                className="w-full"
-              />
-              <img
-                src="https://serviceapi.spicezgold.com/download/1753722939207_5107b7b1-ba6d-473c-9195-8576a6a0a9611749366193848-Flying-Machine-Women-Wide-Leg-High-Rise-Light-Fade-Stretchab-3.jpg"
+                src={props?.item?.images[1]}
                 alt="wrapper"
                 className="w-full transition-all duration-700 absolute top-0 left-0 opacity-0 group-hover:opacity-100 group-hover:scale-150"
               />
@@ -34,7 +30,7 @@ const ProductsItem = () => {
             className="discount flex items-center absolute top-[10px] left-[10px] z-50 
     bg-primary text-white rounded-lg p-1 text-[12px] font-[500]"
           >
-            10%
+            {props?.item?.discount}
           </span>
 
           <div
@@ -44,7 +40,7 @@ const ProductsItem = () => {
             <Button
               className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white
          text-black hover:!bg-[#ff5252] hover:text-white group"
-              onClick={() => context.setOpenProductDetailsModal(true)}
+              onClick={() => context.handleOpenProductDetailsModal(true, props?.item)}
             >
               <MdOutlineZoomOutMap
                 className="text-[18px]
@@ -73,23 +69,24 @@ const ProductsItem = () => {
           </div>
         </div>
         <div className="info p-3 py-5">
-          <h6 className="text-[13px] !font-[400]">
-            <Link to={'/'} className="link transition-all">
-              Flying Machine
-            </Link>
+          <h6 className="text-[13px] title mt-1 font-[500] mb-1 text-[#000]">
+            <span className="link transition-all">{props?.item?.brand}</span>
           </h6>
-          <h3 className="text-[13px] title mt-1 font-[500] mb-1 text-[#000]">
-            <Link to={'/'} className="link transition-all">
-              Women Wide Leg High-Rise Light Fade Stretchable Jeans
+
+          <h3 className="text-[13px] !font-[400]">
+            <Link to={`/product/${props?.item?._id}`} className="link transition-all">
+              {props?.item?.name}
             </Link>
           </h3>
-          <Rating name="size-small" defaultValue={4} size="small" readOnly />
+          <Rating name="size-small" defaultValue={props?.item?.rating} size="small" readOnly />
 
           <div className="flex items-center gap-4">
             <span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
-              $58.00
+              &#8363; {props?.item?.price}
             </span>
-            <span className="price text-primary text-[15px] font-[600]">$49.00</span>
+            <span className="price text-primary text-[15px] font-[600]">
+              &#8363; {props?.item?.oldPrice}
+            </span>
           </div>
         </div>
       </div>
