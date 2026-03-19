@@ -433,6 +433,7 @@ const Products = () => {
                               name="half-rating"
                               size="small"
                               defaultValue={product?.rating}
+                              readOnly
                             />
                           </p>
                           {/* <ProgressBar value={40} type="success" /> */}

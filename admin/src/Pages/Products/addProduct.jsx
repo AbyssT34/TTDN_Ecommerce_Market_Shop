@@ -10,6 +10,9 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { MyContext } from "../../App";
 import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import Switch from "@mui/material/Switch";
+
+const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const AddProduct = () => {
   const [productCat, setProductCat] = useState("");
@@ -23,6 +26,7 @@ const AddProduct = () => {
   const [productSizeData, setproductSizeData] = useState([]);
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [previews, setPreviews] = useState([]);
+  const [bannerPreviews, setBannerPreviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formFields, setFormFields] = useState({
     name: "",
@@ -45,7 +49,13 @@ const AddProduct = () => {
     productRam: [],
     size: [],
     productWeight: [],
+    bannerTitleName: "",
+    bannerimages: [],
+    isDisplayOnHomeBanner:false,
   });
+
+  const [checkedSwitch, setCheckedSwitch] = useState(false);
+
 
   const context = useContext(MyContext);
   const history = useNavigate();
@@ -76,11 +86,26 @@ const AddProduct = () => {
     }));
   };
 
+  const setBannerImagesFun = (newBannerPreviews) => {
+    setBannerPreviews((prev) => [...prev, ...newBannerPreviews]);
+    setFormFields((prev) => ({
+      ...prev,
+      bannerimages: [...prev.bannerimages, ...newBannerPreviews], // ✅ không phải images
+    }));
+  };
   const removeImg = (image, index) => {
     deleteImages(`/api/category/deteleImage?img=${image}`).then(() => {
       const imageArr = previews.filter((_, i) => i !== index);
       setPreviews(imageArr);
       setFormFields((prev) => ({ ...prev, images: imageArr }));
+    });
+  };
+
+  const removeBannerImg = (image, index) => {
+    deleteImages(`/api/product/deteleImage?img=${image}`).then(() => {
+      const imageArr = bannerPreviews.filter((_, i) => i !== index);
+      setBannerPreviews(imageArr);
+      setFormFields((prev) => ({ ...prev, bannerimages: imageArr }));
     });
   };
 
@@ -200,6 +225,8 @@ const AddProduct = () => {
       return context.alertBox("error", "Please enter product discount");
     if (previews?.length === 0)
       return context.alertBox("error", "Please select product image");
+    if (formFields?.bannerTitleName === 0)
+      return context.alertBox("error", "Please select product image");
 
     setIsLoading(true);
 
@@ -222,6 +249,12 @@ const AddProduct = () => {
         context.alertBox("error", "Failed to create product");
       });
   };
+
+  const handleChangeSwitch = (event) => {
+    setCheckedSwitch(event.target.checked);
+    formFields.isDisplayOnHomeBanner = event.target.checked;
+  };
+
 
   return (
     <section className="p-5 bg-gray-50">
@@ -506,28 +539,81 @@ const AddProduct = () => {
           <div className="col w-full p-5 px-0">
             <h3 className="font-[700] text-[18px] mb-3">Media & Images</h3>
             <div className="grid grid-cols-8 gap-4">
-              {previews?.map((image, index) => (
-                <div className="uploadBoxWrapper relative" key={index}>
-                  <span
-                    className="absolute w-[20px] h-[20px] rounded-full overflow-hidden bg-red-700 -top-[5px] -right-[5px] flex items-center justify-center z-50 cursor-pointer"
-                    onClick={() => removeImg(image, index)}
-                  >
-                    <IoMdClose className="text-white text-[17px]" />
-                  </span>
-                  <div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-[rgba(0,0,0,0.3)] h-[150px] w-[100%] bg-gray-100 cursor-pointer hover:bg-gray-200 flex items-center justify-center flex-col relative">
-                    <img
-                      src={image}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              ))}
+              {previews?.length !== 0 &&
+                previews?.map((image, index) => {
+                  return (
+                    <div className="uploadBoxWrapper relative" key={index}>
+                      <span
+                        className="absolute w-[20px] h-[20px] rounded-full overflow-hidden bg-red-700 -top-[5px] -right-[5px] flex items-center justify-center z-50 cursor-pointer"
+                        onClick={() => removeImg(image, index)}
+                      >
+                        <IoMdClose className="text-white text-[17px]" />
+                      </span>
+                      <div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-[rgba(0,0,0,0.3)] h-[150px] w-[100%] bg-gray-100 cursor-pointer hover:bg-gray-200 flex items-center justify-center flex-col relative">
+                        <img
+                          src={image}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               <UploadBox
                 multiple={true}
                 name="images"
                 url="/api/product/uploadImages"
                 setPreviewsFun={setPreviewsFun}
+              />
+            </div>
+          </div>
+          <div className="col w-full p-5 px-0">
+            <div className="shadow-mg bg-white p-4 w-full">
+              <div className="flex items-center gap-8">
+                <h3 className="font-[700] text-[18px] mb-3">Banner Images</h3>
+                <Switch
+                  {...label}
+                  onChange={handleChangeSwitch}
+                  checked={checkedSwitch}
+                />
+              </div>
+              <div className="grid grid-cols-8 gap-4">
+                {bannerPreviews?.length !== 0 &&
+                  bannerPreviews?.map((image, index) => {
+                    return (
+                      <div className="uploadBoxWrapper relative" key={index}>
+                        <span
+                          className="absolute w-[20px] h-[20px] rounded-full overflow-hidden bg-red-700 -top-[5px] -right-[5px] flex items-center justify-center z-50 cursor-pointer"
+                          onClick={() => removeBannerImg(image, index)}
+                        >
+                          <IoMdClose className="text-white text-[17px]" />
+                        </span>
+                        <div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-[rgba(0,0,0,0.3)] h-[150px] w-[100%] bg-gray-100 cursor-pointer hover:bg-gray-200 flex items-center justify-center flex-col relative">
+                          <img
+                            src={image}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                <UploadBox
+                  multiple={true}
+                  name="images"
+                  url="/api/product/uploadBannerImages"
+                  setBannerImagesFun={setBannerImagesFun}
+                />
+              </div>
+
+              <h3 className="font-[700] text-[18px] mb-3">Banner Title</h3>
+              <input
+                type="text"
+                className="w-full h-[40px] border border-[rgba(0,0,0,0.2)]
+                 focus:outline-none focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm"
+                name="bannerTitleName"
+                value={formFields.bannerTitleName}
+                onChange={onChangeInput}
               />
             </div>
           </div>

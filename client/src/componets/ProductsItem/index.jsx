@@ -75,7 +75,7 @@ const ProductsItem = (props) => {
 
           <h3 className="text-[13px] !font-[400]">
             <Link to={`/product/${props?.item?._id}`} className="link transition-all">
-              {props?.item?.name}
+              {props?.item?.name?.substr(0,40)+"..."}
             </Link>
           </h3>
           <Rating name="size-small" defaultValue={props?.item?.rating} size="small" readOnly />

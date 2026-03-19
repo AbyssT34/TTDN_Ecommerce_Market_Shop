@@ -34,7 +34,6 @@ export async function uploadImages(request, response) {
     }
 
     return response.status(200).json({
-      avatar: imagesArr[0],
       images: imagesArr,
     });
   } catch (error) {

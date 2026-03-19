@@ -195,81 +195,6 @@ const SideBar = () => {
           </li>
 
           <li>
-            <Button
-              className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] 
-            !font-[600] items-center !py-2 hover:!bg-[#f1f1f1]"
-              onClick={() => isOpenSubMenu(4)}
-            >
-              <TbCategory className="text-[20px]" /> <span>Category</span>
-              <span className="ml-auto w-[30px] h-[30px] flex items-center justify-center">
-                <FaAngleDown
-                  className={`transition-all ${
-                    submenuIndex === 4 ? "rotate-180 " : ""
-                  }`}
-                />
-              </span>
-            </Button>
-
-            <Collapse isOpened={submenuIndex === 4 ? true : false}>
-              <ul className="w-full">
-                <li className="w-full">
-                  <Link to={"/category/list"}>
-                    <Button
-                      className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start
-                   !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
-                    >
-                      <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
-                      Category List
-                    </Button>
-                  </Link>
-                </li>
-                <li className="w-full">
-                  <Button
-                    className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start 
-                  !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
-                    onClick={() =>
-                      context.setIsOpenFullScreenPanel({
-                        open: true,
-                        model: "Add New Category",
-                      })
-                    }
-                  >
-                    <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
-                    Add a Category
-                  </Button>
-                </li>
-
-                <li className="w-full">
-                  <Link to={"/subCategory/list"}>
-                    <Button
-                      className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start 
-                  !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
-                    >
-                      <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
-                      Sub Category List
-                    </Button>
-                  </Link>
-                </li>
-                <li className="w-full">
-                  <Button
-                    className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start 
-                  !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
-                    onClick={() =>
-                      context.setIsOpenFullScreenPanel({
-                        open: true,
-                        model: "Add New Sub Category",
-                      })
-                    }
-                  >
-                    <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
-                    Add a Sub Category
-                  </Button>
-                </li>
-              </ul>
-            </Collapse>
-          </li>
-
-          <li>
             <Link to={"/orders"}>
               <Button
                 className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] 
@@ -279,6 +204,85 @@ const SideBar = () => {
                 <span>Orders</span>
               </Button>
             </Link>
+          </li>
+
+          <Collapse isOpened={submenuIndex === 1 ? true : false}>
+            <ul className="w-full">
+              <li className="w-full">
+                <Link to={"/homeSlider/list"}>
+                  <Button
+                    className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start
+                   !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
+                  >
+                    <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
+                    Home Banner List
+                  </Button>
+                </Link>
+              </li>
+              <li className="w-full">
+                <Button
+                  className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start 
+                  !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
+                  onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Add HomeSlide",
+                    })
+                  }
+                >
+                  <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
+                  Add Home Banner Slide
+                </Button>
+              </li>
+            </ul>
+          </Collapse>
+
+          <li>
+            <Button
+              className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] 
+            !font-[600] items-center !py-2 hover:!bg-[#f1f1f1]"
+              onClick={() => isOpenSubMenu(5)}
+            >
+              <TbCategory className="text-[20px]" /> <span>Banners</span>
+              <span className="ml-auto w-[30px] h-[30px] flex items-center justify-center">
+                <FaAngleDown
+                  className={`transition-all ${
+                    submenuIndex === 5 ? "rotate-180 " : ""
+                  }`}
+                />
+              </span>
+            </Button>
+
+            <Collapse isOpened={submenuIndex === 5 ? true : false}>
+              <ul className="w-full">
+                <li className="w-full">
+                  <Link to={"/bannerV1List"}>
+                    <Button
+                      className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start
+                   !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
+                    >
+                      <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
+                      Banner V1 List
+                    </Button>
+                  </Link>
+                </li>
+                <li className="w-full">
+                  <Button
+                    className="!text-[rgba(0,0,0,0.7)] !capitalize !justify-start 
+                  !w-full !text-[13px] !font-[400] !pl-9 flex gap-3"
+                    onClick={() =>
+                      context.setIsOpenFullScreenPanel({
+                        open: true,
+                        model: "Add BannerV1",
+                      })
+                    }
+                  >
+                    <span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.2)]"></span>
+                    Add Banner V1
+                  </Button>
+                </li>
+              </ul>
+            </Collapse>
           </li>
 
           <li>

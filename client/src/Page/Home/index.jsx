@@ -20,6 +20,7 @@ import HomeBannerV2 from '../../componets/HomeSliderV2';
 import BannerBoxV2 from '../../componets/bannerBoxV2';
 import { useContext } from 'react';
 import { MyContext } from '../../App';
+import ProductLoading from '../../componets/ProductLoading';
 
 const Home = () => {
   const [value, setValue] = useState(0);
@@ -59,6 +60,7 @@ const Home = () => {
   };
 
   const filterByCatId = (id) => {
+    setPopularProducsData([]);
     fetchDataFromApi(`/api/product/getAllProductsByCatId/${id}`).then((res) => {
       if (res?.error === false) {
         setPopularProducsData(res?.products);
@@ -69,19 +71,6 @@ const Home = () => {
   return (
     <>
       {homeSlidesData?.length !== 0 && <HomeSlider data={homeSlidesData} />}
-
-      <section className="py-6">
-        <div className="container flex items-center gap-5">
-          <div className="part1 w-[70%]">
-            <HomeBannerV2 />
-          </div>
-
-          <div className="part2 w-[30%] flex items-center gap-5 justify-between flex-col">
-            <BannerBoxV2 info="left" image={'/bannerBox2.jpg'} />
-            <BannerBoxV2 info="right" image={'/bannerBox1.jpg'} />
-          </div>
-        </div>
-      </section>
 
       {context?.catData?.length !== 0 && <HomeCatSlider data={context?.catData} />}
 
@@ -111,15 +100,32 @@ const Home = () => {
             </div>
           </div>
 
+          {popularproductsData?.length === 0 && <ProductLoading />}
+
           {popularproductsData?.length !== 0 && (
             <ProductsSlider items={6} data={popularproductsData} />
           )}
         </div>
       </section>
 
+      <section className="py-6">
+        <div className="container flex items-center gap-5">
+          <div className="part1 w-[70%]">
+            {productsData?.length !== 0 && <HomeBannerV2 data={productsData} />}
+          </div>
+
+          <div className="part2 w-[30%] flex items-center gap-5 justify-between flex-col">
+            <BannerBoxV2 info="left" image={'/bannerBox2.jpg'} />
+            <BannerBoxV2 info="right" image={'/bannerBox1.jpg'} />
+          </div>
+        </div>
+      </section>
+
       <section className="py-5 pt-0 bg-white">
         <div className="container">
           <h2 className="text-[20px] font-[600]">Latest Products</h2>
+
+          {productsData?.length === 0 && <ProductLoading />}
           {productsData?.length !== 0 && <ProductsSlider items={6} data={productsData} />}
 
           <AdsBannerSlider items={3} />

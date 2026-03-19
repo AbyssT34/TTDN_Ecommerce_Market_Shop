@@ -37,8 +37,37 @@ export async function uploadImages(request, response) {
     }
 
     return response.status(200).json({
-      avatar: imagesArr[0],
       images: imagesArr,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+export async function uploadBannerImages(request, response) {
+  try {
+    const bannerImage = request.files; // ✅ đây là array files
+
+    const imagesArr = []; // ✅ khai báo local, bỏ biến global
+
+    for (const file of bannerImage) {
+      // ✅ dùng bannerImage, không phải images
+      const uploaded = await cloudinary.uploader.upload(file.path, {
+        use_filename: true,
+        unique_filename: false,
+        overwrite: false,
+      });
+
+      imagesArr.push(uploaded.secure_url);
+      fs.unlinkSync(file.path);
+    }
+
+    return response.status(200).json({
+      images: imagesArr, // ✅ trả về imagesArr
     });
   } catch (error) {
     return response.status(500).json({
@@ -55,7 +84,9 @@ export async function createProduct(request, response) {
     let product = new ProductModel({
       name: request.body.name,
       description: request.body.description,
-      images: imagesArr,
+      images: request.body.images, // ✅ từ body
+      bannerimages: request.body.bannerimages, // ✅ từ body
+      bannerTitleName: request.body.bannerTitleName,
       brand: request.body.brand,
       price: request.body.price,
       oldPrice: request.body.oldPrice,
@@ -78,16 +109,14 @@ export async function createProduct(request, response) {
     product = await product.save();
 
     if (!product) {
-      response.status(500).json({
+      return response.status(500).json({
         success: false,
-        error: error,
+        error: true,
         message: "Product Not Created",
       });
     }
 
-    imagesArr = [];
-
-    response.status(201).json({
+    return response.status(201).json({
       message: "Product Created Successfully",
       success: true,
       error: false,
@@ -793,7 +822,10 @@ export async function updateProducts(request, response) {
       {
         name: request.body.name,
         description: request.body.description,
-        images: imagesArr,
+        images: request.body.images, // ✅ từ body
+        bannerimages: request.body.bannerimages, // ✅ đúng field name
+        bannerTitleName: request.body.bannerTitleName,
+        isDisplayOnHomeBanner: request.body.isDisplayOnHomeBanner,
         brand: request.body.brand,
         price: request.body.price,
         oldPrice: request.body.oldPrice,
@@ -1394,4 +1426,3 @@ export async function deleteMultipleProductSizes(request, response) {
     });
   }
 }
-

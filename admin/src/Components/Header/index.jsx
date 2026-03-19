@@ -26,6 +26,7 @@ import { IoMdClose } from "react-icons/io";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 import EditProduct from "../../Pages/Products/editProduct";
+import AddBannerV1 from "../../Pages/Banners/addBannerV1";
 
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -247,6 +248,10 @@ const Header = () => {
         )}
         {context?.isOpenFullScreenPanel.model === "Add HomeSlide" && (
           <AddHomeSlide />
+        )}
+
+        {context?.isOpenFullScreenPanel.model === "Add BannerV1" && (
+          <AddBannerV1 />
         )}
       </Dialog>
     </>

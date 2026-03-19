@@ -88,7 +88,11 @@ function App() {
       if (res?.success === true) {
         setCatData(res?.data);
       }
+
+      
     });
+
+
   }, []);
 
   const alertBox = (type, msg) => {

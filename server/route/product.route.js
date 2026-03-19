@@ -38,12 +38,14 @@ import {
   updateProductWeight,
   updateProductSize,
   uploadImages,
+  uploadBannerImages,
 } from "../controllers/product.controller.js";
 
 const productRouter = Router();
 
 // ── Images ──────────────────────────────────────────
 productRouter.post("/uploadImages", auth, upload.array("images"), uploadImages);
+productRouter.post("/uploadBannerImages", auth, upload.array("images"), uploadBannerImages);
 productRouter.delete("/deteleImage", auth, removeImageFromCloudinary);
 
 // ── Product Rams (cụ thể trước) ──────────────────────
