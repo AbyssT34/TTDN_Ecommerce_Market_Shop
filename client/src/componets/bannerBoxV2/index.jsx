@@ -17,8 +17,10 @@ const BannerBoxV2 = (props) => {
               props.info === 'left' ? '' : 'pl-15'
             } `}
         >
-          <h2 className="text-[20px] font-[600]">Buy Apple Iphone 13 ProMaxx</h2>
-          <span className="text-[20px] text-primary font-[600] w-full">$60.00</span>
+          <h2 className="text-[20px] font-[600]">{props?.item?.bannerTitle}</h2>
+          <span className="text-[20px] text-primary font-[600] w-full">
+            &#8363; {props?.item?.price}
+          </span>
 
           <div className="w-full">
             <Link to={'/'} className="text-[16px] font-[600] link">

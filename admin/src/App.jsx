@@ -43,6 +43,7 @@ import ProductDetails from "./Pages/Products/productDetails";
 import AddRams from "./Pages/Products/addRams";
 import AddWeight from "./Pages/Products/addWeight";
 import AddSize from "./Pages/Products/addSize";
+import BannersV1List from "./Pages/Banners";
 
 // ✅ Khai báo context ở ngoài hàm App
 const MyContext = createContext();
@@ -475,6 +476,32 @@ function App() {
                 } transition-all`}
               >
                 <AddSize />
+              </div>
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/bannerV1/list",
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="contentMain flex">
+              <div
+                className={`overflow-hidden sidebarWrapper ${
+                  isSiderOpen === true ? "w-[18%]" : "w-[0px] opacity-0"
+                } transition-all`}
+              >
+                <SideBar />
+              </div>
+              <div
+                className={`contentRight py-4 px-5  ${
+                  isSiderOpen === false ? "w-[100%]" : "w-[82%]"
+                } transition-all`}
+              >
+                <BannersV1List />
               </div>
             </div>
           </section>

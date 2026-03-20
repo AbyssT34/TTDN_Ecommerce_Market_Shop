@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { useState } from "react";
 import { useContext } from "react";
 import { MyContext } from "../../App";
-import { deleteImages, postData } from "../../utils/api";
+import {
+  deleteImages,
+  editData,
+  fetchDataFromApi,
+  postData,
+} from "../../utils/api";
 import UploadBox from "../../Components/UploadBox";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
@@ -12,13 +17,13 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import Button from "@mui/material/Button";
 import { IoMdClose } from "react-icons/io";
 
-const AddBannerV1 = () => {
+const EditBannerV1 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [productCat, setProductCat] = useState("");
   const [productSubCat, setProductSubCat] = useState("");
   const [previews, setPreviews] = useState([]);
-  const [alignInfo, setAlignInfo] = useState("");
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
+  const [alignInfo, setAlignInfo] = useState("");
   const [formFields, setFormFields] = useState({
     catId: "",
     bannerTitle: "",
@@ -31,6 +36,28 @@ const AddBannerV1 = () => {
 
   const context = useContext(MyContext);
   const history = useNavigate();
+
+useEffect(() => {
+  const id = context?.isOpenFullScreenPanel?.id;
+
+  fetchDataFromApi(`/api/bannerV1/${id}`).then((res) => {
+    setFormFields({
+      bannerTitle: res?.banner?.bannerTitle || "",
+      price: res?.banner?.price || "",
+      images: res?.banner?.images || [],
+      catId: res?.banner?.catId || "",
+      subCatId: res?.banner?.subCatId || "",
+      thirdsubCatId: res?.banner?.thirdsubCatId || "",
+
+      alignInfo: res?.banner?.alignInfo || "",
+    });
+    setPreviews(res?.banner?.images || []);
+    setProductCat(res?.banner?.catId || "");
+    setProductSubCat(res?.banner?.subCatId || "");
+    setProductThirLaveldCat(res?.banner?.thirdsubCatId || "");
+    setAlignInfo(res?.banner?.alignInfo || ""); // ✅ lấy từ res, không phải event
+  });
+}, []);
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -101,11 +128,11 @@ const AddBannerV1 = () => {
     }));
   };
 
- const handleChangeAlignInfo = (event) => {
-   const value = event.target.value;
-   setAlignInfo(value);
-   setFormFields((prev) => ({ ...prev, alignInfo: value })); // ✅ đổi từ align → alignInfo
- };
+const handleChangeAlignInfo = (event) => {
+  const value = event.target.value;
+  setAlignInfo(value);
+  setFormFields((prev) => ({ ...prev, align: value })); // ✅ không mutate trực tiếp
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -130,7 +157,10 @@ const AddBannerV1 = () => {
       return false;
     }
 
-    postData(`/api/bannerV1/add`, formFields).then((res) => {
+    editData(
+      `/api/bannerV1/${context?.isOpenFullScreenPanel?.id}`,
+      formFields,
+    ).then((res) => {
       console.log(res);
       setTimeout(() => {
         {
@@ -318,4 +348,4 @@ const AddBannerV1 = () => {
   );
 };
 
-export default AddBannerV1;
+export default EditBannerV1;

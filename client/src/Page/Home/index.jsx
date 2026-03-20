@@ -28,6 +28,7 @@ const Home = () => {
   const [popularproductsData, setPopularProducsData] = useState([]);
   const [productsData, setAllProductsData] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [bannerV1Data, setBannerV1Data] = useState([]);
 
   const context = useContext(MyContext);
 
@@ -43,6 +44,13 @@ const Home = () => {
     fetchDataFromApi(`/api/product/getAllFeaturedProducts`).then((res) => {
       setFeaturedProducts(res?.products);
     });
+
+     fetchDataFromApi(`/api/bannerV1`).then((res) => {
+       setBannerV1Data(res?.data);
+     });
+
+
+    
   }, []);
 
   useEffect(() => {
@@ -118,6 +126,28 @@ const Home = () => {
             <BannerBoxV2 info="left" image={'/bannerBox2.jpg'} />
             <BannerBoxV2 info="right" image={'/bannerBox1.jpg'} />
           </div>
+        </div>
+      </section>
+
+      <section className="py-4 pt-2 bg-white">
+        <div className="container">
+          <div
+            className="freeShipping  w-[80%] m-auto py-4 p-4 border border-[#b92727] flex 
+          items-center justify-between rounded-md mb-7"
+          >
+            <div className="col1 flex items-center gap-4 ">
+              <LiaShippingFastSolid className="text-[50px] " />
+              <span className="text-[20px] font-[600] uppercase">Free Shipping</span>
+            </div>
+
+            <div className="col2">
+              <p className="mb-0 font-[500]">Free Delivery Now On Your First Order and over $200</p>
+            </div>
+
+            <p className="font-bold text-[25px]"> - Only $200*</p>
+          </div>
+
+          {bannerV1Data?.length !== 0 && <AdsBannerSliderV2 items={4} data={bannerV1Data} />}
         </div>
       </section>
 

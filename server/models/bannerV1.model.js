@@ -7,17 +7,24 @@ const bannerV1Schema = new mongoose.Schema(
       default: "",
       required: true,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
     catId: {
       type: String,
       default: "",
-      required: true,
     },
     subCatId: {
       type: String,
       default: "",
-      required: true,
     },
     thirdsubCatId: {
+      type: String,
+      default: "",
+    },
+    alignInfo: {
       type: String,
       default: "",
       required: true,
