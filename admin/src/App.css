@@ -207,4 +207,6 @@ button .MuiCirularProgress-root {
   color: #000;
 }
 
-.contentRight{padding-top: 80px !important; }
+.contentRight{padding-top: 75px !important; }
+
+.rsw-ce{min-height: 190px !important; background: #fff !important;}
