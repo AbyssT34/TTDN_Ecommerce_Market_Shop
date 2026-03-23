@@ -22,6 +22,7 @@ import { useContext } from 'react';
 import { MyContext } from '../../App';
 import ProductLoading from '../../componets/ProductLoading';
 
+
 const Home = () => {
   const [value, setValue] = useState(0);
   const [homeSlidesData, setHomeSlidesData] = useState([]);
@@ -34,6 +35,9 @@ const Home = () => {
   const context = useContext(MyContext);
 
   useEffect(() => {
+
+    window.scrollTo(0,0);
+
     fetchDataFromApi(`/api/homeSlider`).then((res) => {
       setHomeSlidesData(res?.data);
     });

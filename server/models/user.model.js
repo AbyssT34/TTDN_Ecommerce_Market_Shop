@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      requered: [true, "Provide name"],
+      required: [true, "Provide name"],
     },
     email: {
       type: String,
@@ -57,7 +57,7 @@ const userSchema = mongoose.Schema(
         ref: "cartProduct",
       },
     ],
-    shopping_cart: [
+    order_list: [
       {
         type: mongoose.Schema.ObjectId,
         ref: "order",
@@ -74,10 +74,14 @@ const userSchema = mongoose.Schema(
       enum: ["ADMIN", "USER"],
       default: "USER",
     },
+    signUpWithGoogle: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const UserModel = mongoose.model("User", userSchema);

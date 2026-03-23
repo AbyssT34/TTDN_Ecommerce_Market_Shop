@@ -18,52 +18,46 @@ const AccountSidebar = () => {
   const context = useContext(MyContext);
 
   useEffect(() => {
-    const userAvtar = [];
     if (context?.userData?.avatar !== '' && context?.userData?.avatar !== undefined) {
-      userAvtar.push(context?.userData?.avatar);
-      setPreviews(userAvtar);
+      setPreviews([context?.userData?.avatar]);
     }
   }, [context?.userData]);
 
-  let img_arr = [];
-  let uniqueArray = [];
-
-  // ❌ Lỗi phổ biến - formData dùng lại giữa các lần upload
-  // khai báo ngoài hàm → bị tích lũy data cũ
-
-  // ✅ Fix - khai báo mới mỗi lần gọi
-  const onChangeFile = async (e, apiEndpoint) => {
+  const onChangeFile = async (e) => {
     try {
-      setPreviews([]);
       const files = e.target.files;
-      setUploading(true);
 
-      const formData = new FormData(); // ✅ tạo mới mỗi lần
-      const selectdImages = []; // ✅ tạo mới mỗi lần
+      if (!files || files.length === 0) return;
 
-      for (var i = 0; i < files.length; i++) {
-        if (
-          files[i] &&
-          (files[i].type === 'image/jpeg' ||
-            files[i].type === 'image/jpg' ||
-            files[i].type === 'image/png' ||
-            files[i].type === 'image/webp')
-        ) {
-          const file = files[i];
-          selectdImages.push(file);
-          formData.append('images', file); // ✅ field name phải khớp upload.single('images')
-        } else {
-          context.alertBox('error', 'Please select a valid JPG, PNG or webp image file');
-          setUploading(false);
-          return false;
-        }
+      // Validate file type
+      const file = files[0];
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        context.alertBox('error', 'Please select a valid JPG, PNG or WEBP image file');
+        return;
       }
+
+      setUploading(true);
+      setPreviews([]);
+
+      // ✅ field name 'avatar' khớp với backend multer
+      const formData = new FormData();
+      formData.append('avatar', file);
 
       uploadImage('/api/user/user-avatar', formData)
         .then((res) => {
           setUploading(false);
-          if (res?.data?.avatar) {
-            setPreviews([res.data.avatar]);
+          // ✅ backend trả { avatar, _id, success }
+          if (res?.avatar) {
+            setPreviews([res.avatar]);
+            // ✅ update context để toàn app cập nhật avatar
+            context.setUserData((prev) => ({
+              ...prev,
+              avatar: res.avatar,
+            }));
+            context.alertBox('success', 'Avatar updated successfully');
+          } else {
+            context.alertBox('error', 'Upload failed');
           }
         })
         .catch(() => {
@@ -82,49 +76,50 @@ const AccountSidebar = () => {
         <div className="w-full p-5 flex items-center justify-center flex-col">
           <div
             className="w-[110px] h-[110px] rounded-full overflow-hidden mb-4 relative group 
-          flex items-center justify-center bg-gray-200"
+            flex items-center justify-center bg-gray-200"
           >
-            {uploading === true ? (
+            {uploading ? (
               <CircularProgress color="inherit" />
             ) : (
               <>
-                {
-                  previews?.length !== 0 ? (
-                    previews?.map((img, index) => (
-                      <img src={img} key={index} className="w-full h-full object-cover" />
-                    ))
-                  ) : (
-                    <img src="/user.jpg" className="w-full h-full object-cover" />
-                  ) // ✅ ternary đúng cách
-                }
+                {previews?.length > 0 ? (
+                  <img src={previews[0]} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <img
+                    src="/user.jpg"
+                    alt="default avatar"
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </>
             )}
 
+            {/* Upload overlay */}
             <div
-              className="overlay w-[100%] h-[100%] absolute top-0 left-0 z-50 bg-[rgba(0,0,0,0.7)] 
-                  flex items-center justify-center cursor-pointer opacity-0 transition-all group-hover:opacity-100"
+              className="overlay w-full h-full absolute top-0 left-0 z-50 bg-[rgba(0,0,0,0.7)] 
+              flex items-center justify-center cursor-pointer opacity-0 transition-all group-hover:opacity-100"
             >
-              <IoMdCloudUpload className="text-[#fff] text-[25px] " />
+              <IoMdCloudUpload className="text-white text-[25px]" />
               <input
                 type="file"
-                className="absolute top-0 left-0 w-full h-full opacity-0"
-                accept="image/*"
-                onChange={(e) => onChangeFile(e, '/api/user/user-avatar')}
+                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={onChangeFile}
                 name="avatar"
               />
             </div>
           </div>
 
-          <h3>{context?.userData?.name}</h3>
-          <h6 className="text-[13px] font-[500]">{context?.userData?.email}</h6>
+          <h3 className="font-[600]">{context?.userData?.name}</h3>
+          <h6 className="text-[13px] font-[500] text-gray-500">{context?.userData?.email}</h6>
         </div>
 
         <ul className="list-none pb-5 bg-[#f1f1f1] myAccountTabs">
           <li className="w-full">
-            <NavLink to={'/my-account'} exact={true} activeClassNem="isActive">
+            <NavLink to={'/my-account'} end>
               <Button
-                className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
-                  !rounded-none flex items-center gap-2"
+                className="w-full !text-left !py-2 !px-5 !justify-start !capitalize 
+                  !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"
               >
                 <FaRegUser className="text-[15px]" />
                 My Profile
@@ -133,10 +128,10 @@ const AccountSidebar = () => {
           </li>
 
           <li className="w-full">
-            <NavLink to={'/address'} exact={true} activeClassNem="isActive">
+            <NavLink to={'/address'}>
               <Button
-                className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
-                  !rounded-none flex items-center gap-2"
+                className="w-full !text-left !py-2 !px-5 !justify-start !capitalize 
+                  !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"
               >
                 <LuMapPin className="text-[17px]" />
                 Address
@@ -145,10 +140,10 @@ const AccountSidebar = () => {
           </li>
 
           <li className="w-full">
-            <NavLink to={'/my-list'} exact={true} activeClassNem="isActive">
+            <NavLink to={'/my-list'}>
               <Button
-                className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
-                  !rounded-none flex items-center gap-2"
+                className="w-full !text-left !py-2 !px-5 !justify-start !capitalize 
+                  !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"
               >
                 <FaRegHeart className="text-[17px]" />
                 My List
@@ -157,10 +152,10 @@ const AccountSidebar = () => {
           </li>
 
           <li className="w-full">
-            <NavLink to={'/my-orders'} exact={true} activeClassNem="isActive">
+            <NavLink to={'/my-orders'}>
               <Button
-                className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
-                  !rounded-none flex items-center gap-2"
+                className="w-full !text-left !py-2 !px-5 !justify-start !capitalize 
+                  !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"
               >
                 <LuMapPinCheck className="text-[17px]" />
                 My Orders
@@ -170,8 +165,9 @@ const AccountSidebar = () => {
 
           <li className="w-full">
             <Button
-              className=" w-full !text-left !py-2 !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] 
-                  !rounded-none flex items-center gap-2"
+              className="w-full !text-left !py-2 !px-5 !justify-start !capitalize 
+                !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"
+              onClick={() => context.logout()}
             >
               <IoIosLogOut className="text-[18px]" />
               Logout

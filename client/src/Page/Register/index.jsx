@@ -9,6 +9,11 @@ import { MyContext } from '../../App';
 import { postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { firebaseApp } from '../../firebase';
+
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +76,56 @@ const Register = () => {
         setIsLoading(false);
       }
     });
+  };
+
+  const authWithGoogle = () => {
+    const auth = getAuth();
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        const fields = {
+          name: user.providerData[0].displayName,
+          email: user.providerData[0].email,
+          password: null,
+          avatar: user.providerData[0].photoURL, // ✅ đổi images → avatar
+          mobile: user.providerData[0].phoneNumber, // ✅ đổi phone → mobile
+          role: 'USER',
+        };
+
+        postData('/api/user/authWithGoogle', fields).then((res) => {
+          console.log(res);
+          if (res?.error !== true) {
+            setIsLoading(false);
+            context.alertBox('success', res?.message);
+            localStorage.setItem('userEmail', fields.email);
+            localStorage.setItem('accesstoken', res?.data.accesstoken);
+            localStorage.setItem('refreshToken', res?.data.refreshToken);
+
+            context.setIsLogin(true);
+
+            history('/');
+          } else {
+            context.alertBox('error', res?.message || 'Something went wrong');
+            setIsLoading(false);
+          }
+        });
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
   };
 
   return (
@@ -153,9 +208,12 @@ const Register = () => {
 
               <p className="text-center font-[500]">Or continue with social account</p>
 
-              <Button className="flex gap-3 w-full !bg-[#f1f1f1] btn-lg !text-black">
+              <Button
+                className="flex gap-3 w-full !bg-[#f1f1f1] btn-lg !text-black"
+                onClick={authWithGoogle}
+              >
                 <FcGoogle className="text-[20px]" />
-                Login with Google
+                Sign Up with Google
               </Button>
             </form>
           </div>

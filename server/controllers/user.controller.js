@@ -132,6 +132,68 @@ export async function verifyEmailController(request, response) {
   }
 }
 
+export async function authWithGoogle(request, response) {
+  const { name, email, avatar, mobile, role } = request.body;
+
+
+  try {
+    const existingUser = await UserModel.findOne({ email });
+
+    const cookiesOption = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    };
+
+    if (!existingUser) {
+      // ✅ Dùng result thay vì user
+      const result = await UserModel.create({
+        name,
+        mobile,
+        email,
+        password: "null",
+        avatar,
+        role: role || "USER",
+        verify_email: true,
+        signUpWithGoogle: true,
+      });
+      // ✅ Không cần await user.save() - create() đã tự save
+
+      const accesstoken = await generatedAccessToken(result._id); // ✅ result._id
+      const refreshToken = await generatedRefreshToke(result._id); // ✅ result._id
+
+      response.cookie("accessToken", accesstoken, cookiesOption);
+      response.cookie("refreshToken", refreshToken, cookiesOption);
+
+      return response.status(200).json({
+        message: "Login successfully",
+        error: false,
+        success: true,
+        data: { accesstoken, refreshToken },
+      });
+    } else {
+      const accesstoken = await generatedAccessToken(existingUser._id);
+      const refreshToken = await generatedRefreshToke(existingUser._id);
+
+      response.cookie("accessToken", accesstoken, cookiesOption);
+      response.cookie("refreshToken", refreshToken, cookiesOption);
+
+      return response.status(200).json({
+        message: "Login successfully",
+        error: false,
+        success: true,
+        data: { accesstoken, refreshToken },
+      });
+    }
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
 export async function loginUserController(request, response) {
   try {
     const { email, password } = request.body;
@@ -236,7 +298,7 @@ var imagesArr = [];
 export async function userAvatarController(request, response) {
   try {
     const userId = request.userId;
-    const images = request.files; // nhiều file
+    const images = request.files;
 
     if (!images || images.length === 0) {
       return response.status(400).json({
@@ -247,7 +309,6 @@ export async function userAvatarController(request, response) {
     }
 
     const user = await UserModel.findById(userId);
-
     if (!user) {
       return response.status(400).json({
         error: true,
@@ -256,40 +317,33 @@ export async function userAvatarController(request, response) {
       });
     }
 
-    // ===========================
-    // XÓA ẢNH CŨ TRÊN CLOUDINARY
-    // ===========================
+    // ✅ Xóa ảnh cũ - lấy đúng publicId kể cả folder
     if (user.avatar) {
-      const urlArr = user.avatar.split("/");
-      const last = urlArr[urlArr.length - 1]; // ví dụ: avatar_abc.jpg
-      const publicId = last.split(".")[0]; // avatar_abc
-
       try {
-        await cloudinary.uploader.destroy(publicId);
+        const urlArr = user.avatar.split("/upload/");
+        if (urlArr.length > 1) {
+          const withoutVersion = urlArr[1].replace(/^v\d+\//, ""); // bỏ v123/
+          const publicId = withoutVersion.split(".")[0]; // bỏ .jpg
+          await cloudinary.uploader.destroy(publicId);
+        }
       } catch (err) {
         console.log("Delete old avatar error:", err);
       }
     }
 
-    // ===========================
-    // UPLOAD ẢNH MỚI
-    // ===========================
+    // ✅ Upload ảnh mới
     const imagesArr = [];
-
     for (const file of images) {
       const uploaded = await cloudinary.uploader.upload(file.path, {
         use_filename: true,
         unique_filename: false,
         overwrite: false,
       });
-
       imagesArr.push(uploaded.secure_url);
-
-      // Xóa file tạm
       fs.unlinkSync(file.path);
     }
 
-    // Lưu avatar mới
+    // ✅ Lưu avatar mới
     user.avatar = imagesArr[0];
     await user.save();
 
@@ -297,6 +351,7 @@ export async function userAvatarController(request, response) {
       _id: userId,
       avatar: imagesArr[0],
       success: true,
+      error: false,
     });
   } catch (error) {
     return response.status(500).json({
@@ -502,59 +557,62 @@ export async function verifyForgotPasswordOtp(request, response) {
 export async function resetPassword(request, response) {
   try {
     const { email, oldPassword, newPassword, confirmPassword } = request.body;
-    if (!email || !oldPassword || !newPassword || !confirmPassword) {
-      return response.status(400).json({
-        message: "provide email, newPassword, confirmPassword",
-        error: true, // ✅ thêm
-        success: false, // ✅ thêm
-      });
-    }
 
     const user = await UserModel.findOne({ email });
-
     if (!user) {
-      return response.status(400).json({
-        message: "Email not available",
-        error: true,
-        success: false,
-      });
+      return response
+        .status(400)
+        .json({ message: "Email not available", error: true, success: false });
     }
-    const checkPassword = await bcryptjs.compare(oldPassword, user.password);
 
-    if (!checkPassword) {
-      return response.status(400).json({
-        message: "your old password is wrong",
-        error: true,
-        success: false,
-      });
+    // ✅ Chỉ check oldPassword khi KHÔNG đăng nhập Google
+    if (user?.signUpWithGoogle === false) {
+      if (!oldPassword) {
+        return response
+          .status(400)
+          .json({
+            message: "Please provide old password",
+            error: true,
+            success: false,
+          });
+      }
+      const checkPassword = await bcryptjs.compare(oldPassword, user.password); // ✅ sửa checkPasswrod → checkPassword
+      if (!checkPassword) {
+        return response
+          .status(400)
+          .json({
+            message: "Your old password is wrong",
+            error: true,
+            success: false,
+          });
+      }
     }
 
     if (newPassword !== confirmPassword) {
-      return response.status(400).json({
-        message: "newPassword and Confirm Password must be same",
-        error: true,
-        success: false,
-      });
+      return response
+        .status(400)
+        .json({
+          message: "Passwords do not match",
+          error: true,
+          success: false,
+        });
     }
 
     const salt = await bcryptjs.genSalt(10);
-    const hashPassword = await bcryptjs.hash(confirmPassword, salt);
-
+    const hashPassword = await bcryptjs.hash(newPassword, salt);
     user.password = hashPassword;
+     user.signUpWithGoogle = false;
     await user.save();
 
     return response.json({
-      // ✅ Sửa "respomse" → "response"
       message: "Password updated successfully",
       error: false,
       success: true,
     });
   } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
+    return response
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
   }
 }
 
@@ -562,7 +620,7 @@ export async function resetPassword(request, response) {
 export async function forgotPasswordReset(request, response) {
   try {
     const { email, newPassword, confirmPassword } = request.body;
-    
+
     if (!email || !newPassword || !confirmPassword) {
       return response.status(400).json({
         message: "provide email, newPassword, confirmPassword",
@@ -668,9 +726,9 @@ export async function userDetails(request, response) {
 
     console.log("userId", userId);
 
-    const user = await UserModel.findById(userId).select(
-      "-password -refresh_token",
-    ).populate('address_details');
+    const user = await UserModel.findById(userId)
+      .select("-password -refresh_token")
+      .populate("address_details");
 
     return response.json({
       message: "User details fetched successfully",
