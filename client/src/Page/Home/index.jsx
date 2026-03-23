@@ -48,7 +48,7 @@ const Home = () => {
 
     fetchDataFromApi(`/api/bannerV1`).then((res) => {
       setBannerV1Data(res?.data);
-    });
+    }); 
 
     fetchDataFromApi(`/api/blog`).then((res) => {
       setBlogData(res?.data);

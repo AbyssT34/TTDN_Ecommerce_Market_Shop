@@ -1426,3 +1426,140 @@ export async function deleteMultipleProductSizes(request, response) {
     });
   }
 }
+
+//fitters
+export async function filtes(request, response) {
+  const {
+    catId,
+    subCatId,
+    thirdsubCatId,
+    minPrice,
+    maxPrice,
+    rating,
+    page,
+    limit,
+  } = request.body;
+
+  const filters = {};
+
+  if (catId?.length) {
+    filters.catId = { $in: catId };
+  }
+
+  if (subCatId?.length) {
+    filters.subCatId = { $in: subCatId };
+  }
+
+  if (thirdsubCatId?.length) {
+    filters.thirdsubCatId = { $in: thirdsubCatId };
+  }
+
+  // ✅ Chỉ query price khi minPrice hoặc maxPrice có giá trị thực
+  if (minPrice !== "" || maxPrice !== "") {
+    filters.price = {
+      ...(minPrice !== "" && { $gte: +minPrice }),
+      ...(maxPrice !== "" && { $lte: +maxPrice }),
+    };
+  }
+
+  if (Array.isArray(rating) && rating.length > 0) {
+    const minRating = Math.min(...rating.map((r) => Number(r))) - 0.9;
+    filters.rating = { $gte: minRating };
+  }
+
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 5;
+
+  try {
+    console.log("Final filters:", JSON.stringify(filters));
+
+    const products = await ProductModel.find(filters)
+      .populate("category")
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
+
+    const total = await ProductModel.countDocuments(filters);
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      products: products,
+      total: total,
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+    });
+  } catch (error) {
+    console.log("ERROR DETAILS:", error);
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// ✅ Sửa - đưa tất cả logic vào trong .sort()
+const sortItems = (products, sortBy, order) => {
+  return products.sort((a, b) => {
+    if (sortBy === "name") {
+      return order === "asc"
+        ? a.name.localeCompare(b.name)  // ✅ localeCompare
+        : b.name.localeCompare(a.name);
+    }
+
+    if (sortBy === "price") {  // ✅ nằm trong sort callback
+      return order === "asc" ? a.price - b.price : b.price - a.price;
+    }
+
+    return 0;
+  });
+};
+
+// sortBy
+export async function sortBy(request, response) {
+  try {
+    const { sortBy, order } = request.body;
+
+    const sortOptions = {};
+
+    switch (sortBy) {
+      case 'sales':
+        sortOptions.sale = order === 'asc' ? 1 : -1;
+        break;
+      case 'name_asc':
+        sortOptions.name = 1;
+        break;
+      case 'name_desc':
+        sortOptions.name = -1;
+        break;
+      case 'price_asc':
+        sortOptions.price = 1;
+        break;
+      case 'price_desc':
+        sortOptions.price = -1;
+        break;
+      default:
+        sortOptions.createdAt = -1; // mặc định mới nhất
+    }
+
+    const products = await ProductModel.find()
+      .sort(sortOptions)
+      .populate("category");
+
+    const total = products.length;
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      products: products,
+      total: total,
+      totalPages: Math.ceil(total / 10),
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}

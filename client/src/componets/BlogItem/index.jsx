@@ -19,9 +19,8 @@ const BlogItem = (props) => {
             className="flex items-center justify-between text-white absolute bottom-[15px] 
             right-[15px] z-50 bg-[#ff5252] rounded-md p-1 text-[12px] font-[500] gap-3"
           >
-            <IoMdTime className="text-[18px]" />{
-              props?.item?.createdAt?.split("T")[0]
-            }
+            <IoMdTime className="text-[18px]" />
+            {props?.item?.createdAt?.split('T')[0]}
           </span>
         </div>
 

@@ -39,13 +39,20 @@ import {
   updateProductSize,
   uploadImages,
   uploadBannerImages,
+  filtes,
+  sortBy,
 } from "../controllers/product.controller.js";
 
 const productRouter = Router();
 
 // ── Images ──────────────────────────────────────────
 productRouter.post("/uploadImages", auth, upload.array("images"), uploadImages);
-productRouter.post("/uploadBannerImages", auth, upload.array("images"), uploadBannerImages);
+productRouter.post(
+  "/uploadBannerImages",
+  auth,
+  upload.array("images"),
+  uploadBannerImages,
+);
 productRouter.delete("/deteleImage", auth, removeImageFromCloudinary);
 
 // ── Product Rams (cụ thể trước) ──────────────────────
@@ -55,7 +62,6 @@ productRouter.get("/productRams/:id", getProductRamsById);
 productRouter.put("/productRams/:id", auth, updateProductRams);
 productRouter.delete("/productRams/:id", deleteProductRams);
 productRouter.delete("/deleteMultipleRams", deleteMultipleProductRams);
-
 
 // ── Product Weight (cụ thể trước) ──────────────────────
 productRouter.get("/productWeight/get", getProductWeights);
@@ -94,6 +100,8 @@ productRouter.get("/getAllProductsCount", getProductsCount);
 productRouter.get("/getAllFeaturedProducts", getAllProductsFeatured);
 productRouter.delete("/deleteMultiple", deleteMultipleProduct);
 productRouter.put("/updateProduct/:id", auth, updateProducts);
+productRouter.post("/filters", filtes);
+productRouter.post("/sortBy", sortBy);
 
 // ── Route động /:id — PHẢI ĐẶT CUỐI CÙNG ───────────
 productRouter.get("/:id", getProduct);

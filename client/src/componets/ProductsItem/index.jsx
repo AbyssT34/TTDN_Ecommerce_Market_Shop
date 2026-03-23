@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import { Button } from '@mui/material';
 import { FaRegHeart } from 'react-icons/fa';
 import { IoIosGitCompare } from 'react-icons/io';
-import { MdOutlineZoomOutMap } from 'react-icons/md';
+import { MdOutlineShoppingCart, MdOutlineZoomOutMap } from 'react-icons/md';
 import { MyContext } from '../../App';
 
 const ProductsItem = (props) => {
@@ -68,14 +68,14 @@ const ProductsItem = (props) => {
             </Button>
           </div>
         </div>
-        <div className="info p-3 py-5">
+        <div className="info p-3 py-5 relative pb-[50px] h-[190px]">
           <h6 className="text-[13px] title mt-1 font-[500] mb-1 text-[#000]">
             <span className="link transition-all">{props?.item?.brand}</span>
           </h6>
 
           <h3 className="text-[13px] !font-[400]">
             <Link to={`/product/${props?.item?._id}`} className="link transition-all">
-              {props?.item?.name?.substr(0,40)+"..."}
+              {props?.item?.name?.substr(0, 40) + '...'}
             </Link>
           </h3>
           <Rating name="size-small" defaultValue={props?.item?.rating} size="small" readOnly />
@@ -87,6 +87,11 @@ const ProductsItem = (props) => {
             <span className="price text-primary text-[15px] font-[600]">
               &#8363; {props?.item?.oldPrice}
             </span>
+          </div>
+          <div className="!absolute bottom-[15px] left-0 pl-3 pr-3 w-full">
+            <Button className="bg-org btn-border flex w-full btn-sm gap-2" size="small">
+              <MdOutlineShoppingCart className="text-[18px]" /> Add to Cart
+            </Button>
           </div>
         </div>
       </div>
