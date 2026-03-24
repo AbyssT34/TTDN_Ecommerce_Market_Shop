@@ -9,6 +9,9 @@ import generatedRefreshToke from "../utils/generatedRefreshToken.js";
 
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import ReviewsModel from "../models/reviews.model.js";
+import ProductModel from "../models/product.model.js";
+import { error } from "console";
 
 // Configuration
 cloudinary.config({
@@ -134,7 +137,6 @@ export async function verifyEmailController(request, response) {
 
 export async function authWithGoogle(request, response) {
   const { name, email, avatar, mobile, role } = request.body;
-
 
   try {
     const existingUser = await UserModel.findOne({ email });
@@ -568,40 +570,34 @@ export async function resetPassword(request, response) {
     // ✅ Chỉ check oldPassword khi KHÔNG đăng nhập Google
     if (user?.signUpWithGoogle === false) {
       if (!oldPassword) {
-        return response
-          .status(400)
-          .json({
-            message: "Please provide old password",
-            error: true,
-            success: false,
-          });
+        return response.status(400).json({
+          message: "Please provide old password",
+          error: true,
+          success: false,
+        });
       }
       const checkPassword = await bcryptjs.compare(oldPassword, user.password); // ✅ sửa checkPasswrod → checkPassword
       if (!checkPassword) {
-        return response
-          .status(400)
-          .json({
-            message: "Your old password is wrong",
-            error: true,
-            success: false,
-          });
+        return response.status(400).json({
+          message: "Your old password is wrong",
+          error: true,
+          success: false,
+        });
       }
     }
 
     if (newPassword !== confirmPassword) {
-      return response
-        .status(400)
-        .json({
-          message: "Passwords do not match",
-          error: true,
-          success: false,
-        });
+      return response.status(400).json({
+        message: "Passwords do not match",
+        error: true,
+        success: false,
+      });
     }
 
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(newPassword, salt);
     user.password = hashPassword;
-     user.signUpWithGoogle = false;
+    user.signUpWithGoogle = false;
     await user.save();
 
     return response.json({
@@ -735,6 +731,74 @@ export async function userDetails(request, response) {
       error: false,
       success: true,
       data: user,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//review contrller
+export async function addReviews(request, response) {
+  try {
+    const { image, userName, review, rating, userId, productId } = request.body;
+
+    if (!review || !rating || !userId || !productId) {
+      return response.status(400).json({
+        message: "Please provide all required fields",
+        error: true,
+        success: false,
+      });
+    }
+
+    const userReview = new ReviewsModel({
+      image,
+      userName,
+      review, // ✅ sửa rieview → review
+      rating,
+      userId,
+      productId,
+    });
+
+    await userReview.save();
+
+    // ✅ Cập nhật rating trung bình cho Product
+    const allReviews = await ReviewsModel.find({ productId });
+    const avgRating =
+      allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+
+    await ProductModel.findByIdAndUpdate(productId, {
+      rating: Math.round(avgRating * 10) / 10,
+    });
+
+    return response.json({
+      message: "Review added successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get reviews
+export async function getReviews(request, response) {
+  try {
+    const productId = request.query.productId;
+
+    const reviews = await ReviewsModel.find({ productId: productId });
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      reviews: reviews,
     });
   } catch (error) {
     return response.status(500).json({

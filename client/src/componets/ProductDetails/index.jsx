@@ -18,7 +18,9 @@ const ProductDetailsComponent = (props) => {
             Brands :<span className="text-black font-[500] opacity-75"> {props?.item?.brand}</span>
           </span>
           <Rating name="size-small" defaultValue={4} size="small" readOnly />
-          <span className="text-[13px] cursor-pointer text-gray-500">Review (0)</span>
+          <span className="text-[13px] cursor-pointer text-gray-500" onClick={props?.gotoReviews}>
+            Review ({props?.reviewsCount})
+          </span>
         </div>
         <div className="flex items-center gap-4 mt-4">
           <span className="oldPrice line-through text-gray-500 text-[18px] font-[500]">
@@ -74,7 +76,7 @@ const ProductDetailsComponent = (props) => {
 
         {props?.item?.productWeight?.length !== 0 && (
           <div className="flex items-center gap-5">
-            <span className="text-[16px]">Size:</span>
+            <span className="text-[16px]">Weight:</span>
             <div className="flex items-center gap-1 actions">
               {props?.item?.productWeight?.map((item, index) => {
                 return (

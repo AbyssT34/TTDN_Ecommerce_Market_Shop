@@ -213,7 +213,7 @@ const Register = () => {
                 onClick={authWithGoogle}
               >
                 <FcGoogle className="text-[20px]" />
-                Sign Up with Google
+                Login with Google
               </Button>
             </form>
           </div>

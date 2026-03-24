@@ -438,3 +438,5 @@ button .MuiCirularProgress-root {
 .productDetailsModal .MuiDialog-paper {width: 1200px !important; max-width: 1200px !important;}
 
 header{box-shadow: 0px 1px 5px #0000001a;}
+
+.MuiCircularProgress-svg{@apply text-[#ff5252]}
