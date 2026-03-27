@@ -8,7 +8,7 @@ import { Link, Links } from 'react-router-dom';
 import { MdChatBubbleOutline } from 'react-icons/md';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox from '@mui/material/Checkbox';  
 import { FaFacebookF } from 'react-icons/fa';
 import { AiOutlineYoutube } from 'react-icons/ai';
 import { FaPinterestP } from 'react-icons/fa';
@@ -265,14 +265,14 @@ const Footer = () => {
         className="cartPanel"
       >
         <div className="flex items-center justify-between py-3 px-4 gap-3 border-b border-[rgba(0,0,0,0.1)] overflow-hidden">
-          <h4>Shopping Cart (1) </h4>
+          <h4>Shopping Cart ({context?.cartData?.length}) </h4>
           <IoCloseSharp
             className="text-[20px] cursor-pointer"
             onClick={context.toggleCartPanel(false)}
           />
         </div>
+        {context?.cartData?.length !== 0 && <CartPanel data={context?.cartData} />  }
 
-        <CartPanel />
       </Drawer>
     </>
   );

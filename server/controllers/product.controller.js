@@ -1471,7 +1471,6 @@ export async function filtes(request, response) {
   const limitNum = parseInt(limit) || 5;
 
   try {
-    console.log("Final filters:", JSON.stringify(filters));
 
     const products = await ProductModel.find(filters)
       .populate("category")

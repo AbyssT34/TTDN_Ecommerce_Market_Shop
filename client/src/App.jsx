@@ -24,7 +24,7 @@ import ForgotPassword from './Page/ForgotPassword';
 import MyAccount from './Page/MyAccount';
 import MyList from './Page/MyList';
 import Orders from './Page/Orders';
-import { fetchDataFromApi } from './utils/api';
+import { fetchDataFromApi, postData } from './utils/api';
 import Address from './Page/MyAccount/address';
 
 const MyContext = createContext();
@@ -40,6 +40,7 @@ function App() {
   const [islogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = useState([]);
+  const [cartData, setCartData] = useState([]);
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -69,6 +70,8 @@ function App() {
           }
         }
       });
+
+      getCartItems();
     } else {
       setIsLogin(false);
     }
@@ -88,11 +91,7 @@ function App() {
       if (res?.success === true) {
         setCatData(res?.data);
       }
-
-      
     });
-
-
   }, []);
 
   const alertBox = (type, msg) => {
@@ -104,17 +103,61 @@ function App() {
     }
   };
 
-   const handleOpenProductDetailsModal = (status, item) => {
-     setOpenProductDetailsModal({
-       open: status,
-       item: item,
-     });
-   }
+  const handleOpenProductDetailsModal = (status, item) => {
+    setOpenProductDetailsModal({
+      open: status,
+      item: item,
+    });
+  };
 
   const handleCloseProductDetailsModal = () => {
     setOpenProductDetailsModal({
       open: false,
-      item: {}
+      item: {},
+    });
+  };
+
+  const addToCart = (product, userId, quantity) => {
+    if (userId === undefined) {
+      alertBox('error', 'you are not login please login first');
+
+      return false;
+    }
+
+    const data = {
+      productTitle: product?.name,
+      image: product?.image,
+      rating: product?.rating,
+      price: product?.price,
+      oldPrice: product?.oldPrice,
+      discount: product?.discount,
+      quantity: quantity,
+      subTotal: parseInt(product?.price * quantity),
+      productId: product?._id,
+      countInStock: product?.countInStock,
+      brand: product?.brand,
+      size: product?.size,
+      weight: product?.weight,
+      ram: product?.ram,
+      userId: userId,
+    };
+
+    postData(`/api/cart/add`, data).then((res) => {
+      if (res?.error === false) {
+        alertBox('success', res?.message);
+
+        getCartItems();
+      } else {
+        alertBox('', res?.message);
+      }
+    });
+  };
+
+  const getCartItems = () => {
+    fetchDataFromApi(`/api/cart/get`).then((res) => {
+      if (res?.error === false) {
+        setCartData(res?.data);
+      }
     });
   };
 
@@ -132,6 +175,9 @@ function App() {
     userData,
     catData,
     setCatData,
+    addToCart,
+    cartData,
+    getCartItems,
   };
 
   return (
@@ -181,7 +227,7 @@ function App() {
                   <ProductZoom images={openProductDetailsModal?.item?.images} />
                 </div>
                 <div className="col2 w-[60%] py-8 px-8 pr-16 productContainer">
-                  <ProductDetailsComponent item={openProductDetailsModal?.item}/>
+                  <ProductDetailsComponent item={openProductDetailsModal?.item} />
                 </div>
               </>
             )}
