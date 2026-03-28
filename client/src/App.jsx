@@ -148,7 +148,7 @@ function App() {
 
         getCartItems();
       } else {
-        alertBox('', res?.message);
+        alertBox('error', res?.message);
       }
     });
   };

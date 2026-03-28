@@ -8,7 +8,7 @@ import { Link, Links } from 'react-router-dom';
 import { MdChatBubbleOutline } from 'react-icons/md';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';  
+import Checkbox from '@mui/material/Checkbox';
 import { FaFacebookF } from 'react-icons/fa';
 import { AiOutlineYoutube } from 'react-icons/ai';
 import { FaPinterestP } from 'react-icons/fa';
@@ -271,8 +271,19 @@ const Footer = () => {
             onClick={context.toggleCartPanel(false)}
           />
         </div>
-        {context?.cartData?.length !== 0 && <CartPanel data={context?.cartData} />  }
-
+        {context?.cartData?.length !== 0 ? (
+          <CartPanel data={context?.cartData} />
+        ) : (
+          <>
+            <div className="flex items-center justify-center flex-col pt-[100px] gap-5">
+              <img src="/cartfoot.png" className="w-[250px]  " alt="Empty Cart" />
+              <h4>Your Cart is currently empty</h4>
+              <Button className="bg-org btn-sm" onClick={context.toggleCartPanel(false)}>
+                Continue Shopping
+              </Button>
+            </div>
+          </>
+        )}
       </Drawer>
     </>
   );

@@ -12,6 +12,7 @@ import { FaMinus } from 'react-icons/fa6';
 import { FaPlus } from 'react-icons/fa';
 import CartItems from '../../Page/Cart/cartItems';
 import { deleteData, editData } from '../../utils/api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ProductsItem = (props) => {
   const [quantity, setQuantity] = useState(1);
@@ -21,6 +22,7 @@ const ProductsItem = (props) => {
   const [activeTab, setActiveTab] = useState(null);
   const [isShowTabs, setIsShowTabs] = useState(false);
   const [selectedTabName, setSelcetedTabName] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const context = useContext(MyContext);
 
@@ -37,10 +39,12 @@ const ProductsItem = (props) => {
       subTotal: parseInt(product?.price * quantity),
       countInStock: product?.countInStock,
       brand: product?.brand,
-      size: props?.item?.size?.length !== 0 ? selectedTabName : ' ',
-      weight: props?.item?.producWeight?.length !== 0 ? selectedTabName : ' ',
-      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : ' ',
+      size: props?.item?.size?.length !== 0 ? selectedTabName || '' : '', // ✅
+      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName || '' : '', // ✅ sửa producWeight → productWeight
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName || '' : '',
     };
+
+    setIsLoading(true);
 
     if (
       props?.item?.size?.length !== 0 ||
@@ -49,15 +53,25 @@ const ProductsItem = (props) => {
     ) {
       setIsShowTabs(true);
     } else {
-      context?.addToCart(producItem, userId, quantity);
       setIsAdded(true);
       setIsShowTabs(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+      context?.addToCart(producItem, userId, quantity);
     }
 
     if (activeTab !== null) {
+      if (!selectedTabName) {
+        context.alertBox('error', 'Please select a size/option first');
+        return;
+      }
       context?.addToCart(producItem, userId, quantity);
       setIsAdded(true);
       setIsShowTabs(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
   };
 
@@ -244,11 +258,11 @@ const ProductsItem = (props) => {
           <Rating name="size-small" defaultValue={props?.item?.rating} size="small" readOnly />
 
           <div className="flex items-center gap-4">
-            <span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
-              &#8363; {props?.item?.price}
-            </span>
-            <span className="price text-primary text-[15px] font-[600]">
+            <span className="oldPrice line-through text-gray-500 text-[14px] font-[500]">
               &#8363; {props?.item?.oldPrice}
+            </span>
+            <span className="price text-primary text-[14px] font-[600]">
+              &#8363; {props?.item?.price}
             </span>
           </div>
           <div className="!absolute bottom-[15px] left-0 pl-3 pr-3 w-full">
@@ -261,21 +275,30 @@ const ProductsItem = (props) => {
                 <MdOutlineShoppingCart className="text-[18px]" /> Add to Cart
               </Button>
             ) : (
-              <div className="flex items-center justify-between overflow-hidden rounded-full border border-[rgba(0,0,0,0.1)]">
-                <Button
-                  className="!min-w-[35px] !w-[35px] !h-[30px] !bg-[#f1f1f1]  !rounded-none"
-                  onClick={minusQyt}
-                >
-                  <FaMinus className="text-[rgba(0,0,0,0.7)]" />
-                </Button>
-                <span>{quantity}</span>
-                <Button
-                  className="!min-w-[35px] !w-[35px] !h-[30px] !bg-[#ff5252] !rounded-none"
-                  onClick={addQyt}
-                >
-                  <FaPlus className="text-white" />
-                </Button>
-              </div>
+              <>
+                {isLoading === true ? (
+                  <Button className="bg-org btn-border flex w-full btn-sm gap-2" size="small">
+                    <CircularProgress />
+                    <MdOutlineShoppingCart className="text-[18px]" /> Add to Cart
+                  </Button>
+                ) : (
+                  <div className="flex items-center justify-between overflow-hidden rounded-full border border-[rgba(0,0,0,0.1)]">
+                    <Button
+                      className="!min-w-[35px] !w-[35px] !h-[30px] !bg-[#f1f1f1]  !rounded-none"
+                      onClick={minusQyt}
+                    >
+                      <FaMinus className="text-[rgba(0,0,0,0.7)]" />
+                    </Button>
+                    <span>{quantity}</span>
+                    <Button
+                      className="!min-w-[35px] !w-[35px] !h-[30px] !bg-[#ff5252] !rounded-none"
+                      onClick={addQyt}
+                    >
+                      <FaPlus className="text-white" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

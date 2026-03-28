@@ -1,13 +1,78 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { MdOutlineShoppingCart } from 'react-icons/md';
 import { FaRegHeart } from 'react-icons/fa';
 import { IoIosGitCompare } from 'react-icons/io';
 import Button from '@mui/material/Button';
 import QtyBox from '../../componets/QtyBox';
 import Rating from '@mui/material/Rating';
+import { MyContext } from '../../App';
+import CircularProgress from '@mui/material/CircularProgress';
+import { postData } from '../../utils/api';
 
 const ProductDetailsComponent = (props) => {
   const [productActionsIndex, setProductActionsIndex] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedTabName, setSelcetedTabName] = useState(null);
+  const [tabError, setTabError] = useState(false);
+
+  const context = useContext(MyContext);
+
+  const handleSelecteQty = (qty) => {
+    setQuantity(qty);
+  };
+
+  const handleClickActivetab = (index, name) => {
+    setProductActionsIndex(index);
+    setSelcetedTabName(name);
+  };
+
+  const addToCart = (product, userId, quantity) => {
+    if (userId === undefined) {
+      context?.alertBox('error', 'you are not login please login first');
+
+      return false;
+    }
+
+    const producItem = {
+      productId: product?._id,
+      productTitle: product?.name,
+      image: product?.images[0],
+      rating: product?.rating,
+      price: product?.price,
+      oldPrice: product?.oldPrice,
+      discount: product?.discount,
+      quantity: quantity,
+      subTotal: parseInt(product?.price * quantity),
+      countInStock: product?.countInStock,
+      brand: product?.brand,
+      size: props?.item?.size?.length !== 0 ? selectedTabName || '' : '', // ✅
+      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName || '' : '', // ✅ sửa producWeight → productWeight
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName || '' : '',
+    };
+
+    if (selectedTabName !== null) {
+      setIsLoading(true);
+
+      postData(`/api/cart/add`, producItem).then((res) => {
+        if (res?.error === false) {
+          context?.alertBox('success', res?.message);
+
+          context?.getCartItems();
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
+        } else {
+          context?.alertBox('error', res?.message);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
+        }
+      });
+    }else{
+      setTabError(true);
+    }
+  };
 
   return (
     <>
@@ -45,8 +110,9 @@ const ProductDetailsComponent = (props) => {
               {props?.item?.productRam?.map((item, index) => {
                 return (
                   <Button
-                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}`}
-                    onClick={() => setProductActionsIndex(index)}
+                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}
+                      ${tabError === true && 'error'}`}
+                    onClick={() => handleClickActivetab(index, item)}
                   >
                     {item}
                   </Button>
@@ -63,8 +129,9 @@ const ProductDetailsComponent = (props) => {
               {props?.item?.size?.map((item, index) => {
                 return (
                   <Button
-                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}`}
-                    onClick={() => setProductActionsIndex(index)}
+                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}
+                      ${tabError === true && 'error'}`}
+                    onClick={() => handleClickActivetab(index, item)} 
                   >
                     {item}
                   </Button>
@@ -81,8 +148,9 @@ const ProductDetailsComponent = (props) => {
               {props?.item?.productWeight?.map((item, index) => {
                 return (
                   <Button
-                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}`}
-                    onClick={() => setProductActionsIndex(index)}
+                    className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}
+                      ${tabError === true && 'error'}`}
+                    onClick={() => handleClickActivetab(index, item)}
                   >
                     {item}
                   </Button>
@@ -97,11 +165,20 @@ const ProductDetailsComponent = (props) => {
         </p>
         <div className="flex items-center  gap-4 py-4">
           <div className="qtyBoxWrapper w-[70px]">
-            <QtyBox />
+            <QtyBox handleSelecteQty={handleSelecteQty} />
           </div>
-          <Button className="bg-org flex gap-2">
-            <MdOutlineShoppingCart className="text-[22px]" />
-            Add To Cart
+          <Button
+            className="bg-org flex gap-2 !min-w-[150px]"
+            onClick={() => addToCart(props?.item, context?.userData?._id, quantity)}
+          >
+            {isLoading === true ? (
+              <CircularProgress color="inherit" />
+            ) : (
+              <>
+                <MdOutlineShoppingCart className="text-[22px]" />
+                Add To Cart
+              </>
+            )}
           </Button>
         </div>
         <div className="flex items-center gap-4 mt-4">

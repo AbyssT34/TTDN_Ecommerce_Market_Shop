@@ -32,7 +32,7 @@ export const addToCartItemController = async (request, response) => {
     const checkItemCart = await CartProductModel.findOne({ userId, productId });
     if (checkItemCart) {
       return response.status(400).json({
-        message: "Item already in cart",
+        message: "This specific variation is already in your cart",
         error: true,
         success: false,
       });
@@ -97,7 +97,7 @@ export const getCartItemController = async (request, response) => {
 export const updateCartItemQtyController = async (request, response) => {
   try {
     const userId = request.userId;
-    const { _id, qty, subTotal } = request.body;
+    const { _id, qty, subTotal, size , weight, ram } = request.body;
 
     if (!_id || !qty) {
       return response.status(400).json({
@@ -112,8 +112,12 @@ export const updateCartItemQtyController = async (request, response) => {
       },
       {
         quantity: qty,
-        subTotal:subTotal,
-      },{new : true}
+        subTotal: subTotal,
+        size: size,
+        weight: weight,
+        ram:ram,
+      },
+      { new: true },
     );
 
     return response.json({
@@ -160,7 +164,7 @@ export const deleteCartItemQtyController = async (request, response) => {
 
     // Bỏ user.save() nếu không cần thiết để tránh lỗi 'user is not defined'
 
-    return response.json({
+    return response.status(200).json({
       message: "Item removed successfully",
       success: true,
       error: false,
