@@ -13,6 +13,7 @@ import { FaPlus } from 'react-icons/fa';
 import CartItems from '../../Page/Cart/cartItems';
 import { deleteData, editData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { MdClose } from 'react-icons/md';
 
 const ProductsItem = (props) => {
   const [quantity, setQuantity] = useState(1);
@@ -27,6 +28,7 @@ const ProductsItem = (props) => {
   const context = useContext(MyContext);
 
   const addToCart = (product, userId, quantity) => {
+
     const producItem = {
       _id: product?._id,
       name: product?.name,
@@ -154,7 +156,18 @@ const ProductsItem = (props) => {
           </Link>
 
           {isShowTabs === true && (
-            <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.7)] z-[60] p-3 gap-2 opacity-100">
+            <div
+              className="flex items-center justify-center absolute top-0 left-0 w-full
+             h-full bg-[rgba(0,0,0,0.7)] z-[60] p-3 gap-2 opacity-100"
+            >
+              <Button
+                className="!absolute top-[10px] right-[10px] !min-w-[30px] !min-h-[30px] !w-[30px] !h-[30px]
+              !rounded-full !bg-[rgba(255,255,255,0.5)] text-black"
+              onClick={() => setIsShowTabs(false)}>
+                {' '}
+                <MdClose className="text-black text-[25px] pointer-events-none" />
+              </Button>
+
               {props?.item?.size?.length !== 0 &&
                 props?.item?.size?.map((size, index) => {
                   return (

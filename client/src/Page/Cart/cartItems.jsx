@@ -7,6 +7,7 @@ import { GoTriangleDown } from 'react-icons/go';
 import { Rating } from '@mui/material';
 import { deleteData, editData } from '../../utils/api';
 import { MyContext } from '../../App';
+import { fetchDataFromApi } from '../../utils/api';
 
 const CartItems = (props) => {
   const [sizeAnchorEl, setSizeAnchorEl] = useState(null);
@@ -22,47 +23,45 @@ const CartItems = (props) => {
   const openWeight = Boolean(weightAnchorEl);
 
   const [qtyAnchorEl, setQtyAnchorEl] = useState(null);
-  const [selectedQty, setSelectedQty] = useState(props.qty);
+  const [selectedQty, setSelectedQty] = useState(props?.item?.quantity || 1);
   const openQty = Boolean(qtyAnchorEl);
 
   const context = useContext(MyContext);
 
   const hasValue = (val) => val && val !== '' && val !== ' ';
 
-  // Size handlers
+  // ─── Size handlers ────────────────────────────────────────────────────────
   const handleClickSize = (event) => setSizeAnchorEl(event.currentTarget);
   const handleCloseSize = (value) => {
     setSizeAnchorEl(null);
     if (value !== null) setSelectedSize(value);
   };
 
-  // Ram handlers
+  // ─── Ram handlers ─────────────────────────────────────────────────────────
   const handleClickRam = (event) => setRamAnchorEl(event.currentTarget);
   const handleCloseRam = (value) => {
     setRamAnchorEl(null);
     if (value !== null) setSelectedRam(value);
   };
 
-  // Weight handlers
+  // ─── Weight handlers ──────────────────────────────────────────────────────
   const handleClickWeight = (event) => setWeightAnchorEl(event.currentTarget);
   const handleCloseWeight = (value) => {
     setWeightAnchorEl(null);
     if (value !== null) setSelectedWeight(value);
   };
 
-  // Qty handlers
+  // ─── Qty handlers ─────────────────────────────────────────────────────────
   const handleClickQty = (event) => setQtyAnchorEl(event.currentTarget);
   const handleCloseQty = (value) => {
     setQtyAnchorEl(null);
     if (value !== null) {
       setSelectedQty(value);
-
       const cartObj = {
         _id: props?.item?._id,
-        qty: value, //
+        qty: value,
         subTotal: props?.item?.price * value,
       };
-
       editData(`/api/cart/update-qty`, cartObj).then((res) => {
         if (res?.data?.error === false) {
           context.alertBox('success', res?.data?.message);
@@ -72,24 +71,73 @@ const CartItems = (props) => {
     }
   };
 
-  const updateCart = (type, selectedVal, qty) => {
+  // ─── Update cart (size / ram / weight) ────────────────────────────────────
+  const updateCart = async (type, selectedVal, qty, field) => {
     const cartObj = {
       _id: props?.item?._id,
-      qty: qty, //
+      qty: qty,
       subTotal: props?.item?.price * qty,
       size: type === 'size' ? selectedVal : props?.item?.size || '',
       weight: type === 'weight' ? selectedVal : props?.item?.weight || '',
       ram: type === 'ram' ? selectedVal : props?.item?.ram || '',
     };
 
-    editData(`/api/cart/update-qty`, cartObj).then((res) => {
-      if (res?.data?.error === false) {
-        context.alertBox('success', res?.data?.message);
-     context?.getCartItems();
+    //update size
+    if (field === 'size') {
+      // Validate size còn hàng không
+      const res = await fetchDataFromApi(`/api/product/${props?.item?.productId}`);
+      const product = res?.product;
+      const matchedSize = product?.size?.filter((size) => size?.includes(selectedVal));
+
+      if (matchedSize?.length !== 0) {
+        const updateRes = await editData(`/api/cart/update-qty`, cartObj);
+        if (updateRes?.data?.error === false) {
+          context.alertBox('success', updateRes?.data?.message);
+          context?.getCartItems();
+        }
+      } else {
+        context.alertBox('error', `Product not avilable with the size of ${selectedVal}`);
       }
-    });
+    }
+
+    //update ram
+    if (field === 'ram') {
+      // Validate ram còn hàng không
+      const res = await fetchDataFromApi(`/api/product/${props?.item?.productId}`);
+      const product = res?.product;
+      const matchedSize = product?.productRam?.filter((ram) => ram?.includes(selectedVal));
+
+      if (matchedSize?.length !== 0) {
+        const updateRes = await editData(`/api/cart/update-qty`, cartObj);
+        if (updateRes?.data?.error === false) {
+          context.alertBox('success', updateRes?.data?.message);
+          context?.getCartItems();
+        }
+      } else {
+      context.alertBox('error', `Product not avilable with the ram of ${selectedVal}`);
+      }
+    }
+
+    //update weight
+    if (field === 'weight') {
+      // Validate Weight còn hàng không
+      const res = await fetchDataFromApi(`/api/product/${props?.item?.productId}`);
+      const product = res?.product;
+      const matchedSize = product?.productWeight?.filter((weight) => weight?.includes(selectedVal));
+
+      if (matchedSize?.length !== 0) {
+        const updateRes = await editData(`/api/cart/update-qty`, cartObj);
+        if (updateRes?.data?.error === false) {
+          context.alertBox('success', updateRes?.data?.message);
+          context?.getCartItems();
+        }
+      } else {
+        context.alertBox('error', `Product not avilable with the weight of ${selectedVal}`);
+      }
+    }
   };
 
+  // ─── Remove item ──────────────────────────────────────────────────────────
   const removeItem = (id) => {
     deleteData(`/api/cart/delete-cart-item/${id}`).then((res) => {
       context.alertBox('success', 'Product removed from cart');
@@ -127,7 +175,7 @@ const CartItems = (props) => {
         <Rating name="size-small" value={props?.item?.rating} size="small" readOnly />
 
         <div className="flex items-center gap-4 mt-2">
-          {/* Size dropdown - chỉ hiện khi item.size có giá trị */}
+          {/* ── Size dropdown ── */}
           {hasValue(props?.item?.size) && props?.productSizeData?.length > 0 && (
             <div className="relative">
               <span
@@ -148,7 +196,7 @@ const CartItems = (props) => {
                     className={`${item?.name === selectedSize && 'selected'}`}
                     onClick={() => {
                       handleCloseSize(item?.name);
-                      updateCart('size', item?.name, props?.item?.quantity);
+                      updateCart('size', item?.name, selectedQty, 'size'); // ✅ truyền đủ 4 tham số
                     }}
                   >
                     {item?.name}
@@ -158,7 +206,7 @@ const CartItems = (props) => {
             </div>
           )}
 
-          {/* Ram dropdown - chỉ hiện khi item.ram có giá trị */}
+          {/* ── Ram dropdown ── */}
           {hasValue(props?.item?.ram) && props?.productRamsData?.length > 0 && (
             <div className="relative">
               <span
@@ -179,7 +227,7 @@ const CartItems = (props) => {
                     className={`${item?.name === selectedRam && 'selected'}`}
                     onClick={() => {
                       handleCloseRam(item?.name);
-                      updateCart('ram', item?.name, props?.item?.quantity);
+                      updateCart('ram', item?.name, selectedQty, 'ram'); // ✅ truyền đủ 4 tham số
                     }}
                   >
                     {item?.name}
@@ -189,7 +237,7 @@ const CartItems = (props) => {
             </div>
           )}
 
-          {/* Weight dropdown - chỉ hiện khi item.weight có giá trị */}
+          {/* ── Weight dropdown ── */}
           {hasValue(props?.item?.weight) && props?.productWeightData?.length > 0 && (
             <div className="relative">
               <span
@@ -210,7 +258,7 @@ const CartItems = (props) => {
                     className={`${item?.name === selectedWeight && 'selected'}`}
                     onClick={() => {
                       handleCloseWeight(item?.name);
-                      updateCart('weight', item?.name, props?.item?.quantity);
+                      updateCart('weight', item?.name, selectedQty, 'weight'); // ✅ truyền đủ 4 tham số
                     }}
                   >
                     {item?.name}
@@ -220,7 +268,7 @@ const CartItems = (props) => {
             </div>
           )}
 
-          {/* Qty dropdown */}
+          {/* ── Qty dropdown ── */}
           <div className="relative">
             <span
               className="flex items-center justify-center bg-[#f1f1f1] text-[11px] font-[600] py-1 px-2 rounded-md cursor-pointer"

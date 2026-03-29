@@ -53,7 +53,8 @@ const Header = () => {
         context.setIsLogin(false);
         localStorage.removeItem('accesstoken', res?.accesstoken);
         localStorage.removeItem('refreshToken', res?.refreshToken);
-        context?.setCatData(null);
+        context?.setUserData(null);
+        context?.setCartData([]);
         history('/');
       }
     });

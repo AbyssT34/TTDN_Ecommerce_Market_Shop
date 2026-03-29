@@ -51,26 +51,54 @@ const ProductDetailsComponent = (props) => {
       ram: props?.item?.productRam?.length !== 0 ? selectedTabName || '' : '',
     };
 
-    if (selectedTabName !== null) {
-      setIsLoading(true);
+    if (
+      props?.item?.size?.length !== 0 ||
+      props?.item?.productWeight?.length !== 0 ||
+      props?.item?.productRam?.length !== 0
+    ) {
+      if (selectedTabName !== null) {
+        setIsLoading(true);
 
-      postData(`/api/cart/add`, producItem).then((res) => {
-        if (res?.error === false) {
-          context?.alertBox('success', res?.message);
+        postData(`/api/cart/add`, producItem).then((res) => {
+          if (res?.error === false) {
+            context?.alertBox('success', res?.message);
 
-          context?.getCartItems();
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
-        } else {
-          context?.alertBox('error', res?.message);
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
-        }
-      });
+            context?.getCartItems();
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 500);
+          } else {
+            context?.alertBox('error', res?.message);
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 500);
+          }
+        });
+      } else {
+        setTabError(true);
+      }
     }else{
-      setTabError(true);
+      if (selectedTabName !== null) {
+        setIsLoading(true);
+
+        postData(`/api/cart/add`, producItem).then((res) => {
+          if (res?.error === false) {
+            context?.alertBox('success', res?.message);
+
+            context?.getCartItems();
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 500);
+          } else {
+            context?.alertBox('error', res?.message);
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 500);
+          }
+        });
+      } else {
+        setTabError(true);
+      }
     }
   };
 
@@ -131,7 +159,7 @@ const ProductDetailsComponent = (props) => {
                   <Button
                     className={`${productActionsIndex === index ? '!bg-[#ff5252] !text-white' : ''}
                       ${tabError === true && 'error'}`}
-                    onClick={() => handleClickActivetab(index, item)} 
+                    onClick={() => handleClickActivetab(index, item)}
                   >
                     {item}
                   </Button>
