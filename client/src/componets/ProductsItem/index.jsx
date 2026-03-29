@@ -11,13 +11,15 @@ import { MyContext } from '../../App';
 import { FaMinus } from 'react-icons/fa6';
 import { FaPlus } from 'react-icons/fa';
 import CartItems from '../../Page/Cart/cartItems';
-import { deleteData, editData } from '../../utils/api';
+import { deleteData, editData, postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdClose } from 'react-icons/md';
+import { IoMdHeart } from 'react-icons/io';
 
 const ProductsItem = (props) => {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [isAddedInMyList, setIsAddedInMyList] = useState(false);
   const [cartItem, setCartItem] = useState([]);
 
   const [activeTab, setActiveTab] = useState(null);
@@ -28,7 +30,6 @@ const ProductsItem = (props) => {
   const context = useContext(MyContext);
 
   const addToCart = (product, userId, quantity) => {
-
     const producItem = {
       _id: product?._id,
       name: product?.name,
@@ -87,6 +88,10 @@ const ProductsItem = (props) => {
       CartItem.productId.includes(props?.item?._id)
     );
 
+     const myListItem = context?.myListData?.filter((item) =>
+       item.productId.includes(props?.item?._id)
+     );
+
     if (item?.length !== 0) {
       setCartItem(item);
       setIsAdded(true);
@@ -94,6 +99,13 @@ const ProductsItem = (props) => {
     } else {
       setQuantity(1);
     }
+
+
+     if (myListItem?.length !== 0) {
+       setIsAddedInMyList(true);
+     } else {
+       setIsAddedInMyList(false);
+     }
   }, [context?.cartData]);
 
   const minusQyt = () => {
@@ -140,6 +152,35 @@ const ProductsItem = (props) => {
     });
   };
 
+  const handleAddToMyList = (item) => {
+    if (context?.userData === null) {
+      context?.alertBox('error', 'you are not login please login first');
+      return false;
+    } else {
+      const obj = {
+        productId: item?._id,
+        userId: context?.userData?._id,
+        productTitle: item?.name,
+        image: item?.images[0],
+        brand: item?.brand,
+        rating: item?.rating,
+        price: item?.price,
+        oldPrice: item?.oldPrice,
+        discount: item?.discount,
+      };
+
+      postData(`/api/myList/add`, obj).then((res) => {
+        if (res?.error === false) {
+          context?.alertBox('success', res?.message);
+          setIsAddedInMyList(true);
+          context?.getMyListData();
+        } else {
+          context?.alertBox('error', res?.message);
+        }
+      });
+    }
+  };
+
   return (
     <>
       <div className="productsItem shadow-lg rounded-md overflow-hidden border-1 border-[rgba(0,0,0,0.1)]">
@@ -163,7 +204,8 @@ const ProductsItem = (props) => {
               <Button
                 className="!absolute top-[10px] right-[10px] !min-w-[30px] !min-h-[30px] !w-[30px] !h-[30px]
               !rounded-full !bg-[rgba(255,255,255,0.5)] text-black"
-              onClick={() => setIsShowTabs(false)}>
+                onClick={() => setIsShowTabs(false)}
+              >
                 {' '}
                 <MdClose className="text-black text-[25px] pointer-events-none" />
               </Button>
@@ -247,13 +289,22 @@ const ProductsItem = (props) => {
             </Button>
 
             <Button
-              className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white
-         text-black hover:!bg-[#ff5252] hover:text-white group"
+              className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white
+         text-black hover:!bg-[#ff5252] hover:text-white 
+         group`}
+              onClick={() => handleAddToMyList(props?.item)}
             >
-              <FaRegHeart
-                className="text-[18px]
+              {isAddedInMyList === true ? (
+                <IoMdHeart
+                  className="text-[18px]
+          !text-[#ff5252] group-hover:text-white hover:!text-white"
+                />
+              ) : (
+                <FaRegHeart
+                  className="text-[18px]
           !text-black group-hover:text-white hover:!text-white"
-              />
+                />
+              )}
             </Button>
           </div>
         </div>

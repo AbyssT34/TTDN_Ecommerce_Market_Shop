@@ -41,6 +41,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = useState([]);
   const [cartData, setCartData] = useState([]);
+  const [myListData, setMyListData] = useState([]);
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -72,6 +73,7 @@ function App() {
       });
 
       getCartItems();
+      getMyListData();
     } else {
       setIsLogin(false);
     }
@@ -160,6 +162,15 @@ function App() {
       }
     });
   };
+  
+  const getMyListData = () => {
+    fetchDataFromApi(`/api/myList`).then((res)=> {
+      if(res?.error === false){
+        setMyListData(res?.data);
+      }
+    })
+  }
+
 
   const values = {
     setOpenProductDetailsModal,
@@ -185,6 +196,9 @@ function App() {
     cartData,
     getCartItems,
     setCartData,
+    myListData,
+    setMyListData,
+    getMyListData,
   };
 
   return (

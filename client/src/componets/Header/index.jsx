@@ -55,6 +55,7 @@ const Header = () => {
         localStorage.removeItem('refreshToken', res?.refreshToken);
         context?.setUserData(null);
         context?.setCartData([]);
+        context?.setMyListData([]);
         history('/');
       }
     });
@@ -203,10 +204,18 @@ const Header = () => {
                 <CartBadge badgeContent={5} color="primary" overlap="circular" />
               </IconButton>
 
-              <IconButton className="!min-w-[45px] !w-[45px] !h-[45px] !rounded-full !bg-gray-100 hover:!bg-gray-200">
-                <FaRegHeart size={20} className="text-gray-700" />
-                <CartBadge badgeContent={5} color="primary" overlap="circular" />
-              </IconButton>
+              <Link to={`/my-list`}>
+                <IconButton className="!min-w-[45px] !w-[45px] !h-[45px] !rounded-full !bg-gray-100 hover:!bg-gray-200">
+                  <FaRegHeart size={20} className="text-gray-700" />
+                  <CartBadge
+                    badgeContent={
+                      context?.myListData?.length !== 0 ? context?.myListData?.length : 0
+                    }
+                    color="primary"
+                    overlap="circular"
+                  />
+                </IconButton>
+              </Link>
 
               <IconButton
                 className="!min-w-[45px] !w-[45px] !h-[45px] !rounded-full !bg-gray-100 hover:!bg-gray-200"

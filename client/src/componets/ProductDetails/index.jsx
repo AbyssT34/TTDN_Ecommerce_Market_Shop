@@ -79,7 +79,6 @@ const ProductDetailsComponent = (props) => {
       }
     }else{
       if (selectedTabName !== null) {
-        setIsLoading(true);
 
         postData(`/api/cart/add`, producItem).then((res) => {
           if (res?.error === false) {
