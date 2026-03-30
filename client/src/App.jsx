@@ -31,6 +31,7 @@ const MyContext = createContext();
 
 function App() {
   const [openCartPanel, setOpenCartPanel] = useState(false);
+    const [openAddressPanel, setOpenAddressPanel] = useState(false);
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState({
     open: false,
     item: {},
@@ -50,6 +51,10 @@ function App() {
   const toggleCartPanel = (newOpen) => () => {
     setOpenCartPanel(newOpen);
   };
+
+    const toggleAddressPanel = (newOpen) => () => {
+      setOpenAddressPanel(newOpen);
+    };
 
   useEffect(() => {
     const token = localStorage.getItem('accesstoken');
@@ -184,6 +189,9 @@ function App() {
     setOpenCartPanel,
     openCartPanel,
     toggleCartPanel,
+    openAddressPanel,
+    setOpenAddressPanel,
+    toggleAddressPanel,
     openAlertBox,
     islogin,
     setIsLogin,

@@ -10,11 +10,10 @@ export const addAddressController = async (request, response) => {
       pincode,
       country,
       mobile,
-      status,
       userId,
-      selected,
+      lamdmark,
+      addressType,
     } = request.body;
-
     // if (
     //   address_line1 ||
     //   city ||
@@ -38,9 +37,9 @@ export const addAddressController = async (request, response) => {
       pincode,
       country,
       mobile,
-      status,
       userId,
-      selected,
+      lamdmark,
+      addressType,
     });
 
     const saveAddress = await address.save();
@@ -108,7 +107,7 @@ export const getAllAddressController = async (request, response) => {
 export const deleteAddressController = async (request, response) => {
   try {
     const userId = request.userId;
-    const  _id  = request.params.id;
+    const _id = request.params.id;
 
     if (!_id) {
       return response.status(400).json({
@@ -131,7 +130,6 @@ export const deleteAddressController = async (request, response) => {
       });
     }
 
-
     return response.json({
       message: "Address remove",
       success: true,
@@ -146,3 +144,79 @@ export const deleteAddressController = async (request, response) => {
     });
   }
 };
+
+export const getSingleAddressController = async (request, response) => {
+  try {
+    const { id } = request.params;
+
+    const address = await AddressModel.findById(id);
+
+    if (!address) {
+      return response.status(404).json({
+        message: "Address not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.status(200).json({
+      message: "Address found",
+      error: false,
+      success: true,
+      address: address,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export async function editAddress(request, response) {
+  try {
+
+    const  id  = request.params.id;
+
+    const {
+      address_line1,
+      city,
+      state,
+      pincode,
+      country,
+      mobile,
+      userId,
+      lamdmark,
+      addressType,
+    } = request.body;
+
+    const address = await AddressModel.findByIdAndUpdate(
+      id,
+      {
+        address_line1: address_line1,
+        city: city,
+        state: state,
+        pincode: pincode,
+        country: country,
+        mobile: mobile,
+        lamdmark: lamdmark,
+        addressType: addressType,
+      },
+      { new: true },
+    );
+
+    return response.json({
+      message: "Address details updated successfully",
+      error: false,
+      success: true,
+      address: address,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}

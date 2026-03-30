@@ -97,8 +97,8 @@ header .top-strip {
   background-color: #ff5252;
 }
 
-.link:hover {
-  color: #ff5252;
+.link:hover,.Mui-checked {
+  color: #ff5252 !important;
 }
 
 .Mutibadge-badge {

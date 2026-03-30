@@ -394,20 +394,8 @@ export async function updateUserDetails(request, response) {
     if (!userExist)
       return response.status(400).send("The user cannot be Updated");
 
-    let verifyCode = "";
 
-    if (email !== userExist.email) {
-      verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    }
 
-    let hashPassword = " ";
-
-    if (password) {
-      const salt = await bcryptjs.genSalt(10);
-      hashPassword = await bcryptjs.hash(password, salt);
-    } else {
-      hashPassword = userExist.password;
-    }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
@@ -415,10 +403,6 @@ export async function updateUserDetails(request, response) {
         name: name,
         mobile: mobile,
         email: email,
-        verify_email: email !== userExist.email ? false : true,
-        password: hashPassword,
-        otp: verifyCode !== "" ? verifyCode : null,
-        otpExpires: verifyCode !== "" ? Date.now() + 600000 : null,
       },
       { new: true },
     );
