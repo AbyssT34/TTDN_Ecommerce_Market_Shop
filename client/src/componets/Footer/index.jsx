@@ -22,6 +22,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import ProductZoom from '../ProductZoom/';
 import ProductDetailsComponent from '../ProductDetails';
+import AddAress from '../../Page/MyAccount/addAress';
 
 const Footer = () => {
   const context = useContext(MyContext);
@@ -292,20 +293,20 @@ const Footer = () => {
 
       {/* Address Panel */}
       <Drawer
-        open={context.openAddressPanel}
-        onClose={context.toggleAddressPanel(false)}
+        open={context?.openAddressPanel}
+        onClose={context?.toggleAddressPanel(false)}
         anchor={'right'}
-        className="cartPanel"
+        className="addressPanel"
       >
         <div className="flex items-center justify-between py-3 px-4 gap-3 border-b border-[rgba(0,0,0,0.1)] overflow-hidden">
-          <h4>Add Delivery Address </h4>
+          <h4>{context?.addressMode === "add" ? "Add" : "Edit"} Delivery Address </h4>
           <IoCloseSharp
             className="text-[20px] cursor-pointer"
-            onClick={context.toggleAddressPanel(false)}
+            onClick={context?.toggleAddressPanel(false)}
           />
         </div>
 
-        
+        <AddAress />
 
       </Drawer>
 

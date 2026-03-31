@@ -31,12 +31,20 @@ const CartPanel = (props) => {
                 <div className="info w-[75%] pr-5 relative pt-3">
                   <h4 className="text-[14px] font-[500]">
                     <Link to={`/product/${item?.productId}`} className="link transition-all">
-                      {item?.productTitle?.substr(0, 40) + '...'}
+                      {item?.productTitle?.substr(0, 20) + '...'}
                     </Link>
                   </h4>
                   <p className="flex items-center gap-5 mt-2 mb-2">
-                    Qty : <span>{item?.quantity}</span>
-                    <span className="text-primary font-bold">Price : &#8363; {item?.price}</span>
+                    Qty:<span>{item?.quantity}</span>
+                    <span className="text-primary font-bold">
+                      Price :{' '}
+                      {item?.price?.toLocaleString('vi-VN', {
+                        // Nên dùng 'vi-VN' để hiển thị định dạng số kiểu Việt Nam
+                        style: 'currency',
+                        currency: 'VND',
+                        minimumFractionDigits: 0, // Loại bỏ phần .00 nếu không cần thiết
+                      })}
+                    </span>
                   </p>
 
                   <MdOutlineDeleteOutline
@@ -102,7 +110,12 @@ const CartPanel = (props) => {
             <Button className="bg-org btn-lg w-full">View Cart</Button>
           </Link>
           <Link to="/checkout" className="w-[50%] d-block">
-            <Button className="bg-org btn-border btn-lg w-full">Checkout</Button>
+            <Button
+              className="bg-org btn-border btn-lg w-full"
+              onClick={context.toggleCartPanel(false)}
+            >
+              Checkout
+            </Button>
           </Link>
         </div>
       </div>

@@ -31,7 +31,7 @@ const MyContext = createContext();
 
 function App() {
   const [openCartPanel, setOpenCartPanel] = useState(false);
-    const [openAddressPanel, setOpenAddressPanel] = useState(false);
+  const [openAddressPanel, setOpenAddressPanel] = useState(false);
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState({
     open: false,
     item: {},
@@ -43,6 +43,8 @@ function App() {
   const [catData, setCatData] = useState([]);
   const [cartData, setCartData] = useState([]);
   const [myListData, setMyListData] = useState([]);
+  const [addressMode, setAddressMode] = useState('add');
+  const [addressId, setAddressId] = useState('');
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -52,9 +54,12 @@ function App() {
     setOpenCartPanel(newOpen);
   };
 
-    const toggleAddressPanel = (newOpen) => () => {
-      setOpenAddressPanel(newOpen);
-    };
+  const toggleAddressPanel = (newOpen) => () => {
+    if (newOpen === false) {
+      setAddressMode('add');
+    }
+    setOpenAddressPanel(newOpen);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('accesstoken');
@@ -62,27 +67,30 @@ function App() {
     if (token !== undefined && token !== null && token !== '') {
       setIsLogin(true);
 
-      fetchDataFromApi(`/api/user/user-details`).then((res) => {
-        setUserData(res?.data);
-        console.log(res?.response?.data?.error);
-        if (res?.response?.data?.error === true) {
-          if (res?.response?.data?.message) {
-            localStorage.removeItem('accesstoken');
-            localStorage.removeItem('refreshToken');
-
-            alertBox('error', 'Your session is closed please login again');
-
-            window.location.href = '/login';
-          }
-        }
-      });
-
       getCartItems();
       getMyListData();
+      getUserAddress();
     } else {
       setIsLogin(false);
     }
   }, [islogin]);
+
+  const getUserAddress = () => {
+    fetchDataFromApi(`/api/user/user-details`).then((res) => {
+      setUserData(res?.data);
+      console.log(res?.response?.data?.error);
+      if (res?.response?.data?.error === true) {
+        if (res?.response?.data?.message) {
+          localStorage.removeItem('accesstoken');
+          localStorage.removeItem('refreshToken');
+
+          alertBox('error', 'Your session is closed please login again');
+
+          window.location.href = '/login';
+        }
+      }
+    });
+  };
 
   const openAlertBox = (status, msg) => {
     if (status === 'success') {
@@ -167,15 +175,14 @@ function App() {
       }
     });
   };
-  
+
   const getMyListData = () => {
-    fetchDataFromApi(`/api/myList`).then((res)=> {
-      if(res?.error === false){
+    fetchDataFromApi(`/api/myList`).then((res) => {
+      if (res?.error === false) {
         setMyListData(res?.data);
       }
-    })
-  }
-
+    });
+  };
 
   const values = {
     setOpenProductDetailsModal,
@@ -207,6 +214,11 @@ function App() {
     myListData,
     setMyListData,
     getMyListData,
+    getUserAddress,
+    setAddressMode,
+    addressMode,
+    setAddressId,
+    addressId,
   };
 
   return (

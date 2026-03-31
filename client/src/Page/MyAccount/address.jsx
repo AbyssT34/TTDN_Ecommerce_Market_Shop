@@ -15,50 +15,24 @@ import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
 import Select from '@mui/material/Select';
 
-import { deleteData, editData, fetchDataFromApi, postData } from '../../utils/api';
+import { deleteData, fetchDataFromApi} from '../../utils/api';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import AddressBox from './addressBox';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const label = { inputProps: { 'arial-label': 'checkbox demo' } };
+
 
 const Address = () => {
   const [address, setAddress] = useState([]);
-  const [phone, setPhone] = useState('');
-  const [isOpenMoel, setIsOpenModel] = useState(false);
-  const [mode, setMode] = useState('add');
-  const [addressId, setAddressId] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [addressType, setAddressType] = useState('');
-  const [formFields, setFormFields] = useState({
-    address_line1: '',
-    city: '',
-    state: '',
-    pincode: '',
-    country: '',
-    mobile: '',
-    userId: '',
-    addressType: '',
-    lamdmark: '',
-  });
+
 
   const context = useContext(MyContext);
 
 
-  useEffect(() => {
-    if (context?.userData?._id !== undefined) {
-      setFormFields((prevState) => ({
-        ...prevState,
-        userId: context?.userData?._id,
-      }));
-    }
-  }, [context?.userData]);
 
   useEffect(() => {
     if (context?.userData?._id !== '' && context?.userData?._id !== undefined) {
-      fetchDataFromApi(`/api/address/get?userId=${context?.userData?._id}`).then((res) => {
-        setAddress(res.data);
-      });
+        setAddress(context?.userData?.address_details || []);
     }
   }, [context?.userData]);
 
@@ -66,9 +40,12 @@ const Address = () => {
     deleteData(`/api/address/${id}`).then((res) => {
       fetchDataFromApi(`/api/address/get?userId=${context?.userData?._id}`).then((res) => {
         setAddress(res.data);
+        context.getUserAddress();
       });
     });
   };
+
+
 
 
 
@@ -92,17 +69,20 @@ const Address = () => {
               <div
                 className="flex items-center justify-center p-5 rounded-md border border-dashed
                           border-[rgba(0,0,0,0.2)] bg-[#f1faff] hover:bg-[#e7f3f9] cursor-pointer"
-                onClick={() => context?.toggleAddressPanel(true)}
+                onClick={() => {
+                  context?.setOpenAddressPanel(true);
+                  context?.setAddressMode('add');
+                }}
               >
                 <span className="text-[14px] font-[500]">Add Address</span>
               </div>
 
               <div className="flex gap-2 flex-col mt-4">
                 {address?.length > 0 &&
-                  address?.map((address, index) => {
+                  address?.map((address, index) => {  
                     return (
                       <>
-                        <AddressBox address={address} key={index} removeAddress={removeAddress} />
+                        <AddressBox address={address} key={index} removeAddress={removeAddress}  />
                       </>
                     );
                   })}
