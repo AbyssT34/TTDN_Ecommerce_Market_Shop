@@ -33,6 +33,8 @@ export {
     type IOrderTimeline,
 } from './Order.model.js';
 
+export { Voucher, VoucherType, type IVoucher } from './Voucher.model.js';
+
 export {
     ChatMessage,
     MessageRole,

@@ -7,9 +7,13 @@
         "dev": "tsx watch src/index.ts",
         "build": "tsc",
         "start": "node dist/index.js",
-        "seed": "tsx src/scripts/seedDatabase.ts"
+        "seed": "tsx src/scripts/seedDatabase.ts",
+        "sync:product-images": "tsx src/scripts/syncProductCloudinaryImages.ts",
+        "sync:recipe-images": "tsx src/scripts/syncRecipeCloudinaryImages.ts"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.78.0",
+        "@google/generative-ai": "^0.24.1",
         "bcryptjs": "^2.4.3",
         "cloudinary": "^2.9.0",
         "compression": "^1.7.4",

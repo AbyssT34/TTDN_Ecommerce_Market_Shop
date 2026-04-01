@@ -1,17 +1,29 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Package, MapPin, CreditCard, Clock } from 'lucide-react';
-import { getOrderById, cancelOrder } from '@/lib/api/orders';
-import { GlassCard, Button, toast } from '@/components/ui';
-import { useState } from 'react';
-
-// ═══════════════════════════════════════════════════════════════
-// ORDER DETAIL PAGE
-// ═══════════════════════════════════════════════════════════════
+import { CreditCard, MapPin, Package, PackageCheck, TimerReset } from 'lucide-react';
+import { cancelOrder, getOrderById } from '@/lib/api/orders';
+import { toast } from '@/components/ui';
+import { translate } from '@/lib/displayPreferences';
+import { useThemeStore } from '@/stores/themeStore';
+import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
+import { StorefrontAccountSidebar } from '@/features/storefront/components/StorefrontAccountSidebar';
+import {
+    formatOrderDateTime,
+    formatOrderPrice,
+    getOrderDisplayCode,
+    getOrderItemImage,
+    getOrderStatusClassName,
+    getOrderStatusLabel,
+    getPaymentMethodLabel,
+    getPaymentStatusLabel,
+    isBankTransferOrder,
+    isPaidOrder,
+} from './orderPresentation';
 
 export const OrderDetailPage = () => {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+    const language = useThemeStore((state) => state.language);
     const [cancelling, setCancelling] = useState(false);
 
     const { data, isLoading, error, refetch } = useQuery({
@@ -22,23 +34,101 @@ export const OrderDetailPage = () => {
 
     const order = data?.order;
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(price);
-    };
+    const copy = useMemo(
+        () => ({
+            orders: translate({ vi: 'Đơn hàng của tôi', en: 'My orders' }, language),
+            detail: translate({ vi: 'Chi tiết đơn hàng', en: 'Order details' }, language),
+            subtitle: translate(
+                { vi: 'Xem trạng thái, địa chỉ nhận hàng, timeline xử lý và thông tin thanh toán của đơn hiện tại.', en: 'View status, shipping address, processing timeline, and payment details for this order.' },
+                language
+            ),
+            loadingTitle: translate({ vi: 'Đang tải chi tiết đơn hàng', en: 'Loading order details' }, language),
+            loadingDescription: translate(
+                { vi: 'Mình đang lấy dữ liệu mới nhất từ order API.', en: 'Fetching the latest data from the order API.' },
+                language
+            ),
+            missingTitle: translate({ vi: 'Không tìm thấy đơn hàng', en: 'Order not found' }, language),
+            missingDescription: translate(
+                { vi: 'Đơn có thể không còn tồn tại hoặc bạn không có quyền xem đơn này.', en: 'This order may no longer exist or you do not have permission to view it.' },
+                language
+            ),
+            backToOrders: translate({ vi: 'Quay lại danh sách đơn', en: 'Back to orders' }, language),
+            sidebarTitle: translate({ vi: 'Chi tiết đơn', en: 'Order details' }, language),
+            sidebarDescription: translate(
+                { vi: 'Theo dõi tiến trình đơn hàng và quay lại thanh toán nếu đơn chuyển khoản vẫn đang chờ xác nhận.', en: 'Track the order progress and return to payment if the bank transfer is still awaiting confirmation.' },
+                language
+            ),
+            orderCode: translate({ vi: 'Mã đơn', en: 'Order code' }, language),
+            status: translate({ vi: 'Trạng thái', en: 'Status' }, language),
+            payment: translate({ vi: 'Thanh toán', en: 'Payment' }, language),
+            total: translate({ vi: 'Tổng cộng', en: 'Total' }, language),
+            pageTitle: (code: string) =>
+                translate(
+                    { vi: `Đơn #${code}`, en: `Order #${code}` },
+                    language
+                ),
+            createdAt: (value: string) =>
+                translate(
+                    { vi: `Tạo lúc ${value}`, en: `Created at ${value}` },
+                    language
+                ),
+            payNow: translate({ vi: 'Thanh toán ngay', en: 'Pay now' }, language),
+            productsInOrder: translate({ vi: 'Sản phẩm trong đơn', en: 'Items in this order' }, language),
+            unit: translate({ vi: 'Đơn vị', en: 'Unit' }, language),
+            shippingAddress: translate({ vi: 'Địa chỉ giao hàng', en: 'Shipping address' }, language),
+            recipient: translate({ vi: 'Người nhận', en: 'Recipient' }, language),
+            phone: translate({ vi: 'Điện thoại', en: 'Phone' }, language),
+            address: translate({ vi: 'Địa chỉ', en: 'Address' }, language),
+            timeline: translate({ vi: 'Timeline xử lý', en: 'Processing timeline' }, language),
+            paymentInfo: translate({ vi: 'Thanh toán', en: 'Payment' }, language),
+            paymentMethod: translate({ vi: 'Phương thức', en: 'Method' }, language),
+            paymentStatus: translate({ vi: 'Trạng thái thanh toán', en: 'Payment status' }, language),
+            deliverySlot: translate({ vi: 'Khung giờ giao', en: 'Delivery slot' }, language),
+            orderTotal: translate({ vi: 'Tổng cộng', en: 'Order total' }, language),
+            subtotal: translate({ vi: 'Tạm tính', en: 'Subtotal' }, language),
+            shippingFee: translate({ vi: 'Phí giao hàng', en: 'Shipping fee' }, language),
+            payTransfer: translate({ vi: 'Thanh toán chuyển khoản', en: 'Pay by transfer' }, language),
+            cancelOrder: translate({ vi: 'Hủy đơn hàng', en: 'Cancel order' }, language),
+            cancelling: translate({ vi: 'Đang hủy...', en: 'Cancelling...' }, language),
+            confirmCancel: translate({ vi: 'Bạn có chắc muốn hủy đơn hàng này không?', en: 'Are you sure you want to cancel this order?' }, language),
+            cancelSuccess: translate({ vi: 'Đã hủy đơn hàng.', en: 'Order cancelled.' }, language),
+            cancelFailed: translate({ vi: 'Không thể hủy đơn', en: 'Unable to cancel this order' }, language),
+            notAvailable: translate({ vi: 'N/A', en: 'N/A' }, language),
+        }),
+        [language]
+    );
+
+    const stats = useMemo(() => {
+        if (!order) {
+            return [
+                { label: copy.orderCode, value: '--' },
+                { label: copy.status, value: '--' },
+                { label: copy.payment, value: '--' },
+                { label: copy.total, value: '--' },
+            ];
+        }
+
+        return [
+            { label: copy.orderCode, value: getOrderDisplayCode(order) },
+            { label: copy.status, value: getOrderStatusLabel(order.orderStatus) },
+            { label: copy.payment, value: getPaymentStatusLabel(order.paymentStatus) },
+            { label: copy.total, value: formatOrderPrice(order.total) },
+        ];
+    }, [order, copy]);
 
     const handleCancel = async () => {
-        if (!order || !window.confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+        if (!order || !window.confirm(copy.confirmCancel)) {
+            return;
+        }
 
         setCancelling(true);
+
         try {
             await cancelOrder(order._id);
-            toast.success('Đã hủy đơn hàng');
+            toast.success(copy.cancelSuccess);
             refetch();
-        } catch (error: any) {
-            const message = error.response?.data?.error || 'Không thể hủy đơn';
+        } catch (cancelError: any) {
+            const message = cancelError.response?.data?.error || copy.cancelFailed;
             toast.error(message);
         } finally {
             setCancelling(false);
@@ -47,178 +137,249 @@ export const OrderDetailPage = () => {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-8 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
-            </div>
+            <>
+                <StorefrontBreadcrumb title={copy.detail} items={[{ label: copy.orders, to: '/orders' }, { label: copy.detail }]} />
+                <section className="section-b-space">
+                    <div className="container-fluid-lg">
+                        <div className="ttdn-empty-state text-center">
+                            <div className="spinner-border text-success mb-3" role="status" />
+                            <h3 className="fw-bold text-dark mb-2">{copy.loadingTitle}</h3>
+                            <p className="text-content mb-0">{copy.loadingDescription}</p>
+                        </div>
+                    </div>
+                </section>
+            </>
         );
     }
 
     if (error || !order) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <GlassCard variant="dark" padding="lg" className="text-center">
-                    <p className="text-red-400">Không tìm thấy đơn hàng</p>
-                    <Button variant="outline" className="mt-4" onClick={() => navigate('/orders')}>
-                        Quay lại
-                    </Button>
-                </GlassCard>
-            </div>
+            <>
+                <StorefrontBreadcrumb title={copy.detail} items={[{ label: copy.orders, to: '/orders' }, { label: copy.detail }]} />
+                <section className="section-b-space">
+                    <div className="container-fluid-lg">
+                        <div className="ttdn-empty-state text-center">
+                            <h3 className="fw-bold text-dark mb-2">{copy.missingTitle}</h3>
+                            <p className="text-content mb-4">{copy.missingDescription}</p>
+                            <a href="/orders" className="btn btn-animation px-4">
+                                {copy.backToOrders}
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </>
         );
     }
 
     const canCancel = ['pending', 'confirmed'].includes(order.orderStatus);
+    const canPayNow = isBankTransferOrder(order.paymentMethod) && !isPaidOrder(order.paymentStatus);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Button
-                variant="ghost"
-                leftIcon={<ArrowLeft className="w-4 h-4" />}
-                onClick={() => navigate('/orders')}
-                className="mb-6"
-            >
-                Quay lại
-            </Button>
+        <>
+            <StorefrontBreadcrumb
+                title={copy.pageTitle(getOrderDisplayCode(order))}
+                items={[{ label: copy.orders, to: '/orders' }, { label: copy.pageTitle(getOrderDisplayCode(order)) }]}
+                subtitle={copy.subtitle}
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Order Info */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Header */}
-                    <GlassCard variant="dark" padding="lg">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                <Package className="w-6 h-6 text-primary-400" />
-                                <div>
-                                    <h1 className="text-2xl font-bold text-white">
-                                        Đơn hàng #{order._id.slice(-6)}
-                                    </h1>
-                                    <p className="text-sm text-gray-400">
-                                        {new Date(order.createdAt).toLocaleDateString('vi-VN', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </p>
-                                </div>
-                            </div>
-                            {canCancel && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleCancel}
-                                    loading={cancelling}
-                                >
-                                    Hủy đơn
-                                </Button>
-                            )}
+            <section className="user-dashboard-section section-b-space">
+                <div className="container-fluid-lg">
+                    <div className="row g-4">
+                        <div className="col-xl-4 col-xxl-3">
+                            <StorefrontAccountSidebar title={copy.sidebarTitle} description={copy.sidebarDescription} stats={stats} />
                         </div>
-                    </GlassCard>
 
-                    {/* Items */}
-                    <GlassCard variant="dark" padding="lg">
-                        <h3 className="text-xl font-bold text-white mb-4">Sản phẩm</h3>
-                        <div className="space-y-4">
-                            {order.items.map((item: any, index: number) => (
-                                <div key={index} className="flex gap-4">
-                                    <div className="w-20 h-20 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
-                                        {item.product?.images?.[0] ? (
-                                            <img
-                                                src={item.product.images[0]}
-                                                alt={item.product.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-2xl">
-                                                🛒
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h4 className="text-white font-medium">{item.product?.name || 'N/A'}</h4>
-                                        <p className="text-sm text-gray-400">
-                                            {formatPrice(item.price)} x {item.quantity}
-                                        </p>
-                                    </div>
-                                    <p className="text-white font-bold">
-                                        {formatPrice(item.price * item.quantity)}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </GlassCard>
-
-                    {/* Shipping */}
-                    <GlassCard variant="dark" padding="lg">
-                        <div className="flex items-center gap-2 mb-4">
-                            <MapPin className="w-5 h-5 text-primary-400" />
-                            <h3 className="text-xl font-bold text-white">Địa chỉ giao hàng</h3>
-                        </div>
-                        <div className="text-gray-300">
-                            <p className="font-medium text-white">{order.shippingAddress.fullName}</p>
-                            <p>{order.shippingAddress.phone}</p>
-                            <p className="mt-2">
-                                {order.shippingAddress.street}, {order.shippingAddress.ward},{' '}
-                                {order.shippingAddress.district}, {order.shippingAddress.city}
-                            </p>
-                        </div>
-                    </GlassCard>
-
-                    {/* Timeline */}
-                    <GlassCard variant="dark" padding="lg">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-5 h-5 text-primary-400" />
-                            <h3 className="text-xl font-bold text-white">Lịch sử đơn hàng</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {order.timeline.map((event: any, index: number) => (
-                                <div key={index} className="flex gap-4">
-                                    <div className="w-2 h-2 mt-2 rounded-full bg-primary-400 flex-shrink-0"></div>
+                        <div className="col-xl-8 col-xxl-9">
+                            <div className="ttdn-page-hero mb-4">
+                                <div className="d-flex flex-wrap justify-content-between align-items-start gap-3">
                                     <div>
-                                        <p className="text-white font-medium">{event.status}</p>
-                                        <p className="text-sm text-gray-400">
-                                            {new Date(event.timestamp).toLocaleString('vi-VN')}
-                                        </p>
-                                        {event.note && <p className="text-sm text-gray-500">{event.note}</p>}
+                                        <p className="text-uppercase small fw-bold text-white-50 mb-2">{copy.detail}</p>
+                                        <h2 className="text-white fw-bold mb-2">{copy.pageTitle(getOrderDisplayCode(order))}</h2>
+                                        <p className="text-white-50 mb-0">{copy.createdAt(formatOrderDateTime(order.createdAt))}</p>
+                                    </div>
+
+                                    <div className="d-flex flex-column align-items-start align-items-lg-end gap-2">
+                                        <span className={`badge rounded-pill px-3 py-2 ${getOrderStatusClassName(order.orderStatus)}`}>
+                                            {getOrderStatusLabel(order.orderStatus)}
+                                        </span>
+                                        {canPayNow ? (
+                                            <a href={`/payment/${order._id}`} className="btn btn-light rounded-pill px-4">
+                                                {copy.payNow}
+                                            </a>
+                                        ) : null}
                                     </div>
                                 </div>
-                            ))}
+                            </div>
+
+                            <div className="row g-4">
+                                <div className="col-lg-8">
+                                    <div className="ttdn-panel mb-4">
+                                        <div className="d-flex align-items-center gap-2 mb-4">
+                                            <Package size={20} className="text-success" />
+                                            <h3 className="fw-bold text-dark mb-0">{copy.productsInOrder}</h3>
+                                        </div>
+
+                                        <div className="d-grid gap-3">
+                                            {order.items.map((item: any, index: number) => {
+                                                const imageUrl = getOrderItemImage(item);
+
+                                                return (
+                                                    <div key={`${order._id}-${index}`} className="ttdn-order-item-card">
+                                                        <div className="d-flex gap-3 align-items-center">
+                                                            <div className="ttdn-recipe-thumbnail">
+                                                                {imageUrl ? (
+                                                                    <img src={imageUrl} alt={item.name} />
+                                                                ) : (
+                                                                    <div className="w-100 h-100 d-flex align-items-center justify-content-center text-success fs-3">
+                                                                        <Package size={28} />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex-grow-1 min-w-0">
+                                                                <p className="fw-bold text-dark mb-1">{item.name}</p>
+                                                                <p className="text-muted mb-1">
+                                                                    {formatOrderPrice(item.price)} x {item.quantity}
+                                                                </p>
+                                                                <p className="text-muted small mb-0">
+                                                                    {copy.unit}: {item.product?.unit || copy.notAvailable}
+                                                                </p>
+                                                            </div>
+
+                                                            <strong className="theme-color text-nowrap">
+                                                                {formatOrderPrice(item.subtotal || item.price * item.quantity)}
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <div className="ttdn-panel mb-4">
+                                        <div className="d-flex align-items-center gap-2 mb-4">
+                                            <MapPin size={20} className="text-success" />
+                                            <h3 className="fw-bold text-dark mb-0">{copy.shippingAddress}</h3>
+                                        </div>
+
+                                        <div className="row g-3">
+                                            <div className="col-md-6">
+                                                <div className="ttdn-order-item-card h-100">
+                                                    <p className="text-muted small mb-1">{copy.recipient}</p>
+                                                    <p className="fw-bold text-dark mb-0">{order.shippingAddress.fullName}</p>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <div className="ttdn-order-item-card h-100">
+                                                    <p className="text-muted small mb-1">{copy.phone}</p>
+                                                    <p className="fw-bold text-dark mb-0">{order.shippingAddress.phone}</p>
+                                                </div>
+                                            </div>
+                                            <div className="col-12">
+                                                <div className="ttdn-order-item-card">
+                                                    <p className="text-muted small mb-1">{copy.address}</p>
+                                                    <p className="fw-bold text-dark mb-0">
+                                                        {order.shippingAddress.street}
+                                                        {order.shippingAddress.ward ? `, ${order.shippingAddress.ward}` : ''}
+                                                        , {order.shippingAddress.district}, {order.shippingAddress.city}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="ttdn-panel">
+                                        <div className="d-flex align-items-center gap-2 mb-4">
+                                            <TimerReset size={20} className="text-success" />
+                                            <h3 className="fw-bold text-dark mb-0">{copy.timeline}</h3>
+                                        </div>
+
+                                        <div className="d-grid gap-3">
+                                            {order.timeline.map((event: any, index: number) => (
+                                                <div key={`${event.timestamp}-${index}`} className="ttdn-step-card">
+                                                    <div className="d-flex gap-3">
+                                                        <div className="ttdn-step-index">{index + 1}</div>
+                                                        <div>
+                                                            <p className="fw-bold text-dark mb-1">{getOrderStatusLabel(event.status)}</p>
+                                                            <p className="text-muted mb-1">{formatOrderDateTime(event.timestamp)}</p>
+                                                            {event.note ? <p className="text-muted mb-0">{event.note}</p> : null}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-4">
+                                    <div className="ttdn-panel mb-4">
+                                        <div className="d-flex align-items-center gap-2 mb-4">
+                                            <CreditCard size={20} className="text-success" />
+                                            <h3 className="fw-bold text-dark mb-0">{copy.paymentInfo}</h3>
+                                        </div>
+
+                                        <div className="d-grid gap-3">
+                                            <div className="ttdn-order-item-card">
+                                                <p className="text-muted small mb-1">{copy.paymentMethod}</p>
+                                                <p className="fw-bold text-dark mb-0">{getPaymentMethodLabel(order.paymentMethod)}</p>
+                                            </div>
+                                            <div className="ttdn-order-item-card">
+                                                <p className="text-muted small mb-1">{copy.paymentStatus}</p>
+                                                <p className="fw-bold text-dark mb-0">{getPaymentStatusLabel(order.paymentStatus)}</p>
+                                            </div>
+                                            <div className="ttdn-order-item-card">
+                                                <p className="text-muted small mb-1">{copy.deliverySlot}</p>
+                                                <p className="fw-bold text-dark mb-0">{order.deliverySlot}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="ttdn-panel">
+                                        <div className="d-flex align-items-center gap-2 mb-4">
+                                            <PackageCheck size={20} className="text-success" />
+                                            <h3 className="fw-bold text-dark mb-0">{copy.orderTotal}</h3>
+                                        </div>
+
+                                        <div className="d-grid gap-3 mb-4">
+                                            <div className="d-flex justify-content-between text-muted">
+                                                <span>{copy.subtotal}</span>
+                                                <span>{formatOrderPrice(order.subtotal)}</span>
+                                            </div>
+                                            <div className="d-flex justify-content-between text-muted">
+                                                <span>{copy.shippingFee}</span>
+                                                <span>{formatOrderPrice(order.shippingFee)}</span>
+                                            </div>
+                                            <div className="d-flex justify-content-between fw-bold text-dark fs-5">
+                                                <span>{copy.total}</span>
+                                                <span className="theme-color">{formatOrderPrice(order.total)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="d-grid gap-2">
+                                            {canPayNow ? (
+                                                <a href={`/payment/${order._id}`} className="btn btn-animation w-100">
+                                                    {copy.payTransfer}
+                                                </a>
+                                            ) : null}
+
+                                            {canCancel ? (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger rounded-pill w-100"
+                                                    onClick={handleCancel}
+                                                    disabled={cancelling}
+                                                >
+                                                    {cancelling ? copy.cancelling : copy.cancelOrder}
+                                                </button>
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </GlassCard>
+                    </div>
                 </div>
-
-                {/* Summary */}
-                <div className="lg:col-span-1">
-                    <GlassCard variant="dark" padding="lg" className="sticky top-24">
-                        <h3 className="text-xl font-bold text-white mb-4">Tổng cộng</h3>
-
-                        <div className="space-y-2 mb-4">
-                            <div className="flex justify-between text-gray-300">
-                                <span>Tạm tính</span>
-                                <span>{formatPrice(order.subtotal)}</span>
-                            </div>
-                            <div className="flex justify-between text-gray-300">
-                                <span>Phí vận chuyển</span>
-                                <span>{formatPrice(order.shippingFee)}</span>
-                            </div>
-                            <hr className="border-white/10" />
-                            <div className="flex justify-between text-xl font-bold text-white">
-                                <span>Tổng</span>
-                                <span>{formatPrice(order.total)}</span>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2 text-sm">
-                            <div className="flex items-center gap-2">
-                                <CreditCard className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-300">
-                                    {order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản'}
-                                </span>
-                            </div>
-                        </div>
-                    </GlassCard>
-                </div>
-            </div>
-        </div>
+            </section>
+        </>
     );
 };

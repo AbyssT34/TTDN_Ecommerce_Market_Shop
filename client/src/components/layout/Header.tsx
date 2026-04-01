@@ -10,7 +10,7 @@ import { toast } from '@/components/ui';
 
 // ═══════════════════════════════════════════════════════════════
 // HEADER COMPONENT
-// Phase 2: Enhanced with dropdown, cart badge, and animations
+// Enhanced with dropdown, cart badge, and animations
 // ═══════════════════════════════════════════════════════════════
 
 export const Header = () => {

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import { Category } from './models/Category.model.js';
 import { Product } from './models/Product.model.js';
+import { productCloudinaryImageMap } from './data/productCloudinaryMap.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -757,10 +758,20 @@ async function seedDatabase() {
         // Normalize products: generate slug, format images
         const productsWithCategory = products.map((product) => {
             const slug = slugify(product.name);
-            const formattedImages = product.images.map((url, index) => ({
-                url,
-                isPrimary: index === 0, // First image is primary
-            }));
+            const cloudinaryImage = productCloudinaryImageMap[product.sku];
+            const formattedImages = cloudinaryImage
+                ? [
+                      {
+                          url: cloudinaryImage.url,
+                          publicId: cloudinaryImage.publicId,
+                          alt: product.name,
+                          isPrimary: true,
+                      },
+                  ]
+                : product.images.map((url, index) => ({
+                      url,
+                      isPrimary: index === 0, // First image is primary
+                  }));
 
             return {
                 name: product.name,

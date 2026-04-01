@@ -13,6 +13,8 @@ import cartRoutes from './routes/cart.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import testRoutes from './routes/test.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import recipeRoutes from './routes/recipe.routes.js';
+import chatRoutes from './routes/chat.routes.js';
 
 // Initialize Express app
 const app = express();
@@ -106,6 +108,12 @@ app.use('/api/orders', orderRoutes);
 
 // Admin routes (protected: admin/superadmin only)
 app.use('/api/admin', adminRoutes);
+
+// Recipe routes (public)
+app.use('/api/recipes', recipeRoutes);
+
+// Chat/AI routes (public with optional auth)
+app.use('/api/chat', chatRoutes);
 
 // Test routes (Development only)
 if (process.env.NODE_ENV !== 'production') {

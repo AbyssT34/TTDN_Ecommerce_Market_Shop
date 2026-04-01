@@ -41,6 +41,7 @@ export interface Order {
         district: string;
         city: string;
     };
+    deliverySlot: string;
     paymentMethod: string;
     orderStatus: string;
     paymentStatus: string;

@@ -1,28 +1,36 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import {
-    ArrowLeft, Package, Truck, CheckCircle, Clock, XCircle,
-    AlertCircle, Loader2,
+    AlertCircle,
+    ArrowLeft,
+    CheckCircle2,
+    Clock3,
+    CreditCard,
+    Loader2,
+    MapPin,
+    Package,
+    XCircle,
 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+    adminOrderFlow,
+    formatAdminCurrency,
+    formatAdminDateTime,
+    getAdminFirstImageUrl,
+    getAdminOrderStatusClassName,
+    getAdminOrderStatusLabel,
+} from './adminPresentation';
 import { adminGetOrderDetail, adminUpdateOrderStatus } from './services/adminApi';
 
-const formatCurrency = (n: number) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+const paymentMethodLabels: Record<string, string> = {
+    cod: 'Thanh toán khi nhận hàng',
+    bank_transfer: 'Chuyển khoản ngân hàng',
+};
 
-const formatDate = (d: string) =>
-    new Date(d).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-// Status flow for progression
-const STATUS_FLOW = ['pending', 'confirmed', 'preparing', 'shipping', 'completed'];
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-    pending: { label: 'Chờ xác nhận', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30', icon: Clock },
-    confirmed: { label: 'Đã xác nhận', color: 'text-blue-400 bg-blue-400/10 border-blue-400/30', icon: CheckCircle },
-    preparing: { label: 'Đang chuẩn bị', color: 'text-purple-400 bg-purple-400/10 border-purple-400/30', icon: Package },
-    shipping: { label: 'Đang giao', color: 'text-orange-400 bg-orange-400/10 border-orange-400/30', icon: Truck },
-    completed: { label: 'Hoàn thành', color: 'text-green-400 bg-green-400/10 border-green-400/30', icon: CheckCircle },
-    cancelled: { label: 'Đã hủy', color: 'text-red-400 bg-red-400/10 border-red-400/30', icon: XCircle },
+const paymentStatusLabels: Record<string, string> = {
+    pending: 'Chờ thanh toán',
+    paid: 'Đã thanh toán',
+    failed: 'Thất bại',
+    refunded: 'Đã hoàn tiền',
 };
 
 export function AdminOrderDetailPage() {
@@ -32,250 +40,335 @@ export function AdminOrderDetailPage() {
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
+    const [success, setSuccess] = useState('');
 
-    const fetchOrder = () => {
+    const fetchOrder = async () => {
+        if (!id) {
+            return;
+        }
+
         setLoading(true);
-        adminGetOrderDetail(id!)
-            .then((d) => setOrder(d.order))
-            .catch(() => setError('Không thể tải đơn hàng'))
-            .finally(() => setLoading(false));
+        setError('');
+
+        try {
+            const data = await adminGetOrderDetail(id);
+            setOrder(data.order);
+        } catch {
+            setError('Không thể tải chi tiết đơn hàng.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    useEffect(() => { fetchOrder(); }, [id]);
+    useEffect(() => {
+        fetchOrder();
+    }, [id]);
 
-    const handleUpdateStatus = async (nextStatus: string) => {
+    const nextStatus = useMemo(() => {
+        if (!order?.orderStatus) {
+            return null;
+        }
+
+        const currentIndex = adminOrderFlow.indexOf(order.orderStatus);
+
+        if (currentIndex === -1 || currentIndex === adminOrderFlow.length - 1) {
+            return null;
+        }
+
+        return adminOrderFlow[currentIndex + 1];
+    }, [order?.orderStatus]);
+
+    const handleUpdateStatus = async (status: string) => {
+        if (!id) {
+            return;
+        }
+
         setUpdating(true);
         setError('');
+
         try {
-            await adminUpdateOrderStatus(id!, nextStatus);
-            setSuccessMsg(`Đã cập nhật trạng thái → ${STATUS_CONFIG[nextStatus]?.label}`);
+            await adminUpdateOrderStatus(id, status);
+            setSuccess(`Đã cập nhật đơn sang trạng thái "${getAdminOrderStatusLabel(status)}".`);
             fetchOrder();
-            setTimeout(() => setSuccessMsg(''), 3000);
-        } catch (err: any) {
-            setError(err?.response?.data?.error || 'Cập nhật thất bại');
+        } catch (updateError: any) {
+            setError(updateError.response?.data?.error || 'Không thể cập nhật đơn hàng.');
         } finally {
             setUpdating(false);
         }
     };
 
-    const getNextStatus = (current: string) => {
-        const idx = STATUS_FLOW.indexOf(current);
-        return idx >= 0 && idx < STATUS_FLOW.length - 1 ? STATUS_FLOW[idx + 1] : null;
-    };
-
-    const canCancel = (status: string) => ['pending', 'confirmed'].includes(status);
-
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 text-green-400 animate-spin" />
+            <div className="ttdn-admin-card text-center">
+                <div className="spinner-border text-success mb-3" role="status" />
+                <h2 className="h5 fw-bold text-dark mb-2">Đang tải đơn hàng</h2>
+                <p className="text-muted mb-0">Hệ thống đang lấy thông tin mới nhất từ order API.</p>
             </div>
         );
     }
 
     if (!order) {
         return (
-            <div className="text-center py-16 text-gray-400">
-                Không tìm thấy đơn hàng
+            <div className="ttdn-admin-card text-center">
+                <h2 className="h5 fw-bold text-dark mb-2">Không tìm thấy đơn hàng</h2>
+                <p className="text-muted mb-4">Đơn hàng có thể không còn tồn tại hoặc không khả dụng lúc này.</p>
+                <Link to="/admin/orders" className="btn btn-light rounded-pill px-4">
+                    Quay lại danh sách
+                </Link>
             </div>
         );
     }
 
-    const currentCfg = STATUS_CONFIG[order.orderStatus] || STATUS_CONFIG['pending'];
-    const nextStatus = getNextStatus(order.orderStatus);
+    const canCancel = ['pending', 'confirmed'].includes(order.orderStatus);
 
     return (
-        <div className="space-y-6 max-w-5xl">
-            {/* Header */}
-            <div className="flex items-center gap-4">
-                <button
-                    onClick={() => navigate('/admin/orders')}
-                    className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-white">Đơn hàng #{order.orderNumber}</h1>
-                    <p className="text-gray-400 text-sm mt-0.5">Đặt lúc: {formatDate(order.createdAt)}</p>
-                </div>
-                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${currentCfg.color}`}>
-                    {currentCfg.label}
-                </span>
-            </div>
-
-            {/* Alerts */}
-            {error && (
-                <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    {error}
-                </div>
-            )}
-            {successMsg && (
-                <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3 text-green-400 text-sm">
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                    {successMsg}
-                </div>
-            )}
-
-            {/* Action Buttons */}
-            {order.orderStatus !== 'completed' && order.orderStatus !== 'cancelled' && (
-                <div className="flex flex-wrap gap-3">
-                    {nextStatus && (
-                        <button
-                            onClick={() => handleUpdateStatus(nextStatus)}
-                            disabled={updating}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                        >
-                            {updating && <Loader2 className="w-4 h-4 animate-spin" />}
-                            Chuyển sang: {STATUS_CONFIG[nextStatus]?.label}
-                        </button>
-                    )}
-                    {canCancel(order.orderStatus) && (
-                        <button
-                            onClick={() => {
-                                if (window.confirm('Bạn chắc chắn muốn hủy đơn hàng này?')) {
-                                    handleUpdateStatus('cancelled');
-                                }
-                            }}
-                            disabled={updating}
-                            className="flex items-center gap-2 px-5 py-2.5 border border-red-500/40 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                        >
-                            <XCircle className="w-4 h-4" />
-                            Hủy đơn
-                        </button>
-                    )}
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left: Items + Timeline */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Items */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                        <div className="p-5 border-b border-white/10">
-                            <h2 className="font-semibold text-white">Sản phẩm ({order.items?.length})</h2>
-                        </div>
-                        <div className="divide-y divide-white/5">
-                            {(order.items || []).map((item: any, i: number) => (
-                                <div key={i} className="flex items-center gap-4 p-4">
-                                    {item.product?.images?.[0] && (
-                                        <img src={item.product.images[0]} alt={item.name} className="w-12 h-12 rounded-lg object-cover bg-white/5 flex-shrink-0" />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white">{item.name}</p>
-                                        <p className="text-xs text-gray-400">x{item.quantity} {item.product?.unit || ''}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-sm font-semibold text-white">{formatCurrency(item.subtotal)}</p>
-                                        <p className="text-xs text-gray-400">{formatCurrency(item.price)}/đv</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="p-4 border-t border-white/10 space-y-1.5">
-                            <div className="flex justify-between text-sm text-gray-400">
-                                <span>Tạm tính</span>
-                                <span>{formatCurrency(order.subtotal)}</span>
-                            </div>
-                            <div className="flex justify-between text-sm text-gray-400">
-                                <span>Phí giao hàng</span>
-                                <span>{formatCurrency(order.shippingFee)}</span>
-                            </div>
-                            {order.discount > 0 && (
-                                <div className="flex justify-between text-sm text-green-400">
-                                    <span>Giảm giá</span>
-                                    <span>-{formatCurrency(order.discount)}</span>
-                                </div>
-                            )}
-                            <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-white/10">
-                                <span>Tổng cộng</span>
-                                <span className="text-green-400">{formatCurrency(order.total)}</span>
-                            </div>
-                        </div>
+        <div className="d-grid gap-4">
+            <section className="ttdn-admin-page-intro">
+                <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <p className="text-uppercase small fw-bold text-white-50 mb-2">Chi tiết đơn hàng</p>
+                        <h2 className="display-6 fw-bold text-white mb-2">Đơn #{order.orderNumber}</h2>
+                        <p className="text-white-50 mb-0">Tạo lúc {formatAdminDateTime(order.createdAt)}</p>
                     </div>
+                    <div className="d-flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            className="btn rounded-pill px-4 ttdn-admin-hero-light-btn"
+                            onClick={() => navigate('/admin/orders')}
+                        >
+                            <ArrowLeft size={16} className="me-2" />
+                            Quay lại
+                        </button>
+                        <span
+                            className={`badge rounded-pill px-3 py-2 align-self-center ${getAdminOrderStatusClassName(
+                                order.orderStatus
+                            )}`}
+                        >
+                            {getAdminOrderStatusLabel(order.orderStatus)}
+                        </span>
+                    </div>
+                </div>
+            </section>
 
-                    {/* Timeline */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                        <h2 className="font-semibold text-white mb-5">Lịch sử trạng thái</h2>
-                        <div className="space-y-4">
-                            {(order.timeline || []).slice().reverse().map((entry: any, i: number) => {
-                                const cfg = STATUS_CONFIG[entry.status];
-                                return (
-                                    <motion.div
-                                        key={i}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        className="flex items-start gap-3"
-                                    >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${cfg?.color || 'bg-gray-400/10 text-gray-400'}`}>
-                                            {cfg ? <cfg.icon className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+            {error ? (
+                <div className="ttdn-admin-card">
+                    <div className="d-flex align-items-center gap-2 text-danger">
+                        <AlertCircle size={18} />
+                        <strong>{error}</strong>
+                    </div>
+                </div>
+            ) : null}
+
+            {success ? (
+                <div className="ttdn-admin-card">
+                    <div className="d-flex align-items-center gap-2 text-success">
+                        <CheckCircle2 size={18} />
+                        <strong>{success}</strong>
+                    </div>
+                </div>
+            ) : null}
+
+            {order.orderStatus !== 'completed' && order.orderStatus !== 'cancelled' ? (
+                <section className="ttdn-admin-card">
+                    <div className="d-flex flex-wrap gap-2">
+                        {nextStatus ? (
+                            <button
+                                type="button"
+                                className="btn theme-bg-color text-white rounded-pill px-4"
+                                onClick={() => handleUpdateStatus(nextStatus)}
+                                disabled={updating}
+                            >
+                                {updating ? <Loader2 size={16} className="me-2" /> : null}
+                                Chuyển sang {getAdminOrderStatusLabel(nextStatus)}
+                            </button>
+                        ) : null}
+                        {canCancel ? (
+                            <button
+                                type="button"
+                                className="btn btn-outline-danger rounded-pill px-4"
+                                onClick={() => {
+                                    if (window.confirm('Bạn chắc chắn muốn hủy đơn hàng này?')) {
+                                        handleUpdateStatus('cancelled');
+                                    }
+                                }}
+                                disabled={updating}
+                            >
+                                <XCircle size={16} className="me-2" />
+                                Hủy đơn
+                            </button>
+                        ) : null}
+                    </div>
+                </section>
+            ) : null}
+
+            <div className="row g-4">
+                <div className="col-xl-8">
+                    <div className="ttdn-admin-form-grid">
+                        <section className="ttdn-admin-card">
+                            <div className="d-flex align-items-center gap-2 mb-4">
+                                <Package size={18} className="text-success" />
+                                <h3 className="h4 fw-bold text-dark mb-0">Sản phẩm trong đơn</h3>
+                            </div>
+
+                            <div className="d-grid gap-3">
+                                {(order.items || []).map((item: any, index: number) => {
+                                    const imageUrl = getAdminFirstImageUrl(item.product?.images);
+
+                                    return (
+                                        <div key={`${item.name}-${index}`} className="ttdn-order-item-card">
+                                            <div className="d-flex gap-3 align-items-center">
+                                                <div className="ttdn-admin-thumb">
+                                                    {imageUrl ? (
+                                                        <img src={imageUrl} alt={item.name} />
+                                                    ) : (
+                                                        <div className="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                                            <Package size={20} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-grow-1">
+                                                    <p className="fw-bold text-dark mb-1">{item.name}</p>
+                                                    <p className="text-muted mb-1 small">
+                                                        {formatAdminCurrency(item.price)} x {item.quantity}
+                                                    </p>
+                                                    <p className="text-muted mb-0 small">
+                                                        Đơn vị: {item.product?.unit || 'N/A'}
+                                                    </p>
+                                                </div>
+                                                <strong className="theme-color">
+                                                    {formatAdminCurrency(item.subtotal || item.price * item.quantity)}
+                                                </strong>
+                                            </div>
                                         </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+
+                        <section className="ttdn-admin-card">
+                            <div className="d-flex align-items-center gap-2 mb-4">
+                                <Clock3 size={18} className="text-success" />
+                                <h3 className="h4 fw-bold text-dark mb-0">Timeline xử lý</h3>
+                            </div>
+
+                            <div className="ttdn-admin-timeline">
+                                {(order.timeline || []).map((entry: any, index: number) => (
+                                    <div key={`${entry.timestamp}-${index}`} className="ttdn-admin-timeline-item">
+                                        <div className="ttdn-admin-timeline-index">{index + 1}</div>
                                         <div>
-                                            <p className="text-sm font-medium text-white">{cfg?.label || entry.status}</p>
-                                            {entry.note && <p className="text-xs text-gray-400 mt-0.5">{entry.note}</p>}
-                                            <p className="text-xs text-gray-500 mt-1">{formatDate(entry.timestamp)}</p>
+                                            <span
+                                                className={`badge rounded-pill px-3 py-2 ${getAdminOrderStatusClassName(
+                                                    entry.status
+                                                )}`}
+                                            >
+                                                {getAdminOrderStatusLabel(entry.status)}
+                                            </span>
+                                            <p className="text-dark fw-semibold mb-1 mt-2">
+                                                {formatAdminDateTime(entry.timestamp)}
+                                            </p>
+                                            {entry.note ? (
+                                                <p className="text-muted mb-0">{entry.note}</p>
+                                            ) : null}
                                         </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
                     </div>
                 </div>
 
-                {/* Right: Customer + Shipping + Payment */}
-                <div className="space-y-4">
-                    {/* Customer */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
-                        <h2 className="font-semibold text-white text-sm">Khách hàng</h2>
-                        <p className="text-white font-medium">{order.user?.name || '—'}</p>
-                        <p className="text-gray-400 text-sm">{order.user?.email}</p>
-                        <p className="text-gray-400 text-sm">{order.user?.phone}</p>
-                    </div>
-
-                    {/* Shipping */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
-                        <h2 className="font-semibold text-white text-sm">Địa chỉ giao hàng</h2>
-                        <div className="text-sm text-gray-300 space-y-1">
-                            <p className="font-medium text-white">{order.shippingAddress?.fullName}</p>
-                            <p>{order.shippingAddress?.phone}</p>
-                            <p>{order.shippingAddress?.street}</p>
-                            <p>{[order.shippingAddress?.ward, order.shippingAddress?.district, order.shippingAddress?.city].filter(Boolean).join(', ')}</p>
-                        </div>
-                        <div className="pt-2 border-t border-white/10">
-                            <span className="text-xs text-gray-400">Khung giờ giao: </span>
-                            <span className="text-sm text-green-400 font-medium">{order.deliverySlot}</span>
-                        </div>
-                    </div>
-
-                    {/* Payment */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
-                        <h2 className="font-semibold text-white text-sm">Thanh toán</h2>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Phương thức</span>
-                            <span className="text-white font-medium">
-                                {order.paymentMethod === 'cod' ? '💵 COD' : '🏦 Chuyển khoản'}
-                            </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Trạng thái TT</span>
-                            <span className={`font-medium ${order.paymentStatus === 'paid' ? 'text-green-400' : 'text-yellow-400'}`}>
-                                {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chờ TT'}
-                            </span>
-                        </div>
-                        {order.sepayTransactionId && (
-                            <div className="pt-2 border-t border-white/10">
-                                <p className="text-xs text-gray-500">Mã GD SePay</p>
-                                <p className="text-xs font-mono text-gray-300 mt-0.5">{order.sepayTransactionId}</p>
+                <div className="col-xl-4">
+                    <div className="ttdn-admin-form-grid">
+                        <section className="ttdn-admin-card">
+                            <div className="d-flex align-items-center gap-2 mb-4">
+                                <MapPin size={18} className="text-success" />
+                                <h3 className="h4 fw-bold text-dark mb-0">Thông tin giao hàng</h3>
                             </div>
-                        )}
-                        {order.notes && (
-                            <div className="pt-2 border-t border-white/10">
-                                <p className="text-xs text-gray-500">Ghi chú</p>
-                                <p className="text-sm text-gray-300 mt-0.5">{order.notes}</p>
+
+                            <div className="d-grid gap-3">
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Người nhận</p>
+                                    <p className="fw-bold text-dark mb-0">{order.shippingAddress?.fullName}</p>
+                                </div>
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Số điện thoại</p>
+                                    <p className="fw-bold text-dark mb-0">{order.shippingAddress?.phone}</p>
+                                </div>
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Địa chỉ</p>
+                                    <p className="fw-bold text-dark mb-0">
+                                        {[
+                                            order.shippingAddress?.street,
+                                            order.shippingAddress?.ward,
+                                            order.shippingAddress?.district,
+                                            order.shippingAddress?.city,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(', ')}
+                                    </p>
+                                </div>
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Khung giao</p>
+                                    <p className="fw-bold text-dark mb-0">{order.deliverySlot || 'Chưa xếp'}</p>
+                                </div>
                             </div>
-                        )}
+                        </section>
+
+                        <section className="ttdn-admin-card">
+                            <div className="d-flex align-items-center gap-2 mb-4">
+                                <CreditCard size={18} className="text-success" />
+                                <h3 className="h4 fw-bold text-dark mb-0">Thanh toán</h3>
+                            </div>
+
+                            <div className="d-grid gap-3 mb-4">
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Phương thức</p>
+                                    <p className="fw-bold text-dark mb-0">
+                                        {paymentMethodLabels[order.paymentMethod] || order.paymentMethod}
+                                    </p>
+                                </div>
+                                <div className="ttdn-order-item-card">
+                                    <p className="text-muted small mb-1">Trạng thái thanh toán</p>
+                                    <p className="fw-bold text-dark mb-0">
+                                        {paymentStatusLabels[order.paymentStatus] || order.paymentStatus}
+                                    </p>
+                                </div>
+                                {order.sepayTransactionId ? (
+                                    <div className="ttdn-order-item-card">
+                                        <p className="text-muted small mb-1">Mã giao dịch</p>
+                                        <p className="fw-bold text-dark mb-0">{order.sepayTransactionId}</p>
+                                    </div>
+                                ) : null}
+                            </div>
+
+                            <div className="ttdn-admin-note">
+                                <div className="d-flex justify-content-between text-muted mb-2">
+                                    <span>Tạm tính</span>
+                                    <span>{formatAdminCurrency(order.subtotal || 0)}</span>
+                                </div>
+                                <div className="d-flex justify-content-between text-muted mb-2">
+                                    <span>Phí giao hàng</span>
+                                    <span>{formatAdminCurrency(order.shippingFee || 0)}</span>
+                                </div>
+                                {order.discount ? (
+                                    <div className="d-flex justify-content-between text-success mb-2">
+                                        <span>Giảm giá</span>
+                                        <span>-{formatAdminCurrency(order.discount || 0)}</span>
+                                    </div>
+                                ) : null}
+                                <div className="d-flex justify-content-between fw-bold text-dark pt-2 border-top">
+                                    <span>Tổng cộng</span>
+                                    <span className="theme-color">{formatAdminCurrency(order.total || 0)}</span>
+                                </div>
+                            </div>
+
+                            {order.notes ? (
+                                <div className="ttdn-order-item-card mt-4">
+                                    <p className="text-muted small mb-1">Ghi chú</p>
+                                    <p className="mb-0 text-dark">{order.notes}</p>
+                                </div>
+                            ) : null}
+                        </section>
                     </div>
                 </div>
             </div>

@@ -1,21 +1,36 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import {
-    TrendingUp, ShoppingBag, Package, Users,
-    Clock, CheckCircle, Truck, XCircle, AlertCircle,
+    AlertCircle,
+    CheckCircle2,
+    Clock3,
+    Package,
+    ShoppingBag,
+    Sparkles,
+    TrendingUp,
+    Truck,
+    Users,
+    XCircle,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { formatAdminCurrency, getAdminOrderStatusClassName, getAdminOrderStatusLabel } from './adminPresentation';
 import { getDashboardStats } from './services/adminApi';
 
-const formatCurrency = (n: number) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+const statusIcons: Record<string, React.ElementType> = {
+    pending: Clock3,
+    confirmed: CheckCircle2,
+    preparing: Package,
+    shipping: Truck,
+    completed: CheckCircle2,
+    cancelled: XCircle,
+};
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-    pending: { label: 'Chờ xác nhận', color: 'text-yellow-400 bg-yellow-400/10' },
-    confirmed: { label: 'Đã xác nhận', color: 'text-blue-400 bg-blue-400/10' },
-    preparing: { label: 'Đang chuẩn bị', color: 'text-purple-400 bg-purple-400/10' },
-    shipping: { label: 'Đang giao', color: 'text-orange-400 bg-orange-400/10' },
-    completed: { label: 'Hoàn thành', color: 'text-green-400 bg-green-400/10' },
-    cancelled: { label: 'Đã hủy', color: 'text-red-400 bg-red-400/10' },
+const statusDescriptions: Record<string, string> = {
+    pending: 'Đơn mới chờ xác nhận',
+    confirmed: 'Đơn đã được duyệt',
+    preparing: 'Đơn đang được chuẩn bị',
+    shipping: 'Đơn đang trên đường giao',
+    completed: 'Đơn đã hoàn tất',
+    cancelled: 'Đơn đã hủy',
 };
 
 export function AdminDashboardPage() {
@@ -26,178 +41,242 @@ export function AdminDashboardPage() {
     useEffect(() => {
         getDashboardStats()
             .then(setData)
-            .catch(() => setError('Không thể tải dữ liệu dashboard'))
+            .catch(() => setError('Không thể tải dữ liệu dashboard.'))
             .finally(() => setLoading(false));
     }, []);
 
+    const statCards = useMemo(() => {
+        const stats = data?.stats || {};
+
+        return [
+            {
+                label: 'Tổng doanh thu',
+                value: formatAdminCurrency(stats.totalRevenue || 0),
+                note: `Tháng này: ${formatAdminCurrency(stats.monthlyRevenue || 0)}`,
+                icon: TrendingUp,
+            },
+            {
+                label: 'Đơn hôm nay',
+                value: stats.todayOrders || 0,
+                note: `Mọi trạng thái: ${Object.values(stats.ordersByStatus || {}).reduce(
+                    (sum: number, count: any) => sum + Number(count || 0),
+                    0
+                )}`,
+                icon: ShoppingBag,
+            },
+            {
+                label: 'Sản phẩm đang bán',
+                value: stats.activeProducts || 0,
+                note: `Tổng sản phẩm: ${stats.totalProducts || 0}`,
+                icon: Package,
+            },
+            {
+                label: 'Người dùng',
+                value: stats.totalUsers || 0,
+                note: 'Tài khoản đang có trên hệ thống',
+                icon: Users,
+            },
+        ];
+    }, [data?.stats]);
+
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+            <div className="ttdn-admin-card text-center">
+                <div className="spinner-border text-success mb-3" role="status" />
+                <h2 className="h5 fw-bold text-dark mb-2">Đang tải dashboard</h2>
+                <p className="text-muted mb-0">Hệ thống đang lấy số liệu mới nhất từ admin API.</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex items-center gap-3 text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                {error}
+            <div className="ttdn-admin-card">
+                <div className="d-flex align-items-center gap-2 text-danger">
+                    <AlertCircle size={18} />
+                    <strong>{error}</strong>
+                </div>
             </div>
         );
     }
 
-    const { stats, recentOrders, topProducts } = data || {};
-
-    const statCards = [
-        {
-            label: 'Tổng doanh thu',
-            value: formatCurrency(stats?.totalRevenue || 0),
-            icon: TrendingUp,
-            color: 'from-green-400 to-emerald-600',
-            bg: 'bg-green-500/10 border-green-500/20',
-            sub: `Tháng này: ${formatCurrency(stats?.monthlyRevenue || 0)}`,
-        },
-        {
-            label: 'Đơn hàng hôm nay',
-            value: stats?.todayOrders || 0,
-            icon: ShoppingBag,
-            color: 'from-blue-400 to-blue-600',
-            bg: 'bg-blue-500/10 border-blue-500/20',
-            sub: `Tổng: ${Object.values(stats?.ordersByStatus || {}).reduce((a: any, b: any) => a + b, 0)} đơn`,
-        },
-        {
-            label: 'Sản phẩm',
-            value: stats?.activeProducts || 0,
-            icon: Package,
-            color: 'from-purple-400 to-purple-600',
-            bg: 'bg-purple-500/10 border-purple-500/20',
-            sub: `Tổng: ${stats?.totalProducts || 0} sản phẩm`,
-        },
-        {
-            label: 'Người dùng',
-            value: stats?.totalUsers || 0,
-            icon: Users,
-            color: 'from-orange-400 to-orange-600',
-            bg: 'bg-orange-500/10 border-orange-500/20',
-            sub: 'Tài khoản khách hàng',
-        },
-    ];
-
-    const orderStatusCards = [
-        { status: 'pending', icon: Clock },
-        { status: 'confirmed', icon: CheckCircle },
-        { status: 'preparing', icon: Package },
-        { status: 'shipping', icon: Truck },
-        { status: 'completed', icon: CheckCircle },
-        { status: 'cancelled', icon: XCircle },
-    ];
+    const stats = data?.stats || {};
+    const recentOrders = data?.recentOrders || [];
+    const topProducts = data?.topProducts || [];
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-                <p className="text-gray-400 mt-1">Tổng quan hoạt động cửa hàng</p>
-            </div>
+        <div className="d-grid gap-4">
+            <section className="ttdn-admin-page-intro">
+                <div className="row g-4 align-items-center">
+                    <div className="col-lg-8">
+                        <p className="text-uppercase small fw-bold text-white-50 mb-2">Tổng quan</p>
+                        <h2 className="display-6 fw-bold text-white mb-3">
+                            Quản trị cửa hàng tập trung, rõ ràng và dễ theo dõi.
+                        </h2>
+                        <p className="text-white-50 mb-0">
+                            Theo dõi doanh thu, trạng thái đơn hàng và nhóm sản phẩm nổi bật ngay từ dashboard chính.
+                        </p>
+                    </div>
+                    <div className="col-lg-4">
+                        <div className="ttdn-admin-card bg-transparent border border-white border-opacity-25 shadow-none text-white">
+                            <p className="text-white-50 mb-1">Đơn chờ xử lý</p>
+                            <h3 className="h2 fw-bold text-white mb-2">{stats.ordersByStatus?.pending || 0}</h3>
+                            <p className="text-white-50 mb-0">
+                                Hoàn thành: {stats.ordersByStatus?.completed || 0} đơn
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-            {/* Main Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {statCards.map((card, i) => (
-                    <motion.div
-                        key={card.label}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.07 }}
-                        className={`rounded-2xl border p-5 ${card.bg}`}
-                    >
-                        <div className="flex items-start justify-between mb-4">
-                            <div>
-                                <p className="text-gray-400 text-sm font-medium">{card.label}</p>
-                                <p className="text-2xl font-bold text-white mt-1">{card.value}</p>
-                                <p className="text-xs text-gray-500 mt-1">{card.sub}</p>
-                            </div>
-                            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                                <card.icon className="w-5 h-5 text-white" />
+            <section className="row g-4">
+                {statCards.map((card) => (
+                    <div key={card.label} className="col-sm-6 col-xl-3">
+                        <div className="ttdn-admin-stat-card">
+                            <div className="d-flex justify-content-between gap-3">
+                                <div>
+                                    <p className="text-muted text-uppercase small fw-bold mb-2">{card.label}</p>
+                                    <h3 className="h3 fw-bold text-dark mb-2">{card.value}</h3>
+                                    <p className="text-muted mb-0 small">{card.note}</p>
+                                </div>
+                                <span className="ttdn-admin-stat-icon">
+                                    <card.icon size={22} />
+                                </span>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 ))}
-            </div>
+            </section>
 
-            {/* Order Status Row */}
-            <div>
-                <h2 className="text-lg font-semibold text-white mb-4">Trạng thái đơn hàng</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-                    {orderStatusCards.map(({ status, icon: Icon }) => {
-                        const cfg = statusConfig[status];
-                        const count = stats?.ordersByStatus?.[status] || 0;
-                        return (
-                            <div key={status} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                                <div className={`inline-flex items-center justify-center w-9 h-9 rounded-full mb-2 ${cfg.color}`}>
-                                    <Icon className="w-4 h-4" />
-                                </div>
-                                <p className="text-xl font-bold text-white">{count}</p>
-                                <p className="text-xs text-gray-400 mt-0.5">{cfg.label}</p>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {/* Recent Orders */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                    <div className="p-5 border-b border-white/10 flex items-center justify-between">
-                        <h2 className="font-semibold text-white">Đơn hàng mới nhất</h2>
-                        <a href="/admin/orders" className="text-xs text-green-400 hover:text-green-300">Xem tất cả →</a>
+            <section className="ttdn-admin-card">
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <p className="text-uppercase small fw-bold theme-color mb-1">Đơn hàng</p>
+                        <h3 className="h4 fw-bold text-dark mb-0">Trạng thái hiện tại</h3>
                     </div>
-                    <div className="divide-y divide-white/5">
-                        {(recentOrders || []).slice(0, 6).map((order: any) => (
-                            <a
-                                key={order._id}
-                                href={`/admin/orders/${order._id}`}
-                                className="flex items-center gap-3 p-4 hover:bg-white/5 transition-colors group"
-                            >
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">{order.orderNumber}</p>
-                                    <p className="text-xs text-gray-400 truncate">{order.user?.name || '—'}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-sm font-semibold text-white">{formatCurrency(order.total)}</p>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusConfig[order.orderStatus]?.color || 'text-gray-400 bg-gray-400/10'}`}>
-                                        {statusConfig[order.orderStatus]?.label || order.orderStatus}
+                    <Link to="/admin/orders" className="btn btn-light rounded-pill">
+                        Xem tất cả đơn
+                    </Link>
+                </div>
+
+                <div className="row g-3">
+                    {Object.entries(statusIcons).map(([status, Icon]) => (
+                        <div key={status} className="col-sm-6 col-xl-2">
+                            <div className={`ttdn-admin-order-status-card ttdn-admin-order-status-card--${status}`}>
+                                <div className="d-flex justify-content-between align-items-start gap-3 mb-4">
+                                    <span className={getAdminOrderStatusClassName(status)}>
+                                        <Icon size={14} className="me-2" />
+                                        {getAdminOrderStatusLabel(status)}
                                     </span>
+                                    <span className={`ttdn-admin-order-status-dot ttdn-admin-order-status-dot--${status}`} />
                                 </div>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Top Products */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                    <div className="p-5 border-b border-white/10 flex items-center justify-between">
-                        <h2 className="font-semibold text-white">Sản phẩm bán chạy</h2>
-                        <a href="/admin/products" className="text-xs text-green-400 hover:text-green-300">Quản lý →</a>
-                    </div>
-                    <div className="divide-y divide-white/5">
-                        {(topProducts || []).map((p: any, i: number) => (
-                            <div key={p._id} className="flex items-center gap-4 p-4">
-                                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-400/20 to-emerald-600/20 border border-green-500/20 flex items-center justify-center text-green-400 font-bold text-sm flex-shrink-0">
-                                    {i + 1}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">{p.name}</p>
-                                    <p className="text-xs text-gray-400">Đã bán: {p.totalSold} sản phẩm</p>
-                                </div>
-                                <p className="text-sm font-semibold text-green-400 flex-shrink-0">
-                                    {formatCurrency(p.totalRevenue || 0)}
+                                <h3 className="ttdn-admin-order-status-count">
+                                    {stats.ordersByStatus?.[status] || 0}
+                                </h3>
+                                <p className="ttdn-admin-order-status-meta mb-1">đơn</p>
+                                <p className="ttdn-admin-order-status-caption mb-0">
+                                    {statusDescriptions[status]}
                                 </p>
                             </div>
-                        ))}
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className="row g-4">
+                <div className="col-xl-6">
+                    <div className="ttdn-admin-card h-100">
+                        <div className="d-flex justify-content-between align-items-center gap-3 mb-4">
+                            <div>
+                                <p className="text-uppercase small fw-bold theme-color mb-1">Mới nhất</p>
+                                <h3 className="h4 fw-bold text-dark mb-0">Đơn hàng gần đây</h3>
+                            </div>
+                            <Link to="/admin/orders" className="btn btn-light rounded-pill btn-sm px-3">
+                                Quản lý đơn
+                            </Link>
+                        </div>
+
+                        <div className="d-grid gap-3">
+                            {recentOrders.slice(0, 6).map((order: any) => (
+                                <Link
+                                    key={order._id}
+                                    to={`/admin/orders/${order._id}`}
+                                    className="ttdn-order-item-card text-decoration-none"
+                                >
+                                    <div className="d-flex justify-content-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="fw-bold text-dark mb-1 text-truncate">
+                                                {order.orderNumber}
+                                            </p>
+                                            <p className="text-muted mb-0 small">
+                                                {order.user?.name || 'Khách lẻ'}
+                                            </p>
+                                        </div>
+                                        <div className="text-end">
+                                            <p className="fw-bold theme-color mb-1">
+                                                {formatAdminCurrency(order.total || 0)}
+                                            </p>
+                                            <span
+                                                className={`badge rounded-pill px-3 py-2 ${getAdminOrderStatusClassName(
+                                                    order.orderStatus
+                                                )}`}
+                                            >
+                                                {getAdminOrderStatusLabel(order.orderStatus)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <div className="col-xl-6">
+                    <div className="ttdn-admin-card h-100">
+                        <div className="d-flex justify-content-between align-items-center gap-3 mb-4">
+                            <div>
+                                <p className="text-uppercase small fw-bold theme-color mb-1">Bán chạy</p>
+                                <h3 className="h4 fw-bold text-dark mb-0">Sản phẩm nổi bật</h3>
+                            </div>
+                            <Link to="/admin/products" className="btn btn-light rounded-pill btn-sm px-3">
+                                Xem kho hàng
+                            </Link>
+                        </div>
+
+                        <div className="d-grid gap-3">
+                            {topProducts.map((product: any, index: number) => (
+                                <div key={product._id} className="ttdn-order-item-card">
+                                    <div className="d-flex justify-content-between align-items-center gap-3">
+                                        <div className="d-flex align-items-center gap-3 min-w-0">
+                                            <span className="ttdn-admin-stat-icon">{index + 1}</span>
+                                            <div className="min-w-0">
+                                                <p className="fw-bold text-dark mb-1 text-truncate">
+                                                    {product.name}
+                                                </p>
+                                                <p className="text-muted mb-0 small">
+                                                    Đã bán {product.totalSold || 0} sản phẩm
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <p className="fw-bold theme-color mb-0">
+                                            {formatAdminCurrency(product.totalRevenue || 0)}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {!topProducts.length ? (
+                                <div className="ttdn-admin-note">
+                                    <div className="d-flex align-items-center gap-2">
+                                        <Sparkles size={16} className="text-success" />
+                                        <span>Chưa có dữ liệu bán chạy để hiển thị.</span>
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }
