@@ -178,3 +178,26 @@ export const deleteCartItemQtyController = async (request, response) => {
     });
   }
 };
+
+export const emptyCartController = async (request, response) => {
+  try {
+
+    const userId = request.params.id
+
+    await CartProductModel.deleteMany({userId : userId})
+
+     return response.status(200).json({
+       message: "All items in the cart deleted successfully",
+       error: false,
+       success: true,
+     });
+    
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+

@@ -83,6 +83,13 @@ header .top-strip {
   border: 1px solid #171717 !important;
 }
 
+.bg-drack {
+  background: #363636 !important ; color: #fff !important ; border: 1px solid #171717 !important;
+}
+.bg-drack:hover {
+  background: #171717 !important;
+}
+
 .btn-lg {
   font-size: 18px;
   padding: 10px 20px !important;
@@ -451,3 +458,4 @@ header{box-shadow: 0px 1px 5px #0000001a;}
 .MuiCircularProgress-svg{@apply !text-[#ff5252]}
 .MuiButtonBase-root.MuiMenuItem-root.MuiMenuItem-gutters.selected{@apply !text-[#ff5252]}
 
+#paypal-button-container{width: 100% !important;}

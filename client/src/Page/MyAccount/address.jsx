@@ -15,24 +15,19 @@ import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
 import Select from '@mui/material/Select';
 
-import { deleteData, fetchDataFromApi} from '../../utils/api';
+import { deleteData, fetchDataFromApi } from '../../utils/api';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import AddressBox from './addressBox';
 import CircularProgress from '@mui/material/CircularProgress';
 
-
-
 const Address = () => {
   const [address, setAddress] = useState([]);
 
-
   const context = useContext(MyContext);
-
-
 
   useEffect(() => {
     if (context?.userData?._id !== '' && context?.userData?._id !== undefined) {
-        setAddress(context?.userData?.address_details || []);
+      setAddress(context?.userData?.address_details || []);
     }
   }, [context?.userData]);
 
@@ -44,13 +39,6 @@ const Address = () => {
       });
     });
   };
-
-
-
-
-
-
- 
 
   return (
     <>
@@ -79,10 +67,10 @@ const Address = () => {
 
               <div className="flex gap-2 flex-col mt-4">
                 {address?.length > 0 &&
-                  address?.map((address, index) => {  
+                  address?.map((address, index) => {
                     return (
                       <>
-                        <AddressBox address={address} key={index} removeAddress={removeAddress}  />
+                        <AddressBox address={address} key={index} removeAddress={removeAddress} />
                       </>
                     );
                   })}

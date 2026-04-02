@@ -125,9 +125,11 @@ const CartPage = () => {
                 </span>
               </p>
               <br />
-              <Button className="bg-org btn-lg w-full flex gap-2">
-                <BsFillBagCheckFill className="text-[20px]" /> Checkout
-              </Button>
+              <Link to={'/checkout'}>
+                <Button className="bg-org btn-lg w-full flex gap-2">
+                  <BsFillBagCheckFill className="text-[20px]" /> Checkout
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

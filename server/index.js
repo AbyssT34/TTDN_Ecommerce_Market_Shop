@@ -14,6 +14,8 @@ import addressRouter from "./route/address.route.js";
 import homeSliderRouter from "./route/homeSlider.route.js";
 import bannerV1Router from "./route/bannerV1.route.js";
 import blogRouter from "./route/blog.route.js";
+import stripeRouter from "./route/stripe.route.js";
+import orderRouter from "./route/order.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000; // 🔹 khai báo ở đây
@@ -43,6 +45,8 @@ app.use("/api/address", addressRouter);
 app.use("/api/homeSlider",homeSliderRouter);
 app.use("/api/bannerV1", bannerV1Router);
 app.use("/api/blog", blogRouter);
+app.use('/api/stripe', stripeRouter);
+app.use('/api/order', orderRouter);
 
 // Kết nối DB và khởi động server
 await connectDB();

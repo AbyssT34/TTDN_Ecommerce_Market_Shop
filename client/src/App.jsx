@@ -26,6 +26,8 @@ import MyList from './Page/MyList';
 import Orders from './Page/Orders';
 import { fetchDataFromApi, postData } from './utils/api';
 import Address from './Page/MyAccount/address';
+import OrderSuccess from './Page/Orders/success';
+import OrderFailed from './Page/Orders/failed';
 
 const MyContext = createContext();
 
@@ -239,6 +241,8 @@ function App() {
             <Route path={'/my-account'} exact={true} element={<MyAccount />} />
             <Route path={'/my-list'} exact={true} element={<MyList />} />
             <Route path={'/my-orders'} exact={true} element={<Orders />} />
+            <Route path={'/orders/success'} exact={true} element={<OrderSuccess />} />
+            <Route path={'/orders/failed'} exact={true} element={<OrderFailed />} />
             <Route path={'/address'} exact={true} element={<Address />} />
           </Routes>
           <Footer />
