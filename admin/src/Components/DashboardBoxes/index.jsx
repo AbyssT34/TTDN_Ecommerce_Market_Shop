@@ -10,7 +10,7 @@ import { SiProducthunt } from "react-icons/si";
 
 import { Navigation } from "swiper/modules";
 
-const DashboardBoxes = () => {
+const DashboardBoxes = (props) => {
   return (
     <>
       <Swiper
@@ -21,46 +21,46 @@ const DashboardBoxes = () => {
         className="dashboadrBoxesSlider"
       >
         <SwiperSlide>
-          <div className="box bg-white p-5 cursor-pointer hover:bg-[#fafafa] rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
-            <AiOutlineGift className="text-[40px] text-[#3872fa]" />
+          <div className="box bg-[#10b981] p-5 cursor-pointer hover:bg-[#10b981] rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
+            <AiOutlineGift className="text-[40px] text-white" />
             <div className="info w-[70%]">
-              <h3>Total Images</h3>
-              <b>1.390</b>
+              <h3 className="text-white">Total Users</h3>
+              <b className="text-white">{props?.users}</b>
             </div>
-            <IoStatsChartSharp className="text-[50px] text-[#3872fa]" />
+            <IoStatsChartSharp className="text-[50px] text-white" />
           </div>
         </SwiperSlide>
 
         <SwiperSlide>
-          <div className="box bg-white  p-5 cursor-pointer hover:bg-[#fafafa]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
-            <AiTwotonePieChart className="text-[50px] text-[#10b981]" />
+          <div className="box bg-[#3872fa]  p-5 cursor-pointer hover:bg-[#3872fa]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
+            <AiTwotonePieChart className="text-[50px] text-white" />
             <div className="info w-[70%]">
-              <h3>Sales</h3>
-              <b>$57,890</b>
+              <h3 className="text-white">Total Orders</h3>
+              <b className="text-white">{props?.orders}</b>
             </div>
-            <IoStatsChartSharp className="text-[40px] text-[#10b981]" />
+            <IoStatsChartSharp className="text-[40px] text-white" />
           </div>
         </SwiperSlide>
 
         <SwiperSlide>
-          <div className="box bg-white p-5 cursor-pointer hover:bg-[#fafafa]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
-            <BsBank className="text-[40px] text-[#7928ca]" />
+          <div className="box bg-[#312be1d8] p-5 cursor-pointer hover:bg-[#312be1d8]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
+            <SiProducthunt className="text-[40px] text-white" />
             <div className="info w-[70%]">
-              <h3>Revenue</h3>
-              <b>1.390</b>
+              <h3 className="text-white">Total Product</h3>
+              <b className="text-white">{props?.products}</b>
             </div>
-            <IoStatsChartSharp className="text-[50px] text-[#7928ca]" />
+            <IoStatsChartSharp className="text-[50px] text-white" />
           </div>
         </SwiperSlide>
 
         <SwiperSlide>
-          <div className="box bg-white p-5 cursor-pointer hover:bg-[#fafafa]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
-            <SiProducthunt className="text-[40px] text-[#312be1d8]" />
+          <div className="box bg-[#f22c61] p-5 cursor-pointer hover:bg-[#f22c61]  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4">
+            <SiProducthunt className="text-[40px] text-white" />
             <div className="info w-[70%]">
-              <h3>Total Products</h3>
-              <b>1.390</b>
+              <h3 className="text-white">Total Category</h3>
+              <b className="text-white"> {props?.categorry}</b>
             </div>
-            <IoStatsChartSharp className="text-[30px] text-[#312be1d8]" />
+            <IoStatsChartSharp className="text-[30px] text-white" />
           </div>
         </SwiperSlide>
       </Swiper>

@@ -394,9 +394,6 @@ export async function updateUserDetails(request, response) {
     if (!userExist)
       return response.status(400).send("The user cannot be Updated");
 
-
-
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       {
@@ -772,7 +769,7 @@ export async function addReviews(request, response) {
   }
 }
 
-//get reviews
+//get  reviews
 export async function getReviews(request, response) {
   try {
     const productId = request.query.productId;
@@ -783,6 +780,58 @@ export async function getReviews(request, response) {
       error: false,
       success: true,
       reviews: reviews,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get All reviews
+export async function getAllReviews(request, response) {
+  try {
+    const reviews = await ReviewsModel.find();
+
+    if (!reviews) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      reviews: reviews,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//get user
+export async function getAllUsers(request, response) {
+  try {
+    const users = await UserModel.find();
+
+    if (!users) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      users: users,
     });
   } catch (error) {
     return response.status(500).json({

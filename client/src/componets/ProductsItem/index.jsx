@@ -323,10 +323,20 @@ const ProductsItem = (props) => {
 
           <div className="flex items-center gap-4">
             <span className="oldPrice line-through text-gray-500 text-[14px] font-[500]">
-              &#8363; {props?.item?.oldPrice}
+              {props?.item?.oldPrice?.toLocaleString('vi-VN', {
+                // Nên dùng 'vi-VN' để hiển thị định dạng số kiểu Việt Nam
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0, // Loại bỏ phần .00 nếu không cần thiết
+              })}
             </span>
             <span className="price text-primary text-[14px] font-[600]">
-              &#8363; {props?.item?.price}
+              {props?.item?.price?.toLocaleString('vi-VN', {
+                // Nên dùng 'vi-VN' để hiển thị định dạng số kiểu Việt Nam
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0, // Loại bỏ phần .00 nếu không cần thiết
+              })}
             </span>
           </div>
           <div className="!absolute bottom-[15px] left-0 pl-3 pr-3 w-full">

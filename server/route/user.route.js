@@ -4,6 +4,8 @@ import {
   authWithGoogle,
   forgotPasswordController,
   forgotPasswordReset,
+  getAllReviews,
+  getAllUsers,
   getReviews,
   loginUserController,
   logoutController,
@@ -41,6 +43,8 @@ userRouter.get("/user-details", auth, userDetails);
 userRouter.post('/forgot-password-reset', forgotPasswordReset);
 userRouter.post("/addReview",auth ,addReviews);
 userRouter.get("/getReviews",getReviews);
+userRouter.get("/getAllReviews", getAllReviews);
+userRouter.get("/getAllUsers",getAllUsers);
 
 
 export default userRouter;

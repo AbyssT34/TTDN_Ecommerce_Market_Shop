@@ -1,6 +1,7 @@
 import OrderModel from "../models/order.model.js";
 import ProductModel from "../models/product.model.js";
 import paypal from "@paypal/checkout-server-sdk";
+import UserModel from "../models/user.model.js";
 
 // Create order from client payload (called after successful Stripe payment)
 export const createOrderController = async (req, res) => {
@@ -63,16 +64,149 @@ export const createOrderController = async (req, res) => {
 
 export const getOrdersByUserController = async (req, res) => {
   try {
-    // Use userId from auth token
-    const userId = req.userId;
-    if (!userId) return res.status(400).json({ error: "userId required" });
-    const orderList = await OrderModel.find({ userId })
+    const { page = 1, limit = 10 } = req.query; // ✅ default values
+
+    const pageNum = parseInt(page); // ✅ parse sang số
+    const limitNum = parseInt(limit); // ✅ parse sang số
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await OrderModel.countDocuments();
+
+    const orderList = await OrderModel.find()
       .sort({ createdAt: -1 })
-      .populate("delivery_address");
+      .skip(skip)
+      .limit(limitNum)
+      .populate("userId")
+      .populate({ path: "delivery_address", strictPopulate: false });
+
     return res.status(200).json({
       data: orderList,
       error: false,
       success: true,
+      total,
+      page: pageNum, // ✅ trả về số không phải null
+      totalPages: Math.ceil(total / limitNum), // ✅ trả về số không phải null
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const getTotalOrdersCountController = async (req, res) => {
+  try {
+    const ordersCount = await OrderModel.countDocuments();
+
+    return res.status(200).json({
+      error: false,
+      success: true,
+      count: ordersCount,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const totalSalesController = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const ordersList = await OrderModel.find();
+
+    let totalSale = 0;
+    let monthlySales = [
+      { name: "JAN", totalSale: 0 }, // index 0 - month 1
+      { name: "FEB", totalSale: 0 }, // index 1 - month 2
+      { name: "MAR", totalSale: 0 }, // index 2 - month 3
+      { name: "APRIL", totalSale: 0 }, // index 3 - month 4
+      { name: "MAY", totalSale: 0 }, // index 4 - month 5
+      { name: "JUNE", totalSale: 0 }, // index 5 - month 6
+      { name: "JULY", totalSale: 0 }, // index 6 - month 7
+      { name: "AUG", totalSale: 0 }, // index 7 - month 8
+      { name: "SEP", totalSale: 0 }, // index 8 - month 9
+      { name: "OCT", totalSale: 0 }, // index 9 - month 10
+      { name: "NOV", totalSale: 0 }, // index 10 - month 11
+      { name: "DEC", totalSale: 0 }, // index 11 - month 12
+    ];
+
+    for (let i = 0; i < ordersList.length; i++) {
+      totalSale += parseInt(ordersList[i].totalAmt);
+
+      const createdAt = new Date(ordersList[i]?.createdAt);
+      const year = createdAt.getFullYear(); // ✅ number, so sánh đúng
+      const month = createdAt.getMonth() + 1; // ✅ 1-12
+
+      if (currentYear === year) {
+        monthlySales[month - 1].totalSale += parseInt(ordersList[i].totalAmt); // thay 12 if bằng 1 dòng
+      }
+    }
+
+    return res.status(200).json({
+      error: false,
+      success: true,
+      totalSale: totalSale,
+      monthlySales: monthlySales,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const totalUserController = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear(); // ✅ lọc theo năm hiện tại
+
+    const users = await UserModel.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" }, // ✅ sửa "createđAt" -> "createdAt"
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    let monthlyUser = [
+      { name: "JAN", totalUsers: 0 },
+      { name: "FEB", totalUsers: 0 },
+      { name: "MAR", totalUsers: 0 },
+      { name: "APRIL", totalUsers: 0 },
+      { name: "MAY", totalUsers: 0 },
+      { name: "JUNE", totalUsers: 0 },
+      { name: "JULY", totalUsers: 0 },
+      { name: "AUG", totalUsers: 0 },
+      { name: "SEP", totalUsers: 0 },
+      { name: "OCT", totalUsers: 0 },
+      { name: "NOV", totalUsers: 0 },
+      { name: "DEC", totalUsers: 0 },
+    ];
+
+    for (let i = 0; i < users.length; i++) {
+      if (users[i]?._id?.year === currentYear) {
+        const monthIndex = users[i]._id.month - 1; // ✅ month 1-12 -> index 0-11
+        monthlyUser[monthIndex].totalUsers = users[i].count; // ✅ thay 12 if bằng 1 dòng
+      }
+    }
+    return res.status(200).json({
+      // ✅ thêm response
+      error: false,
+      success: true,
+      monthlyUser,
     });
   } catch (error) {
     return res.status(500).json({
@@ -229,6 +363,37 @@ export const captureOrderPaypalController = async (req, res) => {
       error: false,
       message: "Order created successfully",
       order: order,
+    });
+  } catch (err) {
+    // ✅ err thay vì error
+    console.error("Capture PayPal error:", err);
+    return res.status(500).json({
+      message: err.message || err, // ✅ err thay vì error
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const updateOrderStatusController = async (req, res) => {
+  try {
+    const { id, order_status } = req.body;
+
+    const updateOrder = await OrderModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        order_status: order_status,
+      },
+      { new: true },
+    );
+
+    return res.status(201).json({
+      success: true,
+      error: false,
+      message: "Update Order status",
+      data: updateOrder,
     });
   } catch (err) {
     // ✅ err thay vì error

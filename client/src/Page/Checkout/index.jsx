@@ -137,10 +137,16 @@ const Checkout = () => {
 
   const onApprovePayment = async (data) => {
     try {
-      const userId = context?.userData?._id || localStorage.getItem('userId'); // ✅ fallback
+      const userId = context?.userData?._id || localStorage.getItem('userId');
 
       if (!userId) {
         context?.alertBox('error', 'User not found. Please log in again.');
+        return;
+      }
+
+      // ✅ Sửa lỗi logic: dùng length > 0 thay vì !length > 0
+      if (!context?.cartData?.length || context.cartData.length === 0) {
+        context?.alertBox('error', 'Your cart is empty.');
         return;
       }
 
@@ -148,11 +154,11 @@ const Checkout = () => {
       if (!token) throw new Error('No authentication token');
 
       const info = {
-        userId: userId, // ✅ dùng userId đã check
-        products: context?.cartData,
+        userId,
+        products: context.cartData,
         payment_status: 'COMPLETE',
         delivery_address: selectedAddress,
-        totalAmount: totalAmount,
+        totalAmount,
         date: new Date().toLocaleDateString('en-US', {
           month: 'short',
           day: '2-digit',
@@ -163,16 +169,19 @@ const Checkout = () => {
       const response = await axios.post(
         `${VITE_API_URL}/api/order/capture-order-paypal`,
         { ...info, paymentId: data.orderID },
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
       if (response.data.success) {
-        await deleteData(`/api/cart/emptyCart/${userId}`); // ✅ userId không còn undefined
+        await deleteData(`/api/cart/emptyCart/${userId}`);
         if (context?.getCartItems) await context.getCartItems();
         context?.alertBox('success', 'Order completed!');
         histoty('/orders/success');
-      } else {
-        context?.alertBox('error', 'Payment failed on server side.');
       }
     } catch (error) {
       console.error('Payment Error:', error);
@@ -195,6 +204,13 @@ const Checkout = () => {
 
   const checkout = async (e) => {
     e.preventDefault();
+
+    // ✅ Kiểm tra địa chỉ trước
+    if (!selectedAddress) {
+      context?.alertBox('error', 'Vui lòng chọn địa chỉ giao hàng trước khi thanh toán.');
+      return;
+    }
+
     const numericTotal =
       context?.cartData && context.cartData.length
         ? context.cartData.reduce(
@@ -203,8 +219,13 @@ const Checkout = () => {
           )
         : 0;
 
+    // ✅ Kiểm tra giỏ hàng không rỗng
+    if (numericTotal === 0) {
+      context?.alertBox('error', 'Giỏ hàng của bạn đang trống.');
+      return;
+    }
+
     try {
-      // Request a PaymentIntent client secret from server
       const res = await fetch(
         `${import.meta.env.VITE_API_URL || ''}/api/stripe/create-payment-intent`,
         {
@@ -216,7 +237,6 @@ const Checkout = () => {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
-      // Create order payload with only JSON-serializable fields
       const cleanProducts = (context?.cartData || []).map((item) => ({
         productId: item?.productId || item?._id || item?.id || '',
         productTitle: item?.productTitle || item?.title || item?.name || '',
@@ -230,24 +250,23 @@ const Checkout = () => {
         products: cleanProducts,
         paymentId: data.paymentIntentId || '',
         payment_status: 'PENDING',
-        delivery_address: selectedAddress || null,
+        delivery_address: selectedAddress, // ✅ Chắc chắn có giá trị
         totalAmt: numericTotal,
       };
 
-      // Open payment modal with returned clientSecret
       setPaymentClientSecret(data.clientSecret);
       setPaymentOrderPayload(orderPayload);
       setShowPaymentModal(true);
     } catch (err) {
       console.error('Checkout error:', err);
-      alert('Không thể khởi tạo thanh toán. Vui lòng thử lại.');
+      context?.alertBox('error', 'Không thể khởi tạo thanh toán. Vui lòng thử lại.');
     }
   };
-
   const cashOnDeLivery = async (e) => {
     e.preventDefault();
+    // ✅ Kiểm tra địa chỉ trước
     if (!selectedAddress) {
-      alert('Vui lòng chọn địa chỉ giao hàng');
+      context?.alertBox('error', 'Vui lòng chọn địa chỉ giao hàng trước khi thanh toán.');
       return;
     }
 
@@ -272,7 +291,7 @@ const Checkout = () => {
       const codOrderPayload = {
         userId: context?.userData?._id,
         products: cleanProducts,
-        paymentId: `COD_${Date.now()}`,
+        paymentId: 'CASH ON DELIVERY',
         payment_status: 'PENDING',
         delivery_address: selectedAddress,
         totalAmt: numericTotal,
@@ -280,10 +299,9 @@ const Checkout = () => {
 
       // Create order directly (no payment needed for COD)
       const orderRes = await postData('/api/order/create', codOrderPayload);
-      console.log('COD Order created:', orderRes);
 
       if (orderRes.success || orderRes.order) {
-        alert('Đơn hàng tạo thành công! Thanh toán khi nhận hàng.');
+        context?.alertBox('Đơn hàng tạo thành công! Thanh toán khi nhận hàng.');
         // Clear cart after successful order
         try {
           await deleteData(`/api/cart/emptyCart/${context?.userData?._id}`);
@@ -296,11 +314,11 @@ const Checkout = () => {
           histoty('/orders/failed');
         }
       } else {
-        alert('Có lỗi tạo đơn hàng. Vui lòng thử lại.');
+        context?.alertBox('Có lỗi tạo đơn hàng. Vui lòng thử lại.');
       }
     } catch (err) {
       console.error('COD checkout error:', err);
-      alert('Có lỗi xảy ra. Vui lòng thử lại.');
+      context?.alertBox('Có lỗi xảy ra. Vui lòng thử lại.');
     }
   };
 
@@ -459,7 +477,10 @@ const Checkout = () => {
                                 ' ' +
                                 address?.state +
                                 ' ' +
-                                address?.lamdmark}
+                                address?.lamdmark +
+                                ' ' +
+                                '+' +
+                                userData?.mobile}
                             </p>
                             <p className="mb-0 font-[500]">+{userData?.mobile}</p>
                           </div>
@@ -536,7 +557,10 @@ const Checkout = () => {
                   <Button type="submit" className="bg-org btn-lg w-full flex gap-2">
                     <BsFillBagCheckFill className="text-[20px]" /> Checkout
                   </Button>
-                  <div id="paypal-button-container"></div>
+                  <div
+                    id="paypal-button-container"
+                    className={`${!selectedAddress ? 'pointer-events-none' : ''} `}
+                  ></div>
                   <Button
                     type="button"
                     className="bg-drack btn-lg w-full flex gap-2"

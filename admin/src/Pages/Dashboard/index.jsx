@@ -31,9 +31,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  BarChart,
+  Bar,
 } from "recharts";
 import { MyContext } from "../../App";
-import { fetchDataFromApi } from "../../utils/api";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 import SearchBox from "../../Components/SearchBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -88,82 +90,18 @@ const Dashboard = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [sortedIds, setSortedIds] = useState([]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [totalOrdersData, setTotalOrdersData] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [ordersCount, setOrdersCount] = useState(null);
 
-  const [categoryFilterVal, setCategoryFilterVal] = useState("");
-  const [chart1Data, setChart1Data] = useState([
-    {
-      name: "JAN",
-      TotalUsers: 4000,
-      TotalSales: 2400,
-      amt: 2400,
-    },
-    {
-      name: "FEB",
-      TotalUsers: 3000,
-      TotalSales: 1398,
-      amt: 2210,
-    },
-    {
-      name: "MARCH",
-      TotalUsers: 2000,
-      TotalSales: 9800,
-      amt: 2290,
-    },
-    {
-      name: "APRIL",
-      TotalUsers: 2780,
-      TotalSales: 3908,
-      amt: 2000,
-    },
-    {
-      name: "MAY",
-      TotalUsers: 1890,
-      TotalSales: 4800,
-      amt: 2181,
-    },
-    {
-      name: "JUNE",
-      TotalUsers: 2390,
-      TotalSales: 3800,
-      amt: 2500,
-    },
-    {
-      name: "JULY",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-    {
-      name: "AUG",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-    {
-      name: "SEP",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-    {
-      name: "OCT",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-    {
-      name: "NOV",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-    {
-      name: "DEC",
-      TotalUsers: 3490,
-      TotalSales: 4300,
-      amt: 2100,
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [allReviews, setAllReviews] = useState([]);
+
+  const [pageOrder, setPageOrder] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [chartData, setChartData] = useState([]);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   const context = useContext(MyContext);
 
@@ -171,6 +109,71 @@ const Dashboard = () => {
     getProducts();
   }, [context?.refreshData]);
   // ✅ watch refreshData thay vì setIsOpenFullScreenPanel
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/order/order-list?page=${pageOrder}&limit=6}`).then(
+      (res) => {
+        if (res?.error === false) {
+          setOrders(res);
+          setOrdersData(res?.data);
+        }
+      },
+    );
+
+    fetchDataFromApi(`/api/order/order-list`).then((res) => {
+      if (res?.error === false) {
+        setTotalOrdersData(res);
+      }
+    });
+
+    fetchDataFromApi(`/api/order/count`).then((res) => {
+      if (res?.error === false) {
+        setOrdersCount(res?.count);
+      }
+    });
+  }, [pageOrder]);
+
+  useEffect(() => {
+    if (searchQuery !== "") {
+      const filteredOrders = totalOrdersData?.data?.filter(
+        (order) =>
+          order?._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order?.userId?.name
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.userId?.email
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.createdAt.includes(searchQuery),
+      );
+      setOrdersData(filteredOrders);
+    } else {
+      fetchDataFromApi(`/api/order/order-list?page=${pageOrder}&limit=6`).then(
+        (res) => {
+          if (res?.error === false) {
+            setOrders(res);
+            setOrdersData(res?.data);
+          }
+        },
+      );
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    getTotalSalesByYear();
+
+    fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
+      if (res?.error === false) {
+        setUsers(res?.users);
+      }
+    });
+
+    fetchDataFromApi(`/api/user/getAllReviews`).then((res) => {
+      if (res?.error === false) {
+        setAllReviews(res?.reviews);
+      }
+    });
+  }, []);
 
   //Handler to toggle all checkboxes
   const handleSelectAll = (e) => {
@@ -213,10 +216,6 @@ const Dashboard = () => {
     } else {
       setIsOpenOrderdProduct(index);
     }
-  };
-
-  const handleChangeCatFilter = (event) => {
-    setCategoryFilterVal(event.target.value);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -301,6 +300,52 @@ const Dashboard = () => {
     });
   };
 
+  const deleteProduct = (id) => {
+    deleteData(`/api/product/${id}`).then((res) => {
+      getProducts();
+      context.alertBox("success", "Product deleted");
+    });
+  };
+
+ const getTotalUserByYear = () => {
+   fetchDataFromApi(`/api/order/users`).then((res) => {
+     const user = [];
+     res?.monthlyUser?.length !== 0 && // ✅ đúng field
+       res?.monthlyUser?.map((item) => {
+         user.push({
+           name: item?.name,
+           TotalUsers: parseInt(item?.totalUsers), // ✅ đúng field
+         });
+       });
+     const uniqueArr = user.filter(
+       (obj, index, self) =>
+         index === self.findIndex((t) => t.name === obj.name),
+     );
+     setChartData(uniqueArr); // ✅ đừng quên set data
+   });
+ };
+  const getTotalSalesByYear = () => {
+    fetchDataFromApi(`/api/order/sales`).then((res) => {
+      const sales = [];
+      res?.monthlySales?.length !== 0 &&
+        res?.monthlySales?.map((item) => {
+          sales.push({
+            name: item?.name,
+            TotalSales: parseInt(item?.totalSale), //
+          });
+        });
+      const uniqueArr = sales.filter(
+        (obj, index, self) =>
+          index === self.findIndex((t) => t.name === obj.name),
+      );
+      setChartData(uniqueArr);
+    });
+  };
+  const handleChangeYerar = (event) => {
+    getTotalSalesByYear(event.target.value);
+    setYear(event.target.value);
+  };
+
   return (
     <>
       <div
@@ -333,7 +378,17 @@ const Dashboard = () => {
         </div>
         <img src="/logoadmin.jpeg" className="w-[400px]" />
       </div>
-      <DashboardBoxes />
+      {productData?.length !== 0 &&
+        users?.length !== 0 &&
+        allReviews?.length !== 0 && (
+          <DashboardBoxes
+            orders={ordersCount}
+            products={productData?.length}
+            users={users?.length}
+            reivews={allReviews?.length}
+            categorry={context?.catData?.length}
+          />
+        )}
 
       <div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
         <div className="flex items-center w-full px-5 justify-between gap-4">
@@ -573,11 +628,19 @@ const Dashboard = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </div>
+
       <div className="card my-4 shadow-md sm:rounded-lg bg-white">
         <div className="flex items-center justify-between px-5 py-5">
           <h2 className="text-[18px] font-[700]">Recent Orders</h2>
+          <div className="w-[25%]">
+            <SearchBox
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setPageOrder={setPageOrder}
+            />
+          </div>
         </div>
-        <div className="relative overflow-x-auto mt-5 pb-5">
+        <div className="relative overflow-x-auto mt-5">
           <table className=" w-full text-sm text-left rtl:text-right text-gray-500 ">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
               <tr>
@@ -620,155 +683,197 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-white border-b  border-gray-200">
-                <td className="px-6 py-4 font-[500]">
-                  <Button
-                    className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]"
-                    onClick={() => isShowOrderdProduct(0)}
-                  >
-                    {isOpenOrderdProduct === 0 ? (
-                      <FaAngleUp className="text-[16px] text-[rgba(0,0,0,0.7)]" />
-                    ) : (
-                      <FaAngleDown className="text-[16px] text-[rgba(0,0,0,0.7)]" />
-                    )}
-                  </Button>
-                </td>
-                <td className="px-6 py-4 font-[500]">
-                  <span className="text-primary font-[600]">
-                    6484651321861864186{" "}
-                  </span>
-                </td>
-                <td className="px-6 py-4 font-[500]">
-                  <span className="text-primary font-[600]">
-                    pay_JHDHSDVHNSDVJH{" "}
-                  </span>
-                </td>
-                <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                  Vịnh Trần
-                </td>
-                <td className="px-6 py-4 font-[500]">0946565316</td>
-                <td className="px-6 py-4 font-[500]">
-                  <span className="block w-[300px]">
-                    TP Hồ Chí Minh Quận Gò Vấp
-                  </span>
-                </td>
-                <td className="px-6 py-4 font-[500]">110053</td>
-                <td className="px-6 py-4 font-[500]">3800</td>
-                <td className="px-6 py-4 font-[500]">
-                  quocvinhtran.0212@gmail.com
-                </td>
-                <td className="px-6 py-4 font-[500]">
-                  {" "}
-                  <span className="text-primary font-[600]">
-                    648accsa651321861864e186{" "}
-                  </span>
-                </td>
-                <td className="px-6 py-4 font-[500]">
-                  <Badge status="pending" />
-                </td>
-                <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                  2025-8-31
-                </td>
-              </tr>
+              {ordersData?.length !== 0 &&
+                ordersData?.map((orders, index) => {
+                  return (
+                    <>
+                      <tr className="bg-white border-b  border-gray-200">
+                        <td className="px-6 py-4 font-[500]">
+                          <Button
+                            className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]"
+                            onClick={() => isShowOrderdProduct(index)}
+                          >
+                            {isOpenOrderdProduct === index ? (
+                              <FaAngleUp className="text-[16px] text-[rgba(0,0,0,0.7)]" />
+                            ) : (
+                              <FaAngleDown className="text-[16px] text-[rgba(0,0,0,0.7)]" />
+                            )}
+                          </Button>
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          <span className="text-primary"> {orders?._id} </span>
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          <span className="text-primary">
+                            {orders?.paymentId
+                              ? orders?.paymentId
+                              : "CASH ON DELIVERY"}{" "}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-[500] whitespace-nowrap">
+                          {orders?.userId?.name}
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          {" "}
+                          {orders?.userId?.mobile}
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          <span className="block w-[300px]">
+                            {orders?.delivery_address
+                              ? [
+                                  orders.delivery_address?.address_line1,
+                                  orders.delivery_address?.city,
+                                  orders.delivery_address?.lamdmark, // ✅ sửa 'lamdmark' → 'landmark'
+                                  orders.delivery_address?.state,
+                                  orders.delivery_address?.country,
+                                  orders.delivery_address?.mobile
+                                    ? `+${orders.delivery_address.mobile}`
+                                    : null,
+                                ]
+                                  .filter(Boolean) // ✅ Lọc bỏ undefined/null
+                                  .join(", ")
+                              : "No address"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          {orders?.delivery_address?.pincode}
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          {orders?.totalAmt}
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          {orders?.userId?.email}
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          {" "}
+                          <span className="text-primary">
+                            {" "}
+                            {orders?.userId?._id}{" "}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-[500]">
+                          <Badge status={orders?.order_status} />
+                        </td>
+                        <td className="px-6 py-4 font-[500] whitespace-nowrap">
+                          {orders?.createdAt?.split("T")[0]}
+                        </td>
+                      </tr>
 
-              {isOpenOrderdProduct === 0 && (
-                <tr>
-                  <td className=" pl-20" colSpan="6">
-                    <div className="relative overflow-x-auto">
-                      <table className=" w-full text-sm text-left rtl:text-right text-gray-500 ">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
-                          <tr>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Product Id
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Product Title
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Imge
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Quantity
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Price
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 whitespace-nowrap"
-                            >
-                              Sub Total
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="bg-white border-b  border-gray-200">
-                            <td className="px-6 py-4 font-[500]">
-                              <span className="text-gray-600">
-                                6484651321861864186{" "}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 font-[500]">
-                              <span>Women Wide Leg High-Rise Light </span>
-                            </td>
-                            <td className="px-6 py-4 font-[500]">
-                              <img
-                                src="product1.jpg"
-                                className="w-[40px] h-[40px] object-cover rounded-md"
-                              />
-                            </td>
-                            <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                              2
-                            </td>
-                            <td className="px-6 py-4 font-[500]">$58.00</td>
-                            <td className="px-6 py-4 font-[500]">$58.00</td>
-                          </tr>
-
-                          <tr className="bg-white border-b  border-gray-200">
-                            <td className="px-6 py-4 font-[500]">
-                              <span className="text-gray-600">
-                                6484651321861864186{" "}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 font-[500]">
-                              <span>Women Wide Leg High-Rise Light </span>
-                            </td>
-                            <td className="px-6 py-4 font-[500]">
-                              <img
-                                src="product1.jpg"
-                                className="w-[40px] h-[40px] object-cover rounded-md"
-                              />
-                            </td>
-                            <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                              2
-                            </td>
-                            <td className="px-6 py-4 font-[500]">$58.00</td>
-                            <td className="px-6 py-4 font-[500]">$58.00</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              )}
+                      {isOpenOrderdProduct === index && (
+                        <tr>
+                          <td className=" pl-20" colSpan="6">
+                            <div className="relative overflow-x-auto">
+                              <table className=" w-full text-sm text-left rtl:text-right text-gray-500 ">
+                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+                                  <tr>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Product Id
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Product Title
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Imge
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Quantity
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Price
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 whitespace-nowrap"
+                                    >
+                                      Sub Total
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {orders?.products?.map((item, index) => {
+                                    return (
+                                      <tr className="bg-white border-b  border-gray-200">
+                                        <td className="px-6 py-4 font-[500]">
+                                          <span className="text-gray-600">
+                                            {item?._id}
+                                          </span>
+                                        </td>
+                                        <td className="px-6 py-4 font-[500]">
+                                          <div className="w-[200px]">
+                                            <span>{item?.productTitle} </span>
+                                          </div>
+                                        </td>
+                                        <td className="px-6 py-4 font-[500]">
+                                          <img
+                                            src={item?.image}
+                                            className="w-[40px] h-[40px] object-cover rounded-md"
+                                          />
+                                        </td>
+                                        <td className="px-6 py-4 font-[500] whitespace-nowrap">
+                                          {item?.quantity}
+                                        </td>
+                                        <td className="px-6 py-4 font-[500]">
+                                          {item?.price?.toLocaleString(
+                                            "vi-VN",
+                                            {
+                                              // Nên dùng 'vi-VN' để hiển thị định dạng số kiểu Việt Nam
+                                              style: "currency",
+                                              currency: "VND",
+                                              minimumFractionDigits: 0, // Loại bỏ phần .00 nếu không cần thiết
+                                            },
+                                          )}
+                                        </td>
+                                        <td className="px-6 py-4 font-[500]">
+                                          {(
+                                            item?.price * item?.quantity
+                                          )?.toLocaleString("vi-VN", {
+                                            // Nên dùng 'vi-VN' để hiển thị định dạng số kiểu Việt Nam
+                                            style: "currency",
+                                            currency: "VND",
+                                            minimumFractionDigits: 0, // Loại bỏ phần .00 nếu không cần thiết
+                                          })}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  );
+                })}
             </tbody>
           </table>
         </div>
+        {orders?.totalPages > 0 && (
+          <div className="flex items-center justify-center mt-5 pb-5">
+            <Pagination
+              showFirstButton
+              showLastButton
+              count={orders?.totalPages || 0}
+              page={pageOrder}
+              onChange={(e, value) => setPageOrder(value)}
+            />
+          </div>
+        )}
       </div>
 
       <div className="card my-4 shadow-sm sm:rounded-lg bg-white/70 backdrop-blur-md border border-gray-200">
@@ -777,47 +882,70 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center gap-5 px-5 py-5 pt-1">
-          <span className="flex items-center gap-1 text-[15px]">
-            <span className="block w-[8px] h-[8px] rounded-full bg-green-600"></span>
+          <span
+            className="flex items-center gap-1 text-[15px] cursor-pointer"
+            onClick={getTotalUserByYear}
+          >
+            <span className="block w-[8px] h-[8px] rounded-full bg-[#0858f7]"></span>{" "}
+            {/* ✅ xanh dương */}
             Total Users
           </span>
 
-          <span className="flex items-center gap-1 text-[15px]">
-            <span className="block w-[8px] h-[8px] rounded-full bg-primary"></span>
+          <span
+            className="flex items-center gap-1 text-[15px] cursor-pointer"
+            onClick={getTotalSalesByYear} 
+          >
+            <span className="block w-[8px] h-[8px] rounded-full bg-green-600"></span>{" "}
+            {/* ✅ xanh lá */}
             Total Sales
           </span>
         </div>
 
-        <LineChart
-          width={1000}
-          height={500}
-          data={chart1Data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="none" />
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-          <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="TotalSales"
-            stroke="#8884d8"
-            strokeWidth={3}
-            activeDot={{ r: 8 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="TotalUsers"
-            stroke="#82ca9d"
-            strokeWidth={3}
-          />
-        </LineChart>
+        {chartData?.length !== 0 && (
+          <BarChart
+            width={1000}
+            height={500}
+            data={chartData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <XAxis
+              dataKey="name"
+              scale="point"
+              tick={{ fontSize: 12 }}
+              label={{ position: "insideBottom", fontSize: 14 }}
+              style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+            />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              label={{ position: "insideBottom", fontSize: 14 }}
+              style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#071739",
+                color: "white",
+              }}
+              labelStyle={{ color: "yellow" }}
+              itemStyle={{ color: "cyan" }}
+              cursor={{ fill: "white" }}
+            />
+            <Legend />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              horizontal={false}
+              vertical={false}
+            />
+            <Bar dataKey="TotalSales" stackId="sales" fill="#16a34a" />{" "}
+            {/* ✅ xanh lá = Sales (khớp legend) */}
+            <Bar dataKey="TotalUsers" stackId="users" fill="#0858f7" />{" "}
+            {/* ✅ xanh dương = Users (khớp legend) */}
+          </BarChart>
+        )}
       </div>
     </>
   );
