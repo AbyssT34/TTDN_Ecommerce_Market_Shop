@@ -203,10 +203,9 @@ export const totalUserController = async (req, res) => {
       }
     }
     return res.status(200).json({
-      // ✅ thêm response
       error: false,
       success: true,
-      monthlyUser,
+      totalUsers:monthlyUser,
     });
   } catch (error) {
     return res.status(500).json({

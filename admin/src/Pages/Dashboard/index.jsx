@@ -307,23 +307,23 @@ const Dashboard = () => {
     });
   };
 
- const getTotalUserByYear = () => {
-   fetchDataFromApi(`/api/order/users`).then((res) => {
-     const user = [];
-     res?.monthlyUser?.length !== 0 && // ✅ đúng field
-       res?.monthlyUser?.map((item) => {
-         user.push({
-           name: item?.name,
-           TotalUsers: parseInt(item?.totalUsers), // ✅ đúng field
-         });
-       });
-     const uniqueArr = user.filter(
-       (obj, index, self) =>
-         index === self.findIndex((t) => t.name === obj.name),
-     );
-     setChartData(uniqueArr); // ✅ đừng quên set data
-   });
- };
+  const getTotalUserByYear = () => {
+    fetchDataFromApi(`/api/order/users`).then((res) => {
+      const user = [];
+      res?.monthlyUser?.length !== 0 && // ✅ đúng field
+        res?.monthlyUser?.map((item) => {
+          user.push({
+            name: item?.name,
+            TotalUsers: parseInt(item?.totalUsers), // ✅ đúng field
+          });
+        });
+      const uniqueArr = user.filter(
+        (obj, index, self) =>
+          index === self.findIndex((t) => t.name === obj.name),
+      );
+      setChartData(uniqueArr); // ✅ đừng quên set data
+    });
+  };
   const getTotalSalesByYear = () => {
     fetchDataFromApi(`/api/order/sales`).then((res) => {
       const sales = [];
@@ -893,7 +893,7 @@ const Dashboard = () => {
 
           <span
             className="flex items-center gap-1 text-[15px] cursor-pointer"
-            onClick={getTotalSalesByYear} 
+            onClick={getTotalSalesByYear}
           >
             <span className="block w-[8px] h-[8px] rounded-full bg-green-600"></span>{" "}
             {/* ✅ xanh lá */}

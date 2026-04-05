@@ -16,7 +16,7 @@ const orderRouter = Router();
 // Stripe order routes
 orderRouter.post("/create", auth, createOrderController);
 orderRouter.get("/order-list", auth, getOrdersByUserController);
-orderRouter.get('/count' , auth , getTotalOrdersCountController);
+orderRouter.get("/count", auth, getTotalOrdersCountController);
 orderRouter.get("/users", auth, totalUserController);
 orderRouter.get("/sales", auth, totalSalesController);
 

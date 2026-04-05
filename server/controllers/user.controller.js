@@ -841,3 +841,39 @@ export async function getAllUsers(request, response) {
     });
   }
 }
+
+//delete multiple user
+export async function deleteMultiple(request, response) {
+  const { ids } = request.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    return response.status(400).json({
+      error: true,
+      success: false,
+      message: "Invalid input",
+    });
+  }
+
+  try {
+    for (let i = 0; i < ids.length; i++) {
+      const user = await UserModel.findById(ids[i]);
+      if (!user) continue;
+
+      // xử lý ảnh nếu cần ở đây
+    } // ✅ đóng for loop
+
+    await UserModel.deleteMany({ _id: { $in: ids } });
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message: "Users Deleted",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}

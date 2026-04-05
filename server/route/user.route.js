@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addReviews,
   authWithGoogle,
+  deleteMultiple,
   forgotPasswordController,
   forgotPasswordReset,
   getAllReviews,
@@ -44,7 +45,8 @@ userRouter.post('/forgot-password-reset', forgotPasswordReset);
 userRouter.post("/addReview",auth ,addReviews);
 userRouter.get("/getReviews",getReviews);
 userRouter.get("/getAllReviews", getAllReviews);
-userRouter.get("/getAllUsers",getAllUsers);
+userRouter.get("/getAllUsers",getAllUsers); 
+userRouter.delete("/deleteMultiple", deleteMultiple);
 
 
 export default userRouter;

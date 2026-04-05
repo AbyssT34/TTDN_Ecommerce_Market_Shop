@@ -69,6 +69,9 @@ const Products = () => {
   const [productThirLaveldCat, setProductThirLaveldCat] = useState("");
   const [sortedIds, setSortedIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [productTotalData, setProductTotalData] = useState([]);
+    const [pageOrder, setPageOrder] = useState(1);
 
   const context = useContext(MyContext);
 
@@ -77,6 +80,24 @@ const Products = () => {
   }, [context?.refreshData]);
   // ✅ watch refreshData thay vì setIsOpenFullScreenPanel
 
+  useEffect(() => {
+    if (searchQuery !== "") {
+      const filteredOrders = productTotalData?.filter(
+        (product) =>
+          product?._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.catName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.subCat?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setProductData(filteredOrders);
+    } else {
+      fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
+        if (res?.error === false) {
+          setProductCat(res?.products);
+        }
+      });
+    }
+  }, [searchQuery]);
 
   const getProducts = async () => {
     setIsLoading(true);
@@ -89,6 +110,7 @@ const Products = () => {
         }
         setTimeout(() => {
           setProductData(productArr);
+          setProductTotalData(productArr);
           setIsLoading(false);
         }, 300);
       }
@@ -327,7 +349,11 @@ const Products = () => {
           </div>
 
           <div className="col w-[20%] ml-auto">
-            <SearchBox />
+            <SearchBox
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setPageOrder={setPageOrder}
+            />
           </div>
         </div>
 
