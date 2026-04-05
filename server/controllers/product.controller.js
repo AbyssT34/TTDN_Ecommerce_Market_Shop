@@ -1471,7 +1471,6 @@ export async function filtes(request, response) {
   const limitNum = parseInt(limit) || 5;
 
   try {
-
     const products = await ProductModel.find(filters)
       .populate("category")
       .skip((pageNum - 1) * limitNum)
@@ -1502,11 +1501,12 @@ const sortItems = (products, sortBy, order) => {
   return products.sort((a, b) => {
     if (sortBy === "name") {
       return order === "asc"
-        ? a.name.localeCompare(b.name)  // ✅ localeCompare
+        ? a.name.localeCompare(b.name) // ✅ localeCompare
         : b.name.localeCompare(a.name);
     }
 
-    if (sortBy === "price") {  // ✅ nằm trong sort callback
+    if (sortBy === "price") {
+      // ✅ nằm trong sort callback
       return order === "asc" ? a.price - b.price : b.price - a.price;
     }
 
@@ -1522,19 +1522,19 @@ export async function sortBy(request, response) {
     const sortOptions = {};
 
     switch (sortBy) {
-      case 'sales':
-        sortOptions.sale = order === 'asc' ? 1 : -1;
+      case "sales":
+        sortOptions.sale = order === "asc" ? 1 : -1;
         break;
-      case 'name_asc':
+      case "name_asc":
         sortOptions.name = 1;
         break;
-      case 'name_desc':
+      case "name_desc":
         sortOptions.name = -1;
         break;
-      case 'price_asc':
+      case "price_asc":
         sortOptions.price = 1;
         break;
-      case 'price_desc':
+      case "price_desc":
         sortOptions.price = -1;
         break;
       default:
@@ -1553,6 +1553,59 @@ export async function sortBy(request, response) {
       products: products,
       total: total,
       totalPages: Math.ceil(total / 10),
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+//seach Product
+export async function searchProductController(request, response) {
+  try {
+    const { query, page, limit } = request.body;
+
+    if (!query) {
+      return response.status(400).json({
+        // ✅ sửa res -> response
+        message: "Query is required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const pageNum = parseInt(page) || 1; // ✅ khai báo pageNum
+    const limitNum = parseInt(limit) || 10; // ✅ khai báo limitNum
+
+    const searchFilter = {
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { brand: { $regex: query, $options: "i" } },
+        { catName: { $regex: query, $options: "i" } },
+        { subCat: { $regex: query, $options: "i" } },
+        { thirdsubCat: { $regex: query, $options: "i" } },
+      ],
+    };
+
+    // ✅ Đếm tổng TRƯỚC khi skip/limit
+    const total = await ProductModel.countDocuments(searchFilter);
+
+    const products = await ProductModel.find(searchFilter)
+      .populate("category")
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
+
+    return response.status(200).json({
+      // ✅ 200 thay vì 201 cho GET-like search
+      success: true,
+      error: false,
+      products: products,
+      total: total,
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
     });
   } catch (error) {
     return response.status(500).json({

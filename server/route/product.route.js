@@ -41,6 +41,7 @@ import {
   uploadBannerImages,
   filtes,
   sortBy,
+  searchProductController,
 } from "../controllers/product.controller.js";
 
 const productRouter = Router();
@@ -102,6 +103,7 @@ productRouter.delete("/deleteMultiple", deleteMultipleProduct);
 productRouter.put("/updateProduct/:id", auth, updateProducts);
 productRouter.post("/filters", filtes);
 productRouter.post("/sortBy", sortBy);
+productRouter.post('/search/get',searchProductController)
 
 // ── Route động /:id — PHẢI ĐẶT CUỐI CÙNG ───────────
 productRouter.get("/:id", getProduct);

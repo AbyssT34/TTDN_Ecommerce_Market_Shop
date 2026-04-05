@@ -37,6 +37,8 @@ const SideBar = (props) => {
 
   // ✅ Xử lý checkbox check/uncheck
   const handleCheckboxChange = (field, value) => {
+    context.setSearchData([]);
+
     const currentValues = filters[field] || [];
     const updatedValues = currentValues.includes(value)
       ? currentValues.filter((item) => item !== value)
@@ -64,6 +66,7 @@ const SideBar = (props) => {
         rating: [],
         page: 1,
       }));
+      context?.setSearchData([]);
     } else if (url.includes('subCatId')) {
       const subCategoryId = queryParameters.get('subCatId');
       setFilters((prev) => ({
@@ -74,6 +77,7 @@ const SideBar = (props) => {
         rating: [],
         page: 1,
       }));
+      context?.setSearchData([]);
     } else if (url.includes('thirdsubCatId')) {
       const thirdsubCatId = queryParameters.get('thirdsubCatId');
       setFilters((prev) => ({
@@ -84,6 +88,7 @@ const SideBar = (props) => {
         rating: [],
         page: 1,
       }));
+      context?.setSearchData([]);
     } else {
       // Không có params - reset filters
       setFilters((prev) => ({
@@ -100,14 +105,22 @@ const SideBar = (props) => {
   // ✅ Gọi API filter
   const filterData = useCallback(() => {
     props.setIsLoading(true);
-    postData(`/api/product/filters`, { ...filters, page: props.page || filters.page }).then(
-      (res) => {
-        props.setProductsData(res);
-        props.setIsLoading(false);
-        props.setTotalPages(res?.totalPages);
-        window.scrollTo(0, 0);
-      }
-    );
+
+    if (context?.searchData?.products?.length > 0) {
+      props.setProductsData(context?.searchData);
+      props.setIsLoading(false);
+      props.setTotalPages(context?.searchData?.totalPages);
+      window.scrollTo(0, 0);
+    } else {
+      postData(`/api/product/filters`, { ...filters, page: props.page || filters.page }).then(
+        (res) => {
+          props.setProductsData(res);
+          props.setIsLoading(false);
+          props.setTotalPages(res?.totalPages);
+          window.scrollTo(0, 0);
+        }
+      );
+    }
   }, [filters, props.page]);
 
   useEffect(() => {

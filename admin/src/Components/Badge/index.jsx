@@ -13,6 +13,8 @@ const Badge = (props) => {
       >
         {props.status}
       </span>
+
+      
     </>
   );
 };

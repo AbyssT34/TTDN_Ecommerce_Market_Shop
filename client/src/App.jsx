@@ -28,6 +28,7 @@ import { fetchDataFromApi, postData } from './utils/api';
 import Address from './Page/MyAccount/address';
 import OrderSuccess from './Page/Orders/success';
 import OrderFailed from './Page/Orders/failed';
+import SearchPage from './Page/Search';
 
 const MyContext = createContext();
 
@@ -47,6 +48,7 @@ function App() {
   const [myListData, setMyListData] = useState([]);
   const [addressMode, setAddressMode] = useState('add');
   const [addressId, setAddressId] = useState('');
+  const [searchData , setSearchData ] = useState([]);
 
   // const handleClickOpenProductDetailsModal = () => {
   //   setOpenProductDetailsModal(true);
@@ -221,6 +223,8 @@ function App() {
     addressMode,
     setAddressId,
     addressId,
+    searchData,
+    setSearchData,
   };
 
   return (
@@ -244,6 +248,7 @@ function App() {
             <Route path={'/orders/success'} exact={true} element={<OrderSuccess />} />
             <Route path={'/orders/failed'} exact={true} element={<OrderFailed />} />
             <Route path={'/address'} exact={true} element={<Address />} />
+            <Route path={'/search'} exact={true} element={<SearchPage />} />
           </Routes>
           <Footer />
         </MyContext.Provider>
