@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from '@/features/shared/api/apiBaseUrl';
 
 const getAuthHeader = () => {
     const stored = localStorage.getItem('auth-storage');
@@ -127,7 +126,7 @@ export interface AdminVoucherPayload {
 }
 
 export const getDashboardStats = async () => {
-    const res = await axios.get(`${API_BASE}/admin/dashboard`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/dashboard`, {
         headers: getAuthHeader(),
     });
     return res.data;
@@ -139,7 +138,7 @@ export const adminGetAllProducts = async (params?: {
     search?: string;
     category?: string;
 }) => {
-    const res = await axios.get(`${API_BASE}/products`, {
+    const res = await axios.get(`${API_BASE_URL}/products`, {
         params: { ...params, limit: params?.limit || 20 },
         headers: getAuthHeader(),
     });
@@ -147,28 +146,28 @@ export const adminGetAllProducts = async (params?: {
 };
 
 export const adminGetProductById = async (id: string) => {
-    const res = await axios.get(`${API_BASE}/products/${id}`, {
+    const res = await axios.get(`${API_BASE_URL}/products/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminCreateProduct = async (data: Record<string, any>) => {
-    const res = await axios.post(`${API_BASE}/products`, data, {
+    const res = await axios.post(`${API_BASE_URL}/products`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminUpdateProduct = async (id: string, data: Record<string, any>) => {
-    const res = await axios.put(`${API_BASE}/products/${id}`, data, {
+    const res = await axios.put(`${API_BASE_URL}/products/${id}`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminDeleteProduct = async (id: string) => {
-    const res = await axios.delete(`${API_BASE}/products/${id}`, {
+    const res = await axios.delete(`${API_BASE_URL}/products/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
@@ -176,7 +175,7 @@ export const adminDeleteProduct = async (id: string) => {
 
 export const uploadImage = async (base64: string) => {
     const res = await axios.post(
-        `${API_BASE}/admin/upload`,
+        `${API_BASE_URL}/admin/upload`,
         { image: base64 },
         { headers: getAuthHeader() }
     );
@@ -184,7 +183,7 @@ export const uploadImage = async (base64: string) => {
 };
 
 export const adminGetAllRecipes = async (params?: AdminRecipeFilters) => {
-    const res = await axios.get(`${API_BASE}/admin/recipes`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/recipes`, {
         params,
         headers: getAuthHeader(),
     });
@@ -192,56 +191,56 @@ export const adminGetAllRecipes = async (params?: AdminRecipeFilters) => {
 };
 
 export const adminGetRecipeById = async (id: string) => {
-    const res = await axios.get(`${API_BASE}/admin/recipes/${id}`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/recipes/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminCreateRecipe = async (data: AdminRecipePayload) => {
-    const res = await axios.post(`${API_BASE}/admin/recipes`, data, {
+    const res = await axios.post(`${API_BASE_URL}/admin/recipes`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminUpdateRecipe = async (id: string, data: AdminRecipePayload) => {
-    const res = await axios.put(`${API_BASE}/admin/recipes/${id}`, data, {
+    const res = await axios.put(`${API_BASE_URL}/admin/recipes/${id}`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminDeleteRecipe = async (id: string) => {
-    const res = await axios.delete(`${API_BASE}/admin/recipes/${id}`, {
+    const res = await axios.delete(`${API_BASE_URL}/admin/recipes/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminGetAllVouchers = async () => {
-    const res = await axios.get(`${API_BASE}/admin/vouchers`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/vouchers`, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminCreateVoucher = async (data: AdminVoucherPayload) => {
-    const res = await axios.post(`${API_BASE}/admin/vouchers`, data, {
+    const res = await axios.post(`${API_BASE_URL}/admin/vouchers`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminUpdateVoucher = async (id: string, data: AdminVoucherPayload) => {
-    const res = await axios.put(`${API_BASE}/admin/vouchers/${id}`, data, {
+    const res = await axios.put(`${API_BASE_URL}/admin/vouchers/${id}`, data, {
         headers: getAuthHeader(),
     });
     return res.data;
 };
 
 export const adminDeleteVoucher = async (id: string) => {
-    const res = await axios.delete(`${API_BASE}/admin/vouchers/${id}`, {
+    const res = await axios.delete(`${API_BASE_URL}/admin/vouchers/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
@@ -253,7 +252,7 @@ export const adminGetAllOrders = async (params?: {
     status?: string;
     search?: string;
 }) => {
-    const res = await axios.get(`${API_BASE}/admin/orders`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/orders`, {
         params,
         headers: getAuthHeader(),
     });
@@ -261,7 +260,7 @@ export const adminGetAllOrders = async (params?: {
 };
 
 export const adminGetOrderDetail = async (id: string) => {
-    const res = await axios.get(`${API_BASE}/admin/orders/${id}`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/orders/${id}`, {
         headers: getAuthHeader(),
     });
     return res.data;
@@ -269,7 +268,7 @@ export const adminGetOrderDetail = async (id: string) => {
 
 export const adminUpdateOrderStatus = async (id: string, status: string, note?: string) => {
     const res = await axios.put(
-        `${API_BASE}/admin/orders/${id}/status`,
+        `${API_BASE_URL}/admin/orders/${id}/status`,
         { status, note },
         { headers: getAuthHeader() }
     );
@@ -282,7 +281,7 @@ export const adminGetAllUsers = async (params?: {
     search?: string;
     role?: string;
 }) => {
-    const res = await axios.get(`${API_BASE}/admin/users`, {
+    const res = await axios.get(`${API_BASE_URL}/admin/users`, {
         params,
         headers: getAuthHeader(),
     });
@@ -291,7 +290,7 @@ export const adminGetAllUsers = async (params?: {
 
 export const adminToggleUserActive = async (id: string) => {
     const res = await axios.put(
-        `${API_BASE}/admin/users/${id}/toggle`,
+        `${API_BASE_URL}/admin/users/${id}/toggle`,
         {},
         {
             headers: getAuthHeader(),
@@ -301,7 +300,7 @@ export const adminToggleUserActive = async (id: string) => {
 };
 
 export const getCategories = async () => {
-    const res = await axios.get(`${API_BASE}/categories`, {
+    const res = await axios.get(`${API_BASE_URL}/categories`, {
         headers: getAuthHeader(),
     });
     return res.data;

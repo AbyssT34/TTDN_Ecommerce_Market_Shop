@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from '@/features/shared/api/apiBaseUrl';
 
 export interface Recipe {
     _id: string;
@@ -33,18 +32,19 @@ export interface RecipeFilters {
 
 export const getRecipes = async (filters: RecipeFilters = {}) => {
     const params = Object.fromEntries(
-        Object.entries(filters).filter(([, v]) => v !== undefined && v !== '')
+        Object.entries(filters).filter(([, value]) => value !== undefined && value !== '')
     );
-    const { data } = await axios.get(`${API_URL}/recipes`, { params });
+
+    const { data } = await axios.get(`${API_BASE_URL}/recipes`, { params });
     return data;
 };
 
 export const getFeaturedRecipes = async () => {
-    const { data } = await axios.get(`${API_URL}/recipes/featured`);
+    const { data } = await axios.get(`${API_BASE_URL}/recipes/featured`);
     return data;
 };
 
 export const getRecipeBySlug = async (slug: string) => {
-    const { data } = await axios.get(`${API_URL}/recipes/${slug}`);
+    const { data } = await axios.get(`${API_BASE_URL}/recipes/${slug}`);
     return data;
 };
