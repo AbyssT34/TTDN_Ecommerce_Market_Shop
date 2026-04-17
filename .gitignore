@@ -45,4 +45,11 @@ coverage/
 .codex-runtime/
 
 # Custom
-.agent/
+.agent/ 
+
+# Unnecessary project files
+MONGODB_SETUP.md
+PROJECT_STATUS.md
+THE ULTIMATE PROJECT ARCHITECT ECOM.md
+database_setup.sql
+recipes.json
