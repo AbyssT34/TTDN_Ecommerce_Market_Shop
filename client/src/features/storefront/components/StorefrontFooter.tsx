@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 
 export function StorefrontFooter() {
     const language = useThemeStore((state) => state.language);

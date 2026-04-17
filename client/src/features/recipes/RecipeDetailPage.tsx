@@ -13,11 +13,11 @@ import {
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from '@/components/ui';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
-import { formatDisplayCurrency, translate } from '@/lib/displayPreferences';
-import { reserveStock } from '@/lib/api/cart';
-import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { formatDisplayCurrency, translate } from '@/features/shared/utils/displayPreferences';
+import { reserveStock } from '@/features/cart/services/cartApi';
+import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 import { getRecipeBySlug, type Recipe } from './services/recipeApi';
 
 interface RecipeProductImage {

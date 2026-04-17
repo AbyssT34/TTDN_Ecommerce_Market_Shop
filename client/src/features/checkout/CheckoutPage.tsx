@@ -1,10 +1,10 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createOrder, Order } from '@/lib/api/orders';
+import { createOrder, Order } from '@/features/orders/services/ordersApi';
 import { toast } from '@/components/ui';
-import { formatDisplayCurrency, translate } from '@/lib/displayPreferences';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { formatDisplayCurrency, translate } from '@/features/shared/utils/displayPreferences';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
 import { CheckoutFormView } from './components/CheckoutFormView';
 import { CheckoutTransferView } from './components/CheckoutTransferView';

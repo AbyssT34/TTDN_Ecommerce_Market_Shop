@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Lock, Save, ShieldCheck, UserCircle } from 'lucide-react';
 import { toast } from '@/components/ui';
-import { translate } from '@/lib/displayPreferences';
-import { useAuthStore } from '@/stores/authStore';
-import { useThemeStore } from '@/stores/themeStore';
-import { changePassword, updateProfile } from '@/lib/api/user';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useAuthStore } from '@/store/authStore';
+import { useThemeStore } from '@/store/themeStore';
+import { changePassword, updateProfile } from '@/features/auth/services/userApi';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
 import { StorefrontAccountSidebar } from '@/features/storefront/components/StorefrontAccountSidebar';
 

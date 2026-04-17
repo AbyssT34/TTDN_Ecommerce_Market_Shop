@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ProductCard } from '@/components/products/ProductCard';
+import { ProductCard } from '@/features/products/components/ProductCard';
 import { toast } from '@/components/ui';
-import { reserveStock } from '@/lib/api/cart';
-import { getCategories } from '@/lib/api/categories';
-import { getProducts, Product } from '@/lib/api/products';
-import { translate } from '@/lib/displayPreferences';
-import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { reserveStock } from '@/features/cart/services/cartApi';
+import { getCategories } from '@/features/shared/api/categoriesApi';
+import { getProducts, Product } from '@/features/products/services/productsApi';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 
 export const ProductListPage = () => {
     const navigate = useNavigate();

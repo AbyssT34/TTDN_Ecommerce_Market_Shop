@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { ChefHat, Clock3, Filter, Leaf, RefreshCw, Search, Sparkles } from 'lucide-react';
 import { getRecipes, type Recipe } from './services/recipeApi';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 
 const difficultyClassNames: Record<string, string> = {
     de: 'bg-success-subtle text-success-emphasis',

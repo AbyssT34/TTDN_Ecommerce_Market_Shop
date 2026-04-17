@@ -1,7 +1,7 @@
 import { AlertCircle, Check, CheckCircle, Copy, CreditCard, QrCode } from 'lucide-react';
-import { Order } from '@/lib/api/orders';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { Order } from '@/features/orders/services/ordersApi';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 
 interface BankConfig {
     bankId: string;

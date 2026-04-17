@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { PackageCheck, Receipt, ShoppingBag } from 'lucide-react';
-import { getMyOrders } from '@/lib/api/orders';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { getMyOrders } from '@/features/orders/services/ordersApi';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 import {
     formatOrderDateTime,
     formatOrderPrice,

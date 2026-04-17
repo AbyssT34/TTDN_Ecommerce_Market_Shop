@@ -1,8 +1,8 @@
 import type { ChangeEvent, FormEvent } from 'react';
 import { AlertCircle, CreditCard, MapPin, Truck } from 'lucide-react';
-import type { CartItem } from '@/stores/cartStore';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import type { CartItem } from '@/store/cartStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 import { CheckoutOptionCard } from './CheckoutOptionCard';
 
 interface CheckoutFormData {

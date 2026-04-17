@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { ClipboardList, Heart, Receipt, UserCircle } from 'lucide-react';
-import { translate } from '@/lib/displayPreferences';
-import { useAuthStore } from '@/stores/authStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useAuthStore } from '@/store/authStore';
+import { useThemeStore } from '@/store/themeStore';
 
 interface SidebarStat {
     label: string;

@@ -2,16 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, ShoppingBag, Sparkles, Truck } from 'lucide-react';
-import { ProductCard } from '@/components/products/ProductCard';
+import { ProductCard } from '@/features/products/components/ProductCard';
 import { AutoCutoutImage } from '@/components/ui/AutoCutoutImage';
 import { toast } from '@/components/ui';
-import { Category, getCategories } from '@/lib/api/categories';
-import { translate } from '@/lib/displayPreferences';
-import { reserveStock } from '@/lib/api/cart';
-import { getProducts, Product } from '@/lib/api/products';
-import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { Category, getCategories } from '@/features/shared/api/categoriesApi';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { reserveStock } from '@/features/cart/services/cartApi';
+import { getProducts, Product } from '@/features/products/services/productsApi';
+import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 
 interface StorefrontCategoryVisualProps {
     category: Category;

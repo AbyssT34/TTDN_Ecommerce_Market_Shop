@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getOrderById } from '@/lib/api/orders';
+import { getOrderById } from '@/features/orders/services/ordersApi';
 import { toast } from '@/components/ui';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
 import { CheckoutTransferView } from './components/CheckoutTransferView';
 import { formatOrderPrice, getOrderDisplayCode, isBankTransferOrder, isPaidOrder } from '@/features/orders/orderPresentation';

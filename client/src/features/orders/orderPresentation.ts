@@ -1,4 +1,4 @@
-import { formatDisplayCurrency, formatDisplayDateTime, translate } from '@/lib/displayPreferences';
+import { formatDisplayCurrency, formatDisplayDateTime, translate } from '@/features/shared/utils/displayPreferences';
 
 const orderStatusLabels: Record<string, { vi: string; en: string }> = {
     pending: { vi: 'Chờ xác nhận', en: 'Pending confirmation' },

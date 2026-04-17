@@ -17,13 +17,13 @@ import {
     User,
     X,
 } from 'lucide-react';
-import { getCategories } from '@/lib/api/categories';
-import { translate } from '@/lib/displayPreferences';
-import { logoutUser } from '@/lib/api/auth';
+import { getCategories } from '@/features/shared/api/categoriesApi';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { logoutUser } from '@/features/auth/services/authApi';
 import { toast } from '@/components/ui';
-import { useAuthStore } from '@/stores/authStore';
-import { DisplayCurrency, DisplayLanguage, useThemeStore } from '@/stores/themeStore';
-import { useCartStore } from '@/stores/cartStore';
+import { useAuthStore } from '@/store/authStore';
+import { DisplayCurrency, DisplayLanguage, useThemeStore } from '@/store/themeStore';
+import { useCartStore } from '@/store/cartStore';
 
 export function StorefrontHeader() {
     const navigate = useNavigate();

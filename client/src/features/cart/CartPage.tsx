@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { formatDisplayCurrency, translate } from '@/lib/displayPreferences';
-import { validateCart } from '@/lib/api/cart';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { formatDisplayCurrency, translate } from '@/features/shared/utils/displayPreferences';
+import { validateCart } from '@/features/cart/services/cartApi';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
 
 const SHIPPING_FEE = 30000;

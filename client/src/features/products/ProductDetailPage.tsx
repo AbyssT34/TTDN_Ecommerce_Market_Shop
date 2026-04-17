@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Minus, Plus, ShieldCheck, ShoppingCart, Sparkles } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ProductCard } from '@/components/products/ProductCard';
+import { ProductCard } from '@/features/products/components/ProductCard';
 import { toast } from '@/components/ui';
-import { formatDisplayCurrency, getIntlLocale, translate } from '@/lib/displayPreferences';
-import { reserveStock } from '@/lib/api/cart';
-import { getProductById, getProducts, Product } from '@/lib/api/products';
-import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { formatDisplayCurrency, getIntlLocale, translate } from '@/features/shared/utils/displayPreferences';
+import { reserveStock } from '@/features/cart/services/cartApi';
+import { getProductById, getProducts, Product } from '@/features/products/services/productsApi';
+import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
+import { useThemeStore } from '@/store/themeStore';
 
 export const ProductDetailPage = () => {
     const { id } = useParams<{ id: string }>();

@@ -1,31 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
-import '@/styles/index.css';
-import '@/styles/storefront-template.css';
-import '@/styles/admin-template.css';
-import { useThemeStore } from '@/stores/themeStore';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import './index.css';
 
-// Create React Query client
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
+            staleTime: 1000 * 60 * 5,
             retry: 1,
         },
     },
 });
 
 function AppShell() {
-    const isDark = useThemeStore((state) => state.isDark);
-    const language = useThemeStore((state) => state.language);
-
-    useEffect(() => {
-        document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-        document.documentElement.lang = language;
-        document.body.classList.toggle('ttdn-dark-mode', isDark);
-    }, [isDark, language]);
+    useAppTheme();
 
     return <App />;
 }

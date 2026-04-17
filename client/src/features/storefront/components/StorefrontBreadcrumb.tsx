@@ -1,7 +1,7 @@
 import { Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 
 interface BreadcrumbItem {
     label: string;

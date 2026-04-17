@@ -37,19 +37,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
     sessionId: getOrCreateSessionId(),
 
     setOpen: (open) => set({ isOpen: open }),
-    toggle: () => set((s) => ({ isOpen: !s.isOpen })),
+    toggle: () => set((state) => ({ isOpen: !state.isOpen })),
 
     sendMessage: async (text, cartItems = []) => {
         const { sessionId } = get();
 
-        // Add user message immediately
         const userMsg: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'user',
             content: text,
             createdAt: new Date(),
         };
-        set((s) => ({ messages: [...s.messages, userMsg], isTyping: true }));
+        set((state) => ({ messages: [...state.messages, userMsg], isTyping: true }));
 
         try {
             const data = await sendChatMessage(text, sessionId, cartItems, window.location.pathname);
@@ -59,19 +58,20 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 content: data.message.content,
                 createdAt: new Date(data.message.createdAt),
             };
-            set((s) => ({ messages: [...s.messages, aiMsg], isTyping: false }));
+            set((state) => ({ messages: [...state.messages, aiMsg], isTyping: false }));
         } catch (err: any) {
             const status: number | undefined = err?.response?.status;
-            let content = '❌ Xin lỗi, AI đang tạm thời không khả dụng. Vui lòng thử lại sau!';
+            let content = 'Xin loi, AI dang tam thoi khong kha dung. Vui long thu lai sau!';
 
             if (status === 429) {
-                content = '⏳ AI đang bận, vui lòng thử lại sau vài giây!';
+                content = 'AI dang ban, vui long thu lai sau vai giay!';
             } else if (status === 503) {
-                content = '⚙️ AI chưa được cấu hình. Admin cần thêm GEMINI_API_KEY vào server.';
+                content =
+                    'Ket noi AI hien chua san sang. Hay kiem tra cau hinh DashScope va API key trong Model Studio.';
             } else if (status === 401 || status === 403) {
-                content = '🔒 Lỗi xác thực. Vui lòng đăng nhập lại và thử lại.';
+                content = 'Loi xac thuc. Vui long dang nhap lai va thu lai.';
             } else if (!navigator.onLine) {
-                content = '📵 Không có kết nối internet. Vui lòng kiểm tra mạng và thử lại.';
+                content = 'Khong co ket noi internet. Vui long kiem tra mang va thu lai.';
             }
 
             const errorMsg: ChatMessage = {
@@ -80,7 +80,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 content,
                 createdAt: new Date(),
             };
-            set((s) => ({ messages: [...s.messages, errorMsg], isTyping: false }));
+            set((state) => ({ messages: [...state.messages, errorMsg], isTyping: false }));
         }
     },
 

@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CreditCard, MapPin, Package, PackageCheck, TimerReset } from 'lucide-react';
-import { cancelOrder, getOrderById } from '@/lib/api/orders';
+import { cancelOrder, getOrderById } from '@/features/orders/services/ordersApi';
 import { toast } from '@/components/ui';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 import { StorefrontBreadcrumb } from '@/features/storefront/components/StorefrontBreadcrumb';
 import { StorefrontAccountSidebar } from '@/features/storefront/components/StorefrontAccountSidebar';
 import {

@@ -1,11 +1,11 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Lock, Mail, ShieldCheck, ShoppingBag, Sparkles } from 'lucide-react';
-import { loginUser } from '@/lib/api/auth';
+import { loginUser } from '@/features/auth/services/authApi';
 import { toast } from '@/components/ui';
-import { translate } from '@/lib/displayPreferences';
-import { useAuthStore } from '@/stores/authStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useAuthStore } from '@/store/authStore';
+import { useThemeStore } from '@/store/themeStore';
 
 const resolveRedirectTarget = (state: unknown) => {
     if (!state || typeof state !== 'object' || !('from' in state)) {

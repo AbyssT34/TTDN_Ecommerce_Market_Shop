@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Bot, Trash2, ChevronDown, Sparkles } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { translate } from '@/lib/displayPreferences';
-import { useThemeStore } from '@/stores/themeStore';
+import { translate } from '@/features/shared/utils/displayPreferences';
+import { useThemeStore } from '@/store/themeStore';
 import { useChatStore } from './chatStore';
-import { useCartStore } from '@/stores/cartStore';
+import { useCartStore } from '@/store/cartStore';
 
 function MessageContent({ content }: { content: string }) {
     const lines = content.split('\n');
